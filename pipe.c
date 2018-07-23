@@ -9,6 +9,8 @@ struct s_cmd_list
 	struct s_cmd_list *next;
 };
 
+extern char** environ;
+
 void ft_pipe(struct s_cmd_list *cmd)
 {
 	int pfd[2];
@@ -26,7 +28,7 @@ void ft_pipe(struct s_cmd_list *cmd)
 		dup2(pfd[1], STDOUT_FILENO);
 		close(pfd[1]);
 		close(pfd[0]);
-		execlp(cmd->next->args[0], cmd->next->args, NULL);
+		execve(cmd->next->args[0], cmd->next->args, environ);
 	}
 	else
 	{
@@ -34,8 +36,10 @@ void ft_pipe(struct s_cmd_list *cmd)
 		dup2(pfd[0], STDIN_FILENO);
 		close(pfd[1]);
 		close(pfd[0]);
-		execlp(cmd->args[0], cmd->args, NULL);
+		execve(cmd->args[0], cmd->args, environ);
 	}
+	wait(NULL);
+	wait(NULL);
 }
 
 void	ft_push(struct s_cmd_list *cmd, int argc, char **argv, int i)
@@ -58,15 +62,17 @@ void	ft_push(struct s_cmd_list *cmd, int argc, char **argv, int i)
 	while (j < i)
 	{
 		first->args[j] = argv[j];
+		printf("1 - %s\n", argv[j]);
 		j++;
 	}
 	first->args[j] = NULL; 
 //-------------------------------------
-	j = i;
+	j = i +1;
  	second->args = (char**)malloc(sizeof(char*)* (argc - i));
 	while (j < argc)
 	{
 		second->args[j] = argv[j];
+		printf("2 - %s\n", argv[j]);
 		j++;
 	}
 	second->args[j] = NULL; 
@@ -87,6 +93,7 @@ int main(int argc, char **argv)
 		{
 			if (!strcmp("@", argv[i]))
 			{
+				printf("%d %s\n", i, argv[i]);
 				ft_push(cmd, argc, argv, i);
 			}
 			i++;
