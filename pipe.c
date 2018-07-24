@@ -19,17 +19,21 @@ void ft_pipe(struct s_cmd_list *cmd)
 	int pfd[2];
 	int ret = 0;
 	pid_t pid;
-
+//-----------------------------------------
 	ret = pipe(pfd);
-	
+	/*
+		pfd[0] READ
+		pfd[1] WRITE
+	*/
+//-----------------------------------------
 	if (ret != 0)
 	{
 		perror("pipe");
 		exit(1);
 	}
-	
+//-----------------------------------------
 	pid = fork();
-	
+//-----------------------------------------
 	if (pid < 0)
 	{
 		perror("fork");
@@ -38,8 +42,21 @@ void ft_pipe(struct s_cmd_list *cmd)
 	else if (pid == 0)
 	{
 		printf("---> CHILD: %s\n", cmd->args[0]);
+		/*
+				int dup2(int oldfd, int newfd)
+			
+					returns new file descriptor
+
+				! ALWAYS CLOSE NEWFD BEFORE CALLING DUP !
+		*/
 		close(STDOUT_FILENO);
-		dup2(pfd[1], STDOUT_FILENO);
+		//copies pfd[1] to STDOUT, 
+		ret = dup2(pfd[1], STDOUT_FILENO);
+		if (ret == -1)
+		{
+			perror("dup2");
+			exit(1);
+		}
 		close(pfd[1]);
 		close(pfd[0]);
 		ret = execvp(cmd->args[0], cmd->args);
@@ -52,8 +69,17 @@ void ft_pipe(struct s_cmd_list *cmd)
 	else
 	{
 		printf("---> PARENT: %s\n", cmd->next->args[0]);
+		/*
+			! ALWAYS CLOSE NEWFD BEFORE CALLING DUP !
+		*/
 		close(STDIN_FILENO);
+		//copy pfd[0] to stdin
 		dup2(pfd[0], STDIN_FILENO);
+		if (ret == -1)
+		{
+			perror("dup2");
+			exit(1);
+		}
 		close(pfd[1]);
 		close(pfd[0]);
 		
@@ -65,8 +91,8 @@ void ft_pipe(struct s_cmd_list *cmd)
 		}
 
 	}
-	wait(NULL);
-	wait(NULL);
+	wait(NULL); //не обязательно
+	wait(NULL);//не обязательно
 }
 
 void	ft_push(struct s_cmd_list **cmd, int argc, char **argv, int i)
