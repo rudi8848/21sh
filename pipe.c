@@ -15,17 +15,21 @@ struct s_cmd_list
 
 void ft_pipe(struct s_cmd_list *cmd)
 {
-	printf("%s\n", __FUNCTION__);
+	//printf("%s\n", __FUNCTION__);
 	int pfd[2];
 	int ret = 0;
 	pid_t pid;
+
 	ret = pipe(pfd);
+	
 	if (ret != 0)
 	{
 		perror("pipe");
 		exit(1);
 	}
+	
 	pid = fork();
+	
 	if (pid < 0)
 	{
 		perror("fork");
@@ -33,12 +37,12 @@ void ft_pipe(struct s_cmd_list *cmd)
 	}
 	else if (pid == 0)
 	{
-		printf("---> %s\n", cmd->next->args[0]);
+		printf("---> CHILD: %s\n", cmd->args[0]);
 		close(STDOUT_FILENO);
 		dup2(pfd[1], STDOUT_FILENO);
 		close(pfd[1]);
 		close(pfd[0]);
-		ret = execvp(cmd->next->args[0], cmd->next->args);
+		ret = execvp(cmd->args[0], cmd->args);
 		if (ret != 0)
 		{
 			perror("execvp");
@@ -47,12 +51,13 @@ void ft_pipe(struct s_cmd_list *cmd)
 	}
 	else
 	{
-		printf("---> %s\n", cmd->args[0]);
+		printf("---> PARENT: %s\n", cmd->next->args[0]);
 		close(STDIN_FILENO);
 		dup2(pfd[0], STDIN_FILENO);
 		close(pfd[1]);
 		close(pfd[0]);
-		ret = execvp(cmd->args[0], cmd->args);
+		
+		ret = execvp(cmd->next->args[0], cmd->next->args);
 		if (ret != 0)
 		{
 			perror("execvp");
@@ -85,7 +90,7 @@ void	ft_push(struct s_cmd_list **cmd, int argc, char **argv, int i)
 	while (j + 1 < i)
 	{
 		first->args[j] = strdup(argv[j + 1]);
-		printf("1 - %s\n", first->args[j]);
+		//printf("1 - %s\n", first->args[j]);
 		j++;
 	}
 	first->args[j] = NULL; 
@@ -95,7 +100,7 @@ void	ft_push(struct s_cmd_list **cmd, int argc, char **argv, int i)
 	while (j+i+1 < argc)
 	{
 		second->args[j] = strdup(argv[i + 1 + j]);
-		printf("2 - %s\n", second->args[j]);
+		//printf("2 - %s\n", second->args[j]);
 		j++;
 	}
 	second->args[j] = NULL; 
@@ -133,13 +138,13 @@ int main(int argc, char **argv)
 		{
 			if (!strcmp("@", argv[i]))
 			{
-				printf("%d %s\n", i, argv[i]);
+				//printf("%d %s\n", i, argv[i]);
 				ft_push(&cmd, argc, argv, i);
 				break;
 			}
 			i++;
 		}
-		ft_print(cmd);
+		//ft_print(cmd);
 		ft_pipe(cmd);
 	}
 	else
