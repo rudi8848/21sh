@@ -1,5 +1,10 @@
-all: pipe.c
-	gcc -o test -g3 pipe.c
+NAME = test
+SRCS = cmd_table.c
+HDR = 21sh.h
+all: $(NAME)
+
+$(NAME): $(SRCS) $(HDR)
+	gcc -o $(NAME) $(SRCS)
 
 clean:
-	rm test
+	rm $(NAME)
