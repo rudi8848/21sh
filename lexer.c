@@ -1,4 +1,5 @@
 #include "21sh.h"
+#include <strings.h>
 
 typedef enum {
 	T_WORD,
@@ -29,12 +30,14 @@ static t_token ft_gettoken(char *word, size_t maxword)
 	int c;
 	size_t wordn = 0;
 
-	while ((c = getchar() != EOF))
+	while ((c = getchar()) != EOF)
 	{
+		//printf("[%d]\n", c);
 		switch (state)
 		{
 			case PLANE:
 			{
+		//		printf("State is PLANE\n");
 				switch (c)
 				{
 					case ';':
@@ -71,6 +74,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 			}
 			case GGREAT:
 			{
+		//		printf("State is GGREAT\n");
 				if (c == '>')
 					return T_GGREAT;
 				ungetc(c, stdin);
@@ -79,6 +83,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 
 			case INQUOTE:
 			{
+		//		printf("State is QUOTE\n");
 				switch (c)
 				{
 					case '\\':
@@ -105,6 +110,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 			}
 			case INWORD:
 			{
+		//		printf("State is INWORD\n");
 				switch (c)
 				{
 					case ';':
@@ -125,17 +131,22 @@ static t_token ft_gettoken(char *word, size_t maxword)
 					continue;
 				}
 			}
-		} 
+			default:
+			return T_EOF;
+		}
+		
 	}
-	return T_EOF;
+	return T_ERROR;
 }
 
 
 static int store_char(char *word, size_t maxword, int c, size_t *np)
 {
+	//printf("---> %s: %s, %zu, %i, %zu\n", __FUNCTION__, word, maxword, c, *np);
 	if (*np < maxword)
 	{
 		word[(*np)++] = c;
+		//printf("%s\n", word);
 		return 1;
 	}
 	else
@@ -146,6 +157,7 @@ int main(void)
 {
 	char word[200];
 	int t;
+	bzero(word, 200);
 
 	while (1)
 	{
@@ -219,4 +231,7 @@ int main(void)
 			}
 		}
 	}
+	
+
+	//printf("%d\n", ft_gettoken(word, sizeof(word)));
 }
