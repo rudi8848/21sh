@@ -1,5 +1,5 @@
 NAME = test
-SRCS = cmd_table.c
+SRCS = lexer.c
 HDR = 21sh.h
 all: $(NAME)
 
