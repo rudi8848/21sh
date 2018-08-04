@@ -21,6 +21,12 @@
 # define CHILD 0
 # define PARENT 1
 # define ERROR -1
+
+
+# define TRUE 1
+# define FALSE 0
+
+typedef int t_bool;
 /*
 	1) структура с глобальной таблицей команд
 	2) структура с каждой отдельной командой (список? массив?(доступ по инд.))
