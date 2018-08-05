@@ -1,5 +1,3 @@
-suvreq.h
-Go to the documentation of this file.
  /*
      Asking the system what it has (header)
      AUP2, Sec. 1.05.3
