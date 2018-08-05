@@ -1,5 +1,5 @@
 NAME = rsh
-SRC = rshell.c ec.c logf.c options.c suvreq.c macrostr.c extio.c
+SRC = rshell.c ec.c logf.c options.c suvreq.c macrostr.c extio.c statuspr.c
 OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
