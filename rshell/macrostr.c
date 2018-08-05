@@ -44,7 +44,7 @@
      char *ms_macro;
      char *ms_desc;
  } macrostr_db[] = {
- #include "macrostr.incl"
+// #include "macrostr.incl"
      { NULL, 0, NULL, NULL}
  };
  

@@ -19,8 +19,8 @@
  
  */
  #include "defs.h"
- #include "../c5/statuspr.h"
- #include "../c5/builtin.h"
+ #include "statuspr.h"
+ #include "builtin.h"
  
  #define WANT_TESTx
  
@@ -409,7 +409,8 @@
  /*[]*/
  #else
  /*[gettoken-test]*/
- int main(void)
+/* 
+int main(void)
  {
      char word[200];
  
@@ -447,5 +448,6 @@
              exit(EXIT_SUCCESS);
          }
  }
+ */
  /*[]*/
  #endif
