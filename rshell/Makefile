@@ -1,6 +1,6 @@
 NAME = rsh
 SRC = rshell.c ec.c logf.c options.c suvreq.c macrostr.c \
-extio.c statuspr.c builtin.c setenv.c
+extio.c statuspr.c builtin.c setenv.c syserr.c
 OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
