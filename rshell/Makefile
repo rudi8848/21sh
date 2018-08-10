@@ -5,10 +5,10 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	gcc -o $(NAME) $(OBJ)
+	gcc -o $(NAME)  $(OBJ)
 
 $(OBJ): $(SRC)
-	gcc -c $(SRC)
+	gcc -c $(SRC) -g3
 
 clean:
 	rm -f $(OBJ)
