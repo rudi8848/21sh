@@ -7,7 +7,7 @@
 # define K_UP		4283163
 # define K_DOWN		4348699
 
-//# define K_ENTER	13
+//# define K_ENTER	13	//if raw mode
 # define K_ENTER	10
 # define K_TAB		9
 # define K_SPACE 	32
@@ -25,6 +25,11 @@ void	ft_exit(void)
 {
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
 	exit(EXIT_SUCCESS);
+}
+
+int ft_putchar(int c)
+{
+	return(write(1, &c, 1));
 }
 
 static void		ft_int_handler(int signum)
@@ -85,34 +90,44 @@ int 	cbreak_settings()
 	return 0;
 }
 
+void	ft_prompt(void)
+{
+	write(STDOUT_FILENO, "# ", 2);
+}
+
 int		read_loop(void)
 {
 	char line[MAXLINE];
-
-
-int			rr;
+	int			rr;
 	uint64_t	rb;
-	//t_dslist	*ptr;
 
-	//ptr = g_attr.args;
 	bzero(line, MAXLINE);
 	rb = 0;
 	int len = 0;
 	int i = 0;
-	//ft_print_forward(ptr);
+	ft_prompt();
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
+		if (len + 1 == MAXLINE)
+		{
+			printf("Line is too long\n");
+			ft_exit();
+		}
 		if (rb == K_RIGHT)
 		{
-			i++;
+			if (i < len)
+				i++;
+			tputs(tgetstr("nd", NULL), 0, ft_putchar);
 		}
 		else if (rb == K_LEFT )
 		{
-			i--;
+			if (i > 0)
+				i--;
+			tputs(tgetstr("le", NULL), 0, ft_putchar);
 		}
 		else if (rb == K_ENTER)
-			{//return (ft_print_selected(g_attr.args));
-				len++;
+			{
+				//i--; index points to next character
 				printf("\n");
 				//передавать в лексер сo '\n'???
 				if (len)
@@ -122,23 +137,29 @@ int			rr;
 					i = 0;
 					len = 0;
 				}
-				
+				ft_prompt();
 			}
 		else if (isprint(rb))
 		{
 			write(STDOUT_FILENO, &rb, rr);
 			line[i] = (char)rb;
-			i++;
-			len++;
+			if (i <= len)
+			{
+				i++;
+				len++;
+			}
 		}
-		else if (rb == K_DOWN || rb == K_UP)
-			//ft_move_v(&ptr, rb);
-			printf("UP DOWN\n");
-		//else if (rb == K_SPACE)
-		//	ft_switch_mode(ptr, M_SLCT);
-		else if (rb == K_DELETE)
+		else if (rb == K_DOWN)
 		{
 
+		}
+		else if (rb == K_UP)
+		{
+
+		}
+		else if (rb == K_DELETE)
+		{
+			tputs(tgetstr("kD", NULL), 0, ft_putchar);
 		}
 		else if (rb == K_BSPACE)
 		{
@@ -146,13 +167,14 @@ int			rr;
 		}
 		
 		else if (rb == K_ESC)
-			//ft_exit();
 			ft_exit();
 		//ft_print_forward(g_attr.args);
 		rb = 0;
 	}
 	return 0;
 }
+
+
 
 int	main(void)
 {
@@ -164,6 +186,21 @@ int	main(void)
 		perror(__FUNCTION__);
 		return 1;
 	}
+//-----------------------------------------------------------
+	char *name = NULL;
+	if (!(name = getenv("TERM")))
+	{
+		perror("getenv");
+		exit(0);
+	}
+	if (tgetent(NULL, name) < 1)
+	{
+		perror("tgetent");
+		exit(0);
+	}
+	//ret = tputs(tgetstr("cl", NULL), 0, ft_putchar);
+	//printf("[%d]\n", ret);
+	//-----------------------------------------------------------
 
 	//raw_settings();
 	cbreak_settings();

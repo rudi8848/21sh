@@ -18,6 +18,8 @@
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <termios.h>
+# include <curses.h>
+# include <term.h>
 
 # define CHILD 0
 # define PARENT 1
