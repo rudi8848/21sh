@@ -37,8 +37,8 @@
              printf("Signal #%d", WTERMSIG(status));
          else
              printf("%s", desc);
-         if (WCOREDUMP(status))
-             printf(" - core dumped");
+         //if (WCOREDUMP(status))
+           //  printf(" - core dumped");
          if (WIFSTOPPED(status))
              printf(" (stopped)");
  #if defined(_XOPEN_UNIX) && !defined(LINUX)

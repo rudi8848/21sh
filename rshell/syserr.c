@@ -229,7 +229,7 @@
      char *cat = "?";
  
      if (errno_arg == 0)
-         snprintf(buf, buf_max, "No error");
+       ;//  snprintf(buf, buf_max, "No error");
      else {
          if (errno_arg == EC_EINTERNAL)
              errmsg = "Internal error (nonstandard)";
@@ -243,9 +243,9 @@
              cat = "errno";
              errmsg = strerror(errno_arg);
          }
-         snprintf(buf, buf_max, "%s (%d: \"%s\")",
-           get_macrostr(cat, errno_arg, NULL), errno_arg,
-           errmsg != NULL ? errmsg : "no message string");
+         //snprintf(buf, buf_max, "%s (%d: \"%s\")",
+           //get_macrostr(cat, errno_arg, NULL), errno_arg,
+           //errmsg != NULL ? errmsg : "no message string");
      }
      return buf;
  }
@@ -263,7 +263,7 @@
      if (msg == NULL)
          msg = "???";
      if (errno_arg == 0)
-         snprintf(buf, buf_max, "%s", msg);
+        ;// snprintf(buf, buf_max, "%s", msg);
      else {
  /*[]*/
          if (errno_arg == EC_EINTERNAL)
@@ -280,9 +280,9 @@
          }
  /*[syserrmsg-2]*/
          /*errmsg = strerror(errno_arg);*/
-         snprintf(buf, buf_max, "%s\n\t\t*** %s (%d: \"%s\") ***", msg,
-           get_macrostr(cat, errno_arg, NULL), errno_arg,
-           errmsg != NULL ? errmsg : "no message string");
+         //snprintf(buf, buf_max, "%s\n\t\t*** %s (%d: \"%s\") ***", msg,
+           //get_macrostr(cat, errno_arg, NULL), errno_arg,
+          // errmsg != NULL ? errmsg : "no message string");
      }
      return buf;
  }

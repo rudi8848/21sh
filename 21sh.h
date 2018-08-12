@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <sys/wait.h>
+# include <termios.h>
 
 # define CHILD 0
 # define PARENT 1

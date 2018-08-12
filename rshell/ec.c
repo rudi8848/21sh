@@ -20,7 +20,7 @@
  */
  #include "defs.h"
  #include <pthread.h>
- 
+ #include <stdio.h> 
  static void ec_mutex(bool lock)
  {
      static pthread_mutex_t ec_mtx = PTHREAD_MUTEX_INITIALIZER;
@@ -85,8 +85,8 @@
          len = sizeof(ec_s_emergency);
      }
      if (node.ec_context != NULL)
-         snprintf(node.ec_context, len, "%s%s%s%s%d%s%s", fcn, SEP1,
-           file, SEP2, line, SEP3, str);
+         //snprintf(node.ec_context, len, "%s%s%s%s%d%s%s", fcn, SEP1,
+          // file, SEP2, line, SEP3, str);
      p = (struct ec_node *)calloc(1, sizeof(struct ec_node));
      if (p == NULL && ec_node_emergency.ec_context == NULL)
          p = &ec_node_emergency; /* use just once */
@@ -120,8 +120,8 @@
              fprintf(stderr, "\t*** Trace may be incomplete ***\n");
          syserrmsgtype(buf, sizeof(buf), e->ec_context,
            e->ec_next == NULL ? e->ec_errno : 0, e->ec_type);
-         snprintf(buf2, sizeof(buf2), "%s\t%d: %s",
-           (level == 0? "ERROR:" : ""), level, buf);
+         //snprintf(buf2, sizeof(buf2), "%s\t%d: %s",
+           //(level == 0? "ERROR:" : ""), level, buf);
          fprintf(stderr, "%s\n", buf2);
          logfmt(buf2);
      }
