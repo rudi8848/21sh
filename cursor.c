@@ -101,6 +101,7 @@ int		read_loop(void)
 	int			rr;
 	uint64_t	rb;
 	int j;
+	//char c;
 
 	bzero(line, MAXLINE);
 	rb = 0;
@@ -146,12 +147,33 @@ int		read_loop(void)
 		else if (isprint(rb))
 		{
 			write(STDOUT_FILENO, &rb, rr);
+			tputs(tgetstr("im", NULL), 0, ft_putchar);
+			if (line[i + 1])	//if it's at the middle of line
+			{
+					j = len + 1;
+					while (j > i)
+					{
+						line[j] = line[j - 1];
+						j--;
+					}
+					//and insert in termcap
+				
+				//tputs(tgetstr("mi", NULL), 0, ft_putchar);
+				//tputs(tgetstr("ic", NULL), 0, ft_putchar);
+				
+				tputs(tgetstr("ip", NULL), 0, ft_putchar);
+			
+
+			}
+			
 			line[i] = (char)rb;
+
 			if (i <= len)
 			{
 				i++;
 				len++;
 			}
+			tputs(tgetstr("ei", NULL), 0, ft_putchar);
 		}
 		else if (rb == K_DOWN)
 		{
@@ -163,11 +185,11 @@ int		read_loop(void)
 		}
 		else if (rb == K_DELETE)
 		{
-			if (len > 0 && i >= 0)
+			if (len > 0 && i >= 0 && i < len)
 			{
-				tputs(tgetstr("dm", NULL), 0, ft_putchar);
-				tputs(tgetstr("dc", NULL), 0, ft_putchar);
-				tputs(tgetstr("ed", NULL), 0, ft_putchar);
+				tputs(tgetstr("dm", NULL), 0, ft_putchar);		//turn on deleting mode
+				tputs(tgetstr("dc", NULL), 0, ft_putchar);		//delete 1 char on cursor position
+				tputs(tgetstr("ed", NULL), 0, ft_putchar);		// turn off deleting mode
 				len--;
 				j = i;
 				while (line[j])
@@ -189,10 +211,10 @@ int		read_loop(void)
 					line[j] = line[j + 1];
 					j++;
 				}
-				tputs(tgetstr("le", NULL), 0, ft_putchar);
-				tputs(tgetstr("dm", NULL), 0, ft_putchar);
-				tputs(tgetstr("dc", NULL), 0, ft_putchar);
-				tputs(tgetstr("ed", NULL), 0, ft_putchar);
+				tputs(tgetstr("le", NULL), 0, ft_putchar);	//1 position to left
+				tputs(tgetstr("dm", NULL), 0, ft_putchar);	//turn on deleting mode
+				tputs(tgetstr("dc", NULL), 0, ft_putchar);	//delete 1 char on cursor position
+				tputs(tgetstr("ed", NULL), 0, ft_putchar);	// turn off deleting mode
 			}
 		}
 		
