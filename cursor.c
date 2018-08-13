@@ -100,6 +100,7 @@ int		read_loop(void)
 	char line[MAXLINE];
 	int			rr;
 	uint64_t	rb;
+	int j;
 
 	bzero(line, MAXLINE);
 	rb = 0;
@@ -116,14 +117,17 @@ int		read_loop(void)
 		if (rb == K_RIGHT)
 		{
 			if (i < len)
+			{
 				i++;
-			tputs(tgetstr("nd", NULL), 0, ft_putchar);
+				tputs(tgetstr("nd", NULL), 0, ft_putchar);
+			}
 		}
 		else if (rb == K_LEFT )
 		{
 			if (i > 0)
-				i--;
-			tputs(tgetstr("le", NULL), 0, ft_putchar);
+			{	i--;
+				tputs(tgetstr("le", NULL), 0, ft_putchar);
+			}
 		}
 		else if (rb == K_ENTER)
 			{
@@ -159,11 +163,37 @@ int		read_loop(void)
 		}
 		else if (rb == K_DELETE)
 		{
-			tputs(tgetstr("kD", NULL), 0, ft_putchar);
+			if (len > 0 && i >= 0)
+			{
+				tputs(tgetstr("dm", NULL), 0, ft_putchar);
+				tputs(tgetstr("dc", NULL), 0, ft_putchar);
+				tputs(tgetstr("ed", NULL), 0, ft_putchar);
+				len--;
+				j = i;
+				while (line[j])
+				{
+					line[j] = line[j + 1];
+					j++;
+				}
+			}
 		}
 		else if (rb == K_BSPACE)
 		{
-
+			if (i > 0)
+			{
+				i--;
+				len--;
+				j = i;
+				while (line[j])
+				{
+					line[j] = line[j + 1];
+					j++;
+				}
+				tputs(tgetstr("le", NULL), 0, ft_putchar);
+				tputs(tgetstr("dm", NULL), 0, ft_putchar);
+				tputs(tgetstr("dc", NULL), 0, ft_putchar);
+				tputs(tgetstr("ed", NULL), 0, ft_putchar);
+			}
 		}
 		
 		else if (rb == K_ESC)
@@ -180,6 +210,7 @@ int	main(void)
 {
 	int ret = 0;
 	ft_set_signals();
+	//printf("<%s>\n", ctermid(NULL));
 	ret = tcgetattr(STDOUT_FILENO, &saved);
 	if (ret == -1)
 	{
