@@ -5,7 +5,7 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	gcc -o $(NAME)  $(OBJ)
+	gcc -o $(NAME)  $(OBJ) -lncurses -ltermcap
 
 $(OBJ): $(SRC)
 	gcc -c $(SRC) -g3

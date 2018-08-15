@@ -95,7 +95,7 @@ void	ft_prompt(void)
 	write(STDOUT_FILENO, "# ", 2);
 }
 
-int		read_loop(void)
+char		*read_loop(void)
 {
 	char line[MAXLINE];
 	int			rr;
@@ -225,7 +225,7 @@ int		read_loop(void)
 		//ft_print_forward(g_attr.args);
 		rb = 0;
 	}
-	return 0;
+	return line;
 }
 
 
