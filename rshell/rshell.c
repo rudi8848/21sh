@@ -88,19 +88,19 @@ int     cbreak_settings()
 
     return 0;
 }
-char        *read_loop(void)
+void	read_loop(char **line)
 {
-    char line[MAXLINE];
+    //char line[MAXLINE];
     int         rr;
     uint64_t    rb;
     int j;
     //char c;
 
-    bzero(line, MAXLINE);
+    bzero(*line, MAXLINE);
     rb = 0;
     int len = 0;
     int i = 0;
-    ft_prompt();
+    //ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         if (len + 1 == MAXLINE)
@@ -130,30 +130,31 @@ char        *read_loop(void)
                 //передавать в лексер сo '\n'???
                 if (len)
                 {
-                    printf("[GOT:] %s [len = %d, index = %d]\n", line, len, i);
-                    bzero(line, len);
+                    printf("[GOT:] %s [len = %d, index = %d]\n", *line, len, i);
+                    bzero(*line, len);
                     i = 0;
                     len = 0;
                 }
-                ft_prompt();
+		return;
+                //ft_prompt();
             }
         else if (isprint(rb))
         {
             write(STDOUT_FILENO, &rb, rr);
             tputs(tgetstr("im", NULL), 0, ft_putchar);
-            if (line[i ])   //if it's at the middle of line
+            if (*line[i ])   //if it's at the middle of line
             {
                     j = len + 1;
                     while (j > i)
                     {
-                        line[j] = line[j - 1];
+                        *line[j] = *line[j - 1];
                         j--;
                     }
                     //and insert in termcap
                 
                 tputs(tgetstr("sc", NULL), 0, ft_putchar);
                 tputs(tgetstr("cd", NULL), 0, ft_putchar);
-                write(STDOUT_FILENO, line + i + 1, len);
+                write(STDOUT_FILENO, *line + i + 1, len);
                 tputs(tgetstr("rc", NULL), 0, ft_putchar);
                 tputs(tgetstr("nd", NULL), 0, ft_putchar);
             //  tputs(tgetstr("ip", NULL), 0, ft_putchar);
@@ -161,7 +162,7 @@ char        *read_loop(void)
 
             }
             
-            line[i] = (char)rb;
+            *line[i] = (char)rb;
 
                 len++;
             if (i < len)
@@ -187,9 +188,9 @@ char        *read_loop(void)
                 tputs(tgetstr("ed", NULL), 0, ft_putchar);      // turn off deleting mode
                 len--;
                 j = i;
-                while (line[j])
+                while (*line[j])
                 {
-                    line[j] = line[j + 1];
+                    *line[j] = *line[j + 1];
                     j++;
                 }
             }
@@ -201,9 +202,9 @@ char        *read_loop(void)
                 i--;
                 len--;
                 j = i;
-                while (line[j])
+                while (*line[j])
                 {
-                    line[j] = line[j + 1];
+                    *line[j] = *line[j + 1];
                     j++;
                 }
                 tputs(tgetstr("le", NULL), 0, ft_putchar);  //1 position to left
@@ -217,7 +218,7 @@ char        *read_loop(void)
             ft_exit();
         rb = 0;
     }
-    return line;
+    return ;
 }
 /*---MY---*/
 
@@ -255,7 +256,8 @@ char        *read_loop(void)
      enum {NEUTRAL, GTGT, INQUOTE, INWORD} state = NEUTRAL;
      int c;
      size_t wordn = 0;
-    char *line = read_loop();
+    char *line = (char*)malloc(MAXLINE+1);
+   read_loop(&line);
     int i = 0;
      while (c = line[i]) {
          switch (state) {
