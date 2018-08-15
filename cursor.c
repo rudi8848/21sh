@@ -148,7 +148,7 @@ int		read_loop(void)
 		{
 			write(STDOUT_FILENO, &rb, rr);
 			tputs(tgetstr("im", NULL), 0, ft_putchar);
-			if (line[i + 1])	//if it's at the middle of line
+			if (line[i ])	//if it's at the middle of line
 			{
 					j = len + 1;
 					while (j > i)
@@ -158,20 +158,22 @@ int		read_loop(void)
 					}
 					//and insert in termcap
 				
-				//tputs(tgetstr("mi", NULL), 0, ft_putchar);
-				//tputs(tgetstr("ic", NULL), 0, ft_putchar);
-				
-				tputs(tgetstr("ip", NULL), 0, ft_putchar);
+				tputs(tgetstr("sc", NULL), 0, ft_putchar);
+				tputs(tgetstr("cd", NULL), 0, ft_putchar);
+				write(STDOUT_FILENO, line + i + 1, len);
+				tputs(tgetstr("rc", NULL), 0, ft_putchar);
+				tputs(tgetstr("nd", NULL), 0, ft_putchar);
+			//	tputs(tgetstr("ip", NULL), 0, ft_putchar);
 			
 
 			}
 			
 			line[i] = (char)rb;
 
-			if (i <= len)
+				len++;
+			if (i < len)
 			{
 				i++;
-				len++;
 			}
 			tputs(tgetstr("ei", NULL), 0, ft_putchar);
 		}
