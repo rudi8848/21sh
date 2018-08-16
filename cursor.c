@@ -95,7 +95,7 @@ void	ft_prompt(void)
 	write(STDOUT_FILENO, "# ", 2);
 }
 
-char		*read_loop(void)
+void 	read_loop(void)
 {
 	char line[MAXLINE];
 	int			rr;
@@ -147,7 +147,7 @@ char		*read_loop(void)
 		else if (isprint(rb))
 		{
 			write(STDOUT_FILENO, &rb, rr);
-			tputs(tgetstr("im", NULL), 0, ft_putchar);
+			tputs(tgetstr("im", NULL), 0, ft_putchar);			//insert mode
 			if (line[i ])	//if it's at the middle of line
 			{
 					j = len + 1;
@@ -158,14 +158,12 @@ char		*read_loop(void)
 					}
 					//and insert in termcap
 				
-				tputs(tgetstr("sc", NULL), 0, ft_putchar);
-				tputs(tgetstr("cd", NULL), 0, ft_putchar);
+				tputs(tgetstr("sc", NULL), 0, ft_putchar);		// save cursor position
+				tputs(tgetstr("ce", NULL), 0, ft_putchar);		// delete end of line
 				write(STDOUT_FILENO, line + i + 1, len);
-				tputs(tgetstr("rc", NULL), 0, ft_putchar);
-				tputs(tgetstr("nd", NULL), 0, ft_putchar);
+				tputs(tgetstr("rc", NULL), 0, ft_putchar);		// restore cursor position
+				//tputs(tgetstr("nd", NULL), 0, ft_putchar);
 			//	tputs(tgetstr("ip", NULL), 0, ft_putchar);
-			
-
 			}
 			
 			line[i] = (char)rb;
@@ -175,7 +173,7 @@ char		*read_loop(void)
 			{
 				i++;
 			}
-			tputs(tgetstr("ei", NULL), 0, ft_putchar);
+			tputs(tgetstr("ei", NULL), 0, ft_putchar);			//end of insertion mode
 		}
 		else if (rb == K_DOWN)
 		{
@@ -225,7 +223,7 @@ char		*read_loop(void)
 		//ft_print_forward(g_attr.args);
 		rb = 0;
 	}
-	return line;
+	//return line;
 }
 
 

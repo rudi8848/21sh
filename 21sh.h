@@ -29,6 +29,9 @@
 # define TRUE 1
 # define FALSE 0
 
+#define COMPLETED 1		//for state in t_process
+#define STOPPED 2		//for state in t_process
+
 typedef int t_bool;
 /*
 	1) структура с глобальной таблицей команд
@@ -41,20 +44,42 @@ typedef struct s_cmd
 	char **cmd_args;
 	struct s_cmd *next;
 } t_cmd;
-*/
+
 typedef struct s_cmds
 {
 	char *infile;
-	int in_fd;		/* fd of input file*/
+	int in_fd;		//fd of input file
 	char *outfile;
 	int out_fd;
 	char *errfile;
 	int err_fd;
-	int bg;			/* background & */
+	int bg;			// background & 
 
 	int nbr_of_cmds;
 	char ***cmd_list;
 	
 } t_cmds;
+*/
+
+typedef struct s_process
+{
+	struct s_process *next;
+	char **argv;
+	pid_t pid;
+	uint8_t state;	// COMPLETED | STOPPED
+	int status;
+} t_process;
+
+typedef struct s_job
+{
+	struct s_job *next;
+	char *command;
+	t_process *first_process;
+	pid_t pgid;
+	uint8_t notified;
+	int in_fd;
+	int out_fd;
+	int err_fd;
+} t_job;
 
 #endif
