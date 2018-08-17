@@ -49,9 +49,14 @@
 struct termios saved;
 struct termios changed;
 
-void    ft_exit(void)
+void    ft_restore()
 {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+}
+
+void    ft_exit(void)
+{
+    ft_restore();
     //system("leaks a.out");
     exit(EXIT_SUCCESS);
 }
@@ -592,6 +597,7 @@ void    read_loop(char *line)
                  fprintf(stderr, "Missing command\n");
              while (--argc >= 0)
                  free(argv[argc]);
+
              return term;
          case T_EOF:
              exit(EXIT_SUCCESS);
@@ -634,7 +640,7 @@ void    read_loop(char *line)
         perror("tgetent");
         exit(0);
     }
-    cbreak_settings();
+    
  
     //-----------------------------------------------------------
 
@@ -645,10 +651,13 @@ void    read_loop(char *line)
          if (term == T_NL)
             ft_prompt();
              //printf("%s", PROMPT);
-         read_loop(&line[0]);
- 
-         write(1, "\n", 1);
-         term = command(line, &i, &pid, false, NULL);
+
+        cbreak_settings();
+        read_loop(&line[0]);
+        write(1, "\n", 1);
+        ft_restore();
+        
+        term = command(line, &i, &pid, false, NULL);
          if (term == T_ERROR) {
              fprintf(stderr, "Bad command\n");
              EC_FLUSH("main--bad command")
@@ -659,7 +668,7 @@ void    read_loop(char *line)
          fd_check();
          i = 0;
      }
-        tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+        ft_restore();
  }
  /*[]*/
  #else

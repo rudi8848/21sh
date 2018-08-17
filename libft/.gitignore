@@ -1,0 +1,6 @@
+*.o
+res
+res.exe
+libft/*.o
+*.a
+a.out

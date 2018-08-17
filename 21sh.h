@@ -20,7 +20,8 @@
 # include <termios.h>
 # include <curses.h>
 # include <term.h>
-
+# include "libft/includes/libft.h"
+# include "libft/includes/ft_printf.h"
 # define CHILD 0
 # define PARENT 1
 # define ERROR -1
