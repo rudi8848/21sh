@@ -114,6 +114,7 @@ void    read_loop(char *line)
    // ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
+
         if (len + 1 == MAXLINE)
         {
             printf("Line is too long\n");
@@ -634,7 +635,7 @@ void    read_loop(char *line)
         exit(0);
     }
     cbreak_settings();
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+ 
     //-----------------------------------------------------------
 
      //ignore_sig();
@@ -644,7 +645,9 @@ void    read_loop(char *line)
          if (term == T_NL)
             ft_prompt();
              //printf("%s", PROMPT);
-         read_loop(line);
+         read_loop(&line[0]);
+ 
+         write(1, "\n", 1);
          term = command(line, &i, &pid, false, NULL);
          if (term == T_ERROR) {
              fprintf(stderr, "Bad command\n");
@@ -655,6 +658,7 @@ void    read_loop(char *line)
              wait_and_display(pid);
          fd_check();
      }
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
  }
  /*[]*/
  #else
