@@ -114,13 +114,7 @@ void    read_loop(char *line)
    // ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
-
-        if (len + 1 == MAXLINE)
-        {
-            printf("Line is too long\n");
-            return;
-           // ft_exit();
-        }
+        
         if (rb == K_RIGHT)
         {
             if (i < len)
@@ -141,7 +135,7 @@ void    read_loop(char *line)
                 //i--; index points to next character
                 //printf("\n");
                 //передавать в лексер сo '\n'???
-                line[i] = '\n';
+                line[len] = '\n';
                 /*
                 if (len)
                 {
@@ -155,6 +149,12 @@ void    read_loop(char *line)
             }
         else if (isprint(rb))
         {
+            if (len + 1 == MAXLINE)
+            {
+                tputs(tgetstr("bl", NULL), 0, ft_putchar);          // bell
+                printf("\nLine is too long\n");
+                return;
+            }
             write(STDOUT_FILENO, &rb, rr);
             tputs(tgetstr("im", NULL), 0, ft_putchar);          //insert mode
             if (line[i ])   //if it's at the middle of line

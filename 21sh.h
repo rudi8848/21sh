@@ -33,6 +33,28 @@
 #define STOPPED 2		//for state in t_process
 
 typedef int t_bool;
+
+typedef enum {
+	T_WORD,
+	T_PIPE,
+	T_BG,
+	T_SEMI,
+	T_GREAT,
+	T_GGREAT,
+	T_LESS,
+	T_LLESS,
+	T_NLINE,
+	T_EOF,
+	T_ERROR
+} t_token;
+
+typedef enum {
+	PLANE,
+	GGREAT,
+	INQUOTE,
+	INWORD
+} t_state;
+
 /*
 	1) структура с глобальной таблицей команд
 	2) структура с каждой отдельной командой (список? массив?(доступ по инд.))
