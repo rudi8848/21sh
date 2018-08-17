@@ -657,6 +657,7 @@ void    read_loop(char *line)
          if (term != T_AMP && pid > 0)
              wait_and_display(pid);
          fd_check();
+         i = 0;
      }
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
  }
