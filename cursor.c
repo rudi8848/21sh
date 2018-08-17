@@ -24,6 +24,7 @@ struct termios changed;
 void	ft_exit(void)
 {
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+	//system("leaks a.out");
 	exit(EXIT_SUCCESS);
 }
 
@@ -49,7 +50,7 @@ void			ft_set_signals(void)
 	signal(SIGQUIT, ft_int_handler);
 	//signal(SIGWINCH, ft_winch_handler);
 }
-
+/*
 int 	raw_settings(void)
 {
 	changed = saved;
@@ -72,7 +73,7 @@ int 	raw_settings(void)
 	}
 	return 0;
 }
-
+*/
 int 	cbreak_settings()
 {
 	changed = saved;
@@ -177,11 +178,11 @@ void 	read_loop(void)
 		}
 		else if (rb == K_DOWN)
 		{
-
+			tputs(tgetstr("bl", NULL), 0, ft_putchar);			// bell
 		}
 		else if (rb == K_UP)
 		{
-
+			tputs(tgetstr("bl", NULL), 0, ft_putchar);			// bell
 		}
 		else if (rb == K_DELETE)
 		{
@@ -257,6 +258,7 @@ int	main(void)
 
 	//raw_settings();
 	cbreak_settings();
+	
 	read_loop();
 
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
