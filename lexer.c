@@ -24,15 +24,15 @@ typedef enum {
 } t_state;
 
 static int store_char(char *word, size_t maxword, int c, size_t *np);
-static pid_t	invoke(int argc, char *argv[], int srcfd, const char *srcfile, int dstfd, const char * dstfile, t_bool append, t_bool bcgrnd, int closefd);
+//static pid_t	invoke(int argc, char *argv[], int srcfd, const char *srcfile, int dstfd, const char * dstfile, t_bool append, t_bool bcgrnd, int closefd);
 
-static t_token ft_gettoken(char *word, size_t maxword)
+static t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
 	t_state state = PLANE;
 	int c;
 	size_t wordn = 0;
 
-	while ((c = getchar()) != EOF)
+	while ((c = line[(*i)++]) != '\0')
 	{
 		//printf("[%d]\n", c);
 		switch (state)
@@ -79,7 +79,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 		//		printf("State is GGREAT\n");
 				if (c == '>')
 					return T_GGREAT;
-				ungetc(c, stdin);
+				(*i)--;
 				return T_GREAT;
 			}
 
@@ -90,7 +90,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 				{
 					case '\\':
 					{
-						if ((c = getchar()) == EOF)
+						if ((c = line[*i]) == EOF)		// ???
 							c = '\\';
 						if (!store_char(word, maxword, c, &wordn))
 							fprintf(stderr, "ERROR\n");
@@ -123,7 +123,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 					case '\n':
 					case '\t':
 					case ' ':
-					ungetc(c, stdin);
+					(*i)--;
 					if (!store_char(word, maxword, '\0', &wordn))
 							fprintf(stderr, "ERROR\n");
 					return T_WORD;
@@ -137,7 +137,7 @@ static t_token ft_gettoken(char *word, size_t maxword)
 		
 	}
 	return T_EOF;
-//	return T_ERROR;
+//	return T_ERROR;			// ???
 }
 
 
@@ -156,7 +156,7 @@ static int store_char(char *word, size_t maxword, int c, size_t *np)
 
 
 //-------------------------------------------------------------------------------
-
+/*
 #define MAXARG 50
 #define MAXFNAME 500
 #define MAXWORD 500
@@ -248,7 +248,8 @@ static t_token command(pid_t *wpid, t_bool makepipe, int *pipefdp)
 					if (pipe(pfd) == ERROR)
 					{
 						perror("pipe");
-						exit(EXIT_FAILURE);
+						//exit(EXIT_FAILURE);
+						return T_ERROR;
 					}
 					*pipefdp = pfd[1];
 					srcfd = pfd[0];
@@ -256,7 +257,8 @@ static t_token command(pid_t *wpid, t_bool makepipe, int *pipefdp)
 				if (pid = invoke(argc, argv, srcfd, srcfile, dstfd, dstfile,append, term == T_BG, pfd[1]) == ERROR)
 				{
 					perror("invoke");
-					exit(EXIT_FAILURE);
+					//exit(EXIT_FAILURE);
+					return T_ERROR;
 				}
 				if (token != T_PIPE)
 					*wpid = pid;
@@ -274,7 +276,7 @@ static t_token command(pid_t *wpid, t_bool makepipe, int *pipefdp)
 	}
 }
 
-
+*/
 
 //--------------------------------------------------------------------------------
 /*
@@ -288,7 +290,7 @@ static t_bool	entry_sig(void)
 	return TRUE;
 }
 */
-
+/*
 void	display_status(pid_t pid, int status)
 {
 	
@@ -298,7 +300,7 @@ void	display_status(pid_t pid, int status)
 		printf("Exit value %d\n", WEXITSTATUS(status));
 	else
 	{
-		/*
+		
 		char *desc;
 		char *signame = get_macrostr("signal", WTERMSIG(status), &desc);
 		if (desc[0] == '?')
@@ -307,7 +309,7 @@ void	display_status(pid_t pid, int status)
 			printf("Signal #%d", WTERMSIG(status));
 		else
 			printf("%s", desc);
-			*/
+			
 		if (WCOREDUMP(status))
 			printf(" - core dumped");
 		if (WIFSTOPPED(status))
@@ -316,14 +318,15 @@ void	display_status(pid_t pid, int status)
 	}
 	
 }
-
+*/
+/*
 static void	fd_check(void)
 {
 	int fd;
 	t_bool ok = TRUE;
 
 	for (fd = 3; fd < 20; fd++)
-		if (fcntl(fd, F_GETFL) != -1 /*|| errno != EBADF*/)
+		if (fcntl(fd, F_GETFL) != -1 )
 		{
 			ok = FALSE;
 			fprintf(stderr, "*** fd %d is open ***\n", fd);
@@ -331,7 +334,8 @@ static void	fd_check(void)
 	if (!ok)
 		_exit(EXIT_FAILURE);
 }
-
+*/
+/*
 static t_bool	wait_and_display(pid_t pid)
 {
 	pid_t wpid;
@@ -465,8 +469,9 @@ static pid_t	invoke(int argc, char *argv[], int srcfd, const char *srcfile, int 
 		return pid;
 	}
 }
-
+*/
 //--------------------------------------------------------------------------------
+/*
 int main(void)
 {
 	pid_t pid;
@@ -489,7 +494,7 @@ int main(void)
 			wait_and_display(pid);
 		fd_check();
 	}
-	/*
+	
 	char word[200];
 	int t;
 	bzero(word, 200);

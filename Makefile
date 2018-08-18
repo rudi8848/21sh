@@ -3,7 +3,7 @@ SRCS = shell.c
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)
-FLAGS = -ltermcap -lcurses -g3
+FLAGS = -ltermcap -lcurses 
 
 all:	$(NAME)
 
@@ -20,7 +20,7 @@ $(LIB):
 	make -C libft
 
 clean:
-	/bin/rm -f $(OBJ)
+	/bin/rm -f $(OBJS)
 	make clean -C libft
 
 fclean: clean

@@ -105,4 +105,6 @@ typedef struct s_job
 	int err_fd;
 } t_job;
 
+static t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
+
 #endif
