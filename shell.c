@@ -262,6 +262,7 @@ void	init_shell(void)
 		}
 
 		tcsetpgrp(shell_terminal, shell_pgid);
+		init_terminal();
 	}
 }
 
@@ -281,12 +282,13 @@ int		main(void)
 	
 //   	init_terminal();
 	init_shell();
-	printf("Initialization successful\n");
+	ft_printf("Initialization successfull\n");
     //ft_set_signals();
 
-   // cbreak_settings();
-   // read_line(&line[0]);
-   // ft_restore();
+	cbreak_settings();
+	read_line(&line[0]);
+	ft_restore();
+	ft_printf("\n[GOT:] %s", line);
 
  //   pack_argv(&process, &line[0]);
 /*
