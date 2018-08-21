@@ -1,5 +1,6 @@
 #include "21sh.h"
 #include <term.h>
+#include <errno.h>
 
 #define MAXLINE 500
 /*
@@ -26,6 +27,11 @@ struct termios saved;
 void    ft_restore()
 {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+}
+
+void	free_job(t_job *j)
+{
+	;
 }
 
 void    ft_exit(void)
@@ -224,6 +230,281 @@ void 	init_terminal()
     }
 }
 
+//===========================================
+	pid_t	shell_pgid;
+	int	shell_terminal;
+	int	shell_is_interactive;
+	t_job	*first_job = NULL;
+//===========================================
+
+void	set_dfl_signals(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGTSTP, SIG_DFL);
+	signal(SIGTTIN, SIG_DFL);
+	signal(SIGTTOU, SIG_DFL);
+	signal(SIGCHLD, SIG_DFL);
+}
+
+t_job	*find_job(pid_t pgid)
+{
+	t_job	*j;
+	for (j = first_job; j; j = j->next)
+	{
+		if (j->pgid == pgid)
+			return j;
+		return NULL;
+	}
+}
+
+int	job_is_stopped(t_job *j)
+{
+	t_process	*p;
+
+	for (p = j->first_process; p; p = p->next)
+		if (!p->state & (STOPPED | COMPLETED))
+			return 0;
+	return 1;
+}
+
+int	job_is_completed(t_job *j)
+{
+	t_process	*p;
+	for (p = j->first_process; p; p = p->next)
+		if (!p->state & COMPLETED)
+			return 0;
+	return 1;
+	
+}
+
+void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
+{
+	pid_t	pid;
+
+	if (shell_is_interactive)
+	{
+		pid = getpid();
+
+		if (pgid == 0)
+			pgid = pid;
+		setpgid(pid, pgid);
+		if (foreground)
+			tcsetpgrp(shell_terminal, pgid);
+		set_dfl_signals();
+	}
+	if (infile != STDIN_FILENO)
+	{
+		dup2(infile, STDIN_FILENO);
+		close(infile);
+	}
+	if (outfile != STDOUT_FILENO)
+	{
+		dup2(outfile, STDOUT_FILENO);
+		close(outfile);
+	}
+	if (errfile != STDERR_FILENO)
+	{
+		dup2(errfile, STDERR_FILENO);
+		close(errfile);
+	}
+	execvp(p->argv[0], p->argv);
+	perror("execvp");
+	exit(1);
+}
+
+void	put_job_in_background(t_job *j, int cont);
+void	wait_for_job(t_job *j);
+void	put_job_in_foreground(t_job *j, int cont)
+{
+	tcsetpgrp(shell_terminal, j->pgid);
+
+	if (cont)
+	{
+		tcsetattr(shell_terminal, TCSAFLUSH, &j->tmodes);
+		if (kill(- j->pgid, SIGCONT) < 0)
+			perror("kill(SIGCONT)");
+	}
+
+	wait_for_job(j);
+
+	tcsetpgrp(shell_terminal, shell_pgid);
+	tcgetattr(shell_terminal, &j->tmodes);
+	tcsetattr(shell_terminal, TCSAFLUSH, &saved);
+}
+
+void	put_job_in_background(t_job *j, int cont)
+{
+	if (cont)
+		if (kill( - j->pgid, SIGCONT) < 0)
+			perror("kill(SIGCONT)");
+}
+
+int	mark_process_status(pid_t pid, int status)
+{
+	t_job		*j;
+	t_process	*p;
+
+	if (pid > 0)
+	{
+		for (j = first_job; j; j = j->next)
+			for (p = j->first_process; p; p = p->next)
+				if (p->pid == pid)
+				{
+					p->status = status;
+					if (WIFSTOPPED(status))
+						p->state |= STOPPED;
+					else
+					{
+						p->state |= COMPLETED;
+						if (WIFSIGNALED(status))
+							fprintf(stderr, "%d: Terminated by signal %d.\n", (int)pid, WTERMSIG(p->status));
+					}
+					return 0;
+				}
+			fprintf(stderr, "No child process %d.\n", pid);
+			return -1;
+		}
+		else if (pid == 0 || errno == ECHILD)
+			return -1;
+	else
+	{
+		perror("waitpid");
+		return -1;
+	}
+}
+
+void	update_status(void)
+{
+	int	status;
+	pid_t	pid;
+
+	do
+		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
+	while (!mark_process_status(pid, status));
+}
+
+void	wait_for_job(t_job *j)
+{
+	int	status;
+	pid_t	pid;
+
+	do
+		pid = waitpid(WAIT_ANY, &status, WUNTRACED);
+	while (!mark_process_status(pid, status) && !job_is_stopped(j)
+			&& !job_is_completed(j));
+}
+
+void	format_job_info(t_job *j, const char *status)
+{
+	fprintf(stderr, "%ld (%s): %s\n", (long)j->pgid, status, j->command);
+}
+
+void	do_job_notification(void)
+{
+	t_job		*j;
+	t_job		*jlast;
+	t_job		*jnext;
+	t_process	*p;
+
+	update_status();
+	jlast = NULL;
+	for (j = first_job; j; j = jnext)
+	{
+		jnext = j->next;
+		if (job_is_completed(j))
+		{
+			format_job_info(j, "completed");
+			if (jlast)
+				jlast->next = jnext;
+			free_job(j);
+		}
+		else if (job_is_stopped(j) && !j->notified)
+		{
+			format_job_info(j, "stopped");
+			j->notified = 1;
+			jlast = j;
+		}
+		else
+			jlast = j;
+	}
+}
+
+void	mark_job_as_running(t_job *j)
+{
+	t_process	*p;
+
+	for (p = j->first_process; p; p = p->next)
+		p->state &= ~STOPPED;
+	j->notified = 0;
+}
+
+void	continue_job(t_job *j, int foreground)
+{
+	mark_job_as_running(j);
+	if (foreground)
+		put_job_in_foreground(j, 1);
+	else
+		put_job_in_background(j, 1);
+}
+
+void	launch_job(t_job *j, int foreground)
+{
+	t_process	*p;
+	pid_t		pid;
+	int		mypipe[2];
+	int		infile;
+	int		outfile;
+
+	infile = j->in_fd;
+	for(p = j->first_process; p; p = p->next)
+	{
+		if (p->next)
+		{
+			if (pipe(mypipe) < 0)
+			{
+				perror("pipe");
+				exit(1);
+			}
+			outfile = mypipe[1];
+		}
+		else
+			outfile = mypipe[1];
+
+		pid = fork();
+		if (pid == CHILD)
+			launch_process(p, j->pgid, infile, outfile, j->err_fd, foreground);
+		else if (pid == ERROR)
+		{
+			perror("fork");
+			exit(1);
+		}
+		else
+		{
+			p->pid = pid;
+			if (shell_is_interactive)
+			{
+				if (!j->pgid)
+					j->pgid = pid;
+				setpgid(pid, j->pgid);
+			}
+		}
+		if (infile != j->in_fd)
+			close(infile);
+		if (outfile != j->out_fd)
+			close(outfile);
+		infile = mypipe[0];
+	}
+	format_job_info(j, "launched");
+
+	if (!shell_is_interactive)
+		wait_for_job(j);
+	else if (foreground)
+		put_job_in_foreground(j, 0);
+	else
+		put_job_in_background(j, 0);
+}
+
 void	ignore_signals(void)
 {
 	signal(SIGINT, SIG_IGN);
@@ -236,11 +517,6 @@ void	ignore_signals(void)
 
 void	init_shell(void)
 {
-	
-	pid_t	shell_pgid;
-	int	shell_terminal;
-	int	shell_is_interactive;
-
 	shell_terminal = STDIN_FILENO;
 	shell_is_interactive = isatty(shell_terminal);
 
@@ -264,6 +540,8 @@ void	init_shell(void)
 		tcsetpgrp(shell_terminal, shell_pgid);
 		init_terminal();
 	}
+	else
+			fprintf(stderr, "shell is not interactive\n");
 }
 
 int		main(void)
@@ -282,7 +560,7 @@ int		main(void)
 	
 //   	init_terminal();
 	init_shell();
-	ft_printf("Initialization successfull\n");
+//	ft_printf("Initialization successfull\n");
     //ft_set_signals();
 
 	cbreak_settings();
