@@ -1,4 +1,6 @@
 #include "21sh.h"
+#include <term.h>
+
 #define MAXLINE 500
 /*
 	разбираем строку на лексемы, пакуем в t_process->argv
@@ -112,7 +114,7 @@ void    read_line(char *line)
                 line[len] = '\n';
                 return;
             }
-        else if (isprint(rb))
+        else if (ft_isprint(rb))
         {
             if (len + 1 == MAXLINE)
             {
@@ -202,7 +204,7 @@ int 	pack_argv(t_process **process, char *line)
 	return 0;
 }
 
-void 	terminal_init()
+void 	init_terminal()
 {
 	 if ((tcgetattr(STDOUT_FILENO, &saved)) == -1)
     {
@@ -222,8 +224,50 @@ void 	terminal_init()
     }
 }
 
+void	ignore_signals(void)
+{
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGTSTP, SIG_IGN);
+	signal(SIGTTIN, SIG_IGN);
+	signal(SIGTTOU, SIG_IGN);
+	signal(SIGCHLD, SIG_IGN);
+}
+
+void	init_shell(void)
+{
+	
+	pid_t	shell_pgid;
+	int	shell_terminal;
+	int	shell_is_interactive;
+
+	shell_terminal = STDIN_FILENO;
+	shell_is_interactive = isatty(shell_terminal);
+
+	if (shell_is_interactive)
+	{
+		while (tcgetpgrp(shell_terminal) != (shell_pgid = getpgid(0)))
+		{
+			fprintf(stderr, "shell is not interactive\n");
+			kill( - shell_pgid, SIGTTIN);
+		}
+
+		ignore_signals();
+
+		shell_pgid = getpid();
+		if (setpgid(shell_pgid, shell_pgid) < 0)
+		{
+			perror("Couldn't put the shell in it's own group");
+			exit(1);
+		}
+
+		tcsetpgrp(shell_terminal, shell_pgid);
+	}
+}
+
 int		main(void)
 {
+
 	t_process *process;
 
 	char line[MAXLINE];
@@ -235,14 +279,16 @@ int		main(void)
 	}
 	//--------------------------------------------------------
 	
-   	terminal_init();
-    ft_set_signals();
+//   	init_terminal();
+	init_shell();
+	printf("Initialization successful\n");
+    //ft_set_signals();
 
-    cbreak_settings();
-    read_line(&line[0]);
-    ft_restore();
+   // cbreak_settings();
+   // read_line(&line[0]);
+   // ft_restore();
 
-    pack_argv(&process, &line[0]);
+ //   pack_argv(&process, &line[0]);
 /*
 
 	//--------------------------------------------------------

@@ -10,6 +10,7 @@ int		main()
 	//printf("%d\n", _POSIX_JOB_CONTROL);
 	//write(1, STR, sizeof(STR));
 	//
+/*
 	int pfd[2];
 	int flags;
 	int i;
@@ -29,5 +30,14 @@ int		main()
 			}
 		}
 	}
+*/
+
+	pid_t curr = getpgrp();
+	pid_t curr2 = getpgid(0);
+	pid_t fg = tcgetpgrp(STDIN_FILENO);
+	printf("getpgrp: %d\n", curr);
+	printf("getpgid: %d\n", curr2);
+	printf("tcgetpgrp: %d\n", fg);
+
 	return 0;
 }
