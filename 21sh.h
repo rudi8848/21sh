@@ -15,6 +15,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <signal.h>
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <termios.h>

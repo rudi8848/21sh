@@ -22,7 +22,7 @@
 # define K_BSPACE   127
 
 struct termios saved;
-
+extern char **environ;
 
 void    ft_restore()
 {
@@ -50,6 +50,7 @@ void    ft_prompt(void)
 {
     write(STDOUT_FILENO, "# ", 2);
 }
+/*
 
 static void     ft_int_handler(int signum)
 {
@@ -66,7 +67,7 @@ void            ft_set_signals(void)
     signal(SIGQUIT, ft_int_handler);
     //signal(SIGWINCH, ft_winch_handler);
 }
-
+*/
 int     cbreak_settings()
 {
 	struct termios changed;
@@ -212,6 +213,7 @@ int 	pack_argv(t_process **process, char *line)
 
 void 	init_terminal()
 {
+	ft_printf("---> %s\n",__FUNCTION__);
 	 if ((tcgetattr(STDOUT_FILENO, &saved)) == -1)
     {
         perror("cannot get terminal settings");
@@ -232,13 +234,14 @@ void 	init_terminal()
 
 //===========================================
 	pid_t	shell_pgid;
-	int	shell_terminal;
-	int	shell_is_interactive;
+	int		shell_terminal;
+	int		shell_is_interactive;
 	t_job	*first_job = NULL;
 //===========================================
 
 void	set_dfl_signals(void)
 {
+	ft_printf("---> %s\n",__FUNCTION__);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	signal(SIGTSTP, SIG_DFL);
@@ -254,8 +257,9 @@ t_job	*find_job(pid_t pgid)
 	{
 		if (j->pgid == pgid)
 			return j;
-		return NULL;
+	
 	}
+	return NULL;
 }
 
 int	job_is_stopped(t_job *j)
@@ -263,7 +267,7 @@ int	job_is_stopped(t_job *j)
 	t_process	*p;
 
 	for (p = j->first_process; p; p = p->next)
-		if (!p->state & (STOPPED | COMPLETED))
+		if (!(p->state & (STOPPED | COMPLETED)))
 			return 0;
 	return 1;
 }
@@ -272,7 +276,7 @@ int	job_is_completed(t_job *j)
 {
 	t_process	*p;
 	for (p = j->first_process; p; p = p->next)
-		if (!p->state & COMPLETED)
+		if (!(p->state & COMPLETED))
 			return 0;
 	return 1;
 	
@@ -280,6 +284,7 @@ int	job_is_completed(t_job *j)
 
 void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
+	ft_printf("---> %s\n",__FUNCTION__);
 	pid_t	pid;
 
 	if (shell_is_interactive)
@@ -308,7 +313,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		dup2(errfile, STDERR_FILENO);
 		close(errfile);
 	}
-	execvp(p->argv[0], p->argv);
+	execve(p->argv[0], p->argv, environ);
 	perror("execvp");
 	exit(1);
 }
@@ -450,6 +455,7 @@ void	continue_job(t_job *j, int foreground)
 
 void	launch_job(t_job *j, int foreground)
 {
+	ft_printf("---> %s\n",__FUNCTION__);
 	t_process	*p;
 	pid_t		pid;
 	int		mypipe[2];
@@ -507,6 +513,7 @@ void	launch_job(t_job *j, int foreground)
 
 void	ignore_signals(void)
 {
+	ft_printf("---> %s\n",__FUNCTION__);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGTSTP, SIG_IGN);
@@ -517,6 +524,7 @@ void	ignore_signals(void)
 
 void	init_shell(void)
 {
+	ft_printf("---> %s\n",__FUNCTION__);
 	shell_terminal = STDIN_FILENO;
 	shell_is_interactive = isatty(shell_terminal);
 
@@ -546,27 +554,57 @@ void	init_shell(void)
 
 int		main(void)
 {
-
+	ft_printf("---> %s\n",__FUNCTION__);
+	
 	t_process *process;
-
 	char line[MAXLINE];
+
+
 	process = (t_process*)ft_memalloc(sizeof(t_process));
 	if (!process)
 	{
 		perror("ft_memalloc");
 		return 1;
 	}
+	first_job = (t_job*)ft_memalloc(sizeof(t_job));
+	process->argv = (char**)ft_memalloc(sizeof(char) * 3);
+	process->argv[0] = "/bin/ls";
+	process->argv[1] = "-l";
+	process->argv[2] = NULL;
+	first_job->in_fd = STDIN_FILENO;
+	first_job->out_fd = STDOUT_FILENO;
+	first_job->err_fd = STDERR_FILENO;
+
+	process->next = (t_process*)ft_memalloc(sizeof(t_process));
+	process->next->argv = (char**)ft_memalloc(sizeof(char) * 3);
+	process->next->argv[0] = "/usr/bin/grep";
+	process->next->argv[1] = "test";
+	process->next->argv[2] = NULL;
+
+
+
+
+	first_job->first_process = process;
+	first_job->next = NULL;
+	first_job->command = "who";
+
 	//--------------------------------------------------------
 	
 //   	init_terminal();
 	init_shell();
-//	ft_printf("Initialization successfull\n");
+	//ft_printf("Initialization successfull\n");
+	launch_job(first_job, 1);
+
     //ft_set_signals();
 
+	
+/*
 	cbreak_settings();
 	read_line(&line[0]);
 	ft_restore();
 	ft_printf("\n[GOT:] %s", line);
+*/
+
 
  //   pack_argv(&process, &line[0]);
 /*
