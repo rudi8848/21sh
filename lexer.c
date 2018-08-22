@@ -1,7 +1,7 @@
 #include "21sh.h"
 #include <strings.h>
 #include <string.h>
-
+/*
 typedef enum {
 	T_WORD,
 	T_PIPE,
@@ -22,11 +22,11 @@ typedef enum {
 	INQUOTE,
 	INWORD
 } t_state;
-
+*/
 static int store_char(char *word, size_t maxword, int c, size_t *np);
 //static pid_t	invoke(int argc, char *argv[], int srcfd, const char *srcfile, int dstfd, const char * dstfile, t_bool append, t_bool bcgrnd, int closefd);
 
-static t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
+t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
 	t_state state = PLANE;
 	int c;
@@ -574,6 +574,6 @@ int main(void)
 	
 
 	//printf("%d\n", ft_gettoken(word, sizeof(word)));
-	*/
+	
 		return 0;
-}
+}*/

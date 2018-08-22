@@ -107,6 +107,6 @@ typedef struct s_job
 	struct termios tmodes;
 } t_job;
 
-static t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
+t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
 
 #endif

@@ -1,5 +1,5 @@
 NAME = test
-SRCS = shell.c
+SRCS = shell.c lexer.c
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)

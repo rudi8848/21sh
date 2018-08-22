@@ -206,14 +206,102 @@ void    read_line(char *line)
     return;
 }
 
-int 	pack_argv(t_process **process, char *line)
+//===================================================
+#define MAXARG 50
+#define MAXWORD 500
+//===================================================
+
+
+int 	pack_argv(t_job **first_job, char *line, int *i, int makepipe, int *pipefd)
 {
+	t_token		token;
+	t_token		term;
+	
+	ft_printf("\n[GOT:] %s", line);
+
+
+	int argc = 0;
+	int srcfd = STDIN_FILENO;
+	int dstfd = STDOUT_FILENO;
+	t_bool append;
+	char *argv[MAXARG];
+	char word[MAXWORD];
+
+	if (!(*first_job = (t_job*)ft_memalloc(sizeof(t_job))))
+		return 0;
+(*first_job)->first_process = (t_process*)ft_memalloc(sizeof(t_process));
+	while (TRUE)
+	{
+		token = ft_gettoken(line, i, word, sizeof(word));
+		if (token == T_WORD)
+		{
+			if (argc >= MAXARG - 1)
+			{
+				fprintf(stderr, "To many args\n");
+				continue;
+			}
+			if ((argv[argc] = malloc(strlen(word) + 1)) == NULL)
+			{
+				fprintf(stderr, "Out of arg memory\n");
+				continue;
+			}
+			strcpy(argv[argc], word);
+			argc++;
+			continue;
+		}
+		else if (token == T_LESS)
+		{
+			if (makepipe)
+				{
+					fprintf(stderr, "Extra <\n");
+					break;
+				}
+				srcfd = -1;
+				continue;
+		}
+		else if (token == T_GREAT || token == T_GGREAT)
+		{
+			if (dstfd != STDOUT_FILENO)
+			{
+				fprintf(stderr, "Extra > or >>\n");
+				break;
+			}
+			dstfd = -1;
+			append = token == T_GGREAT;
+			continue;
+		}
+		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
+		{
+			argv[argc] = NULL;
+			
+			(*first_job)->first_process->argv = argv;
+			//(*first_job)->first_process = (*first_job)->first_process->next;
+			if (token == T_PIPE)
+			{
+				t_process *last = (*first_job)->first_process;
+				while (last->next)
+					last = last->next;
+				(*first_job)->first_process->next = (t_process*)ft_memalloc(sizeof(t_process));
+
+					if (dstfd != STDOUT_FILENO)
+					{
+						fprintf(stderr, "> of >> conflicts with |\n");
+						break;
+					}
+					term = pack_argv(first_job, line, i, TRUE, &dstfd);
+					if (term == T_ERROR)
+						return 0;
+			}
+			return 1;
+		}
+	}
+
 	return 0;
 }
 
 void 	init_terminal()
 {
-	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	 if ((tcgetattr(STDOUT_FILENO, &saved)) == -1)
     {
         perror("cannot get terminal settings");
@@ -239,15 +327,16 @@ void 	init_terminal()
 	t_job	*first_job = NULL;
 //===========================================
 
-void	set_dfl_signals(void)
+
+void	set_stopsignals(sig_t func)
 {
 	ft_printf("---> %s\n",__FUNCTION__);
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	signal(SIGTSTP, SIG_DFL);
-	signal(SIGTTIN, SIG_DFL);
-	signal(SIGTTOU, SIG_DFL);
-	signal(SIGCHLD, SIG_DFL);
+	signal(SIGINT, func);
+	signal(SIGQUIT, func);
+	signal(SIGTSTP, func);
+	signal(SIGTTIN, func);
+	signal(SIGTTOU, func);
+	signal(SIGCHLD, func);
 }
 
 t_job	*find_job(pid_t pgid)
@@ -284,7 +373,7 @@ int	job_is_completed(t_job *j)
 
 void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
-	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	pid_t	pid;
 
 	if (shell_is_interactive)
@@ -296,7 +385,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		setpgid(pid, pgid);
 		if (foreground)
 			tcsetpgrp(shell_terminal, pgid);
-		set_dfl_signals();
+		set_stopsignals(SIG_DFL);
 	}
 	if (infile != STDIN_FILENO)
 	{
@@ -313,12 +402,12 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		dup2(errfile, STDERR_FILENO);
 		close(errfile);
 	}
-	execve(p->argv[0], p->argv, environ);
-	perror("execvp");
+	
+	if (execve(p->argv[0], p->argv, environ) < 0)
+		perror("execve");
 	exit(1);
 }
 
-void	put_job_in_background(t_job *j, int cont);
 void	wait_for_job(t_job *j);
 void	put_job_in_foreground(t_job *j, int cont)
 {
@@ -455,7 +544,7 @@ void	continue_job(t_job *j, int foreground)
 
 void	launch_job(t_job *j, int foreground)
 {
-	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	t_process	*p;
 	pid_t		pid;
 	int		mypipe[2];
@@ -511,20 +600,11 @@ void	launch_job(t_job *j, int foreground)
 		put_job_in_background(j, 0);
 }
 
-void	ignore_signals(void)
-{
-	ft_printf("---> %s\n",__FUNCTION__);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGTSTP, SIG_IGN);
-	signal(SIGTTIN, SIG_IGN);
-	signal(SIGTTOU, SIG_IGN);
-	signal(SIGCHLD, SIG_IGN);
-}
+
 
 void	init_shell(void)
 {
-	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	shell_terminal = STDIN_FILENO;
 	shell_is_interactive = isatty(shell_terminal);
 
@@ -536,7 +616,7 @@ void	init_shell(void)
 			kill( - shell_pgid, SIGTTIN);
 		}
 
-		ignore_signals();
+		set_stopsignals(SIG_IGN);
 
 		shell_pgid = getpid();
 		if (setpgid(shell_pgid, shell_pgid) < 0)
@@ -554,11 +634,11 @@ void	init_shell(void)
 
 int		main(void)
 {
-	ft_printf("---> %s\n",__FUNCTION__);
-	
-	t_process *process;
+	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
-
+	t_process *process;
+	
+first_job = (t_job*)ft_memalloc(sizeof(t_job));
 
 	process = (t_process*)ft_memalloc(sizeof(t_process));
 	if (!process)
@@ -566,57 +646,44 @@ int		main(void)
 		perror("ft_memalloc");
 		return 1;
 	}
-	first_job = (t_job*)ft_memalloc(sizeof(t_job));
+	
 	process->argv = (char**)ft_memalloc(sizeof(char) * 3);
-	process->argv[0] = "/bin/ls";
-	process->argv[1] = "-l";
+	process->argv[0] = "/bin/echo";
+	process->argv[1] = "hello world!";
 	process->argv[2] = NULL;
 	first_job->in_fd = STDIN_FILENO;
 	first_job->out_fd = STDOUT_FILENO;
 	first_job->err_fd = STDERR_FILENO;
 
 	process->next = (t_process*)ft_memalloc(sizeof(t_process));
-	process->next->argv = (char**)ft_memalloc(sizeof(char) * 3);
-	process->next->argv[0] = "/usr/bin/grep";
-	process->next->argv[1] = "test";
-	process->next->argv[2] = NULL;
+	process->next->argv = (char**)ft_memalloc(sizeof(char) * 2);
+	process->next->argv[0] = "/usr/bin/base64";
+	//process->next->argv[1] = "-l";
+	process->next->argv[1] = NULL;
 
 
 
 
 	first_job->first_process = process;
 	first_job->next = NULL;
-	first_job->command = "who";
+	first_job->command = "";
 
 	//--------------------------------------------------------
 	
-//   	init_terminal();
+
 	init_shell();
-	//ft_printf("Initialization successfull\n");
-	launch_job(first_job, 1);
-
-    //ft_set_signals();
-
-	
 /*
 	cbreak_settings();
 	read_line(&line[0]);
 	ft_restore();
-	ft_printf("\n[GOT:] %s", line);
+	//ft_printf("\n[GOT:] %s", line);
 */
 
+	//if (pack_argv(&first_job, &line[0], 0, 0, NULL))
+		launch_job(first_job, 1);
 
- //   pack_argv(&process, &line[0]);
-/*
+	do_job_notification();
+	continue_job(first_job, 0);
 
-	//--------------------------------------------------------
-	int i = 0;
-	while (process->argv[i])
-	{
-		write(1, process->argv[i], sizeof(process->argv[i]));
-		write(1, "\n", 1);
-		i++;
-	}
-	*/
 	return 0;
 }
