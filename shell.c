@@ -24,6 +24,8 @@
 # define K_BSPACE   127
 # define K_HOME		4741915
 # define K_END		4610843
+# define K_ALT_C	42947		//for copy
+# define K_ALT_V	10127586	//for paste
 
 struct termios saved;
 extern char **environ;

@@ -34,14 +34,19 @@
 # define K_RIGHT    4414235
 # define K_UP       4283163
 # define K_DOWN     4348699
+# define K_CTRL_LEFT     74995417045787
+# define K_CTRL_RIGHT    73895905418011
 
-//# define K_ENTER  13  //if raw mode
 # define K_ENTER    10
 # define K_TAB      9
 # define K_SPACE    32
 # define K_ESC      27
 # define K_DELETE   2117294875L
 # define K_BSPACE   127
+# define K_HOME     4741915
+# define K_END      4610843
+# define K_ALT_C    42947       //for copy
+# define K_ALT_V    10127586    //for paste
 
 
 #define MAXLINE 500
@@ -61,7 +66,7 @@ void    ft_exit(void)
     exit(EXIT_SUCCESS);
 }
 
-int ft_putchar(int c)
+int ft_iputchar(int c)
 {
     return(write(1, &c, 1));
 }
@@ -110,7 +115,6 @@ void    read_loop(char *line)
     int         rr;
     uint64_t    rb;
     int j;
-    //char c;
 
     bzero(line, MAXLINE);
     rb = 0;
@@ -119,50 +123,54 @@ void    read_loop(char *line)
    // ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
-        
+       // ft_printf("\n-> %lld\n", rb);
         if (rb == K_RIGHT)
         {
             if (i < len)
             {
                 i++;
-                tputs(tgetstr("nd", NULL), 0, ft_putchar);
+                tputs(tgetstr("nd", NULL), 0, ft_iputchar);
             }
+        }
+        if (rb == K_CTRL_RIGHT)
+        {
+             if (i < len)
+             {
+                //переместиться к началу следующего слова
+
+             }
         }
         else if (rb == K_LEFT )
         {
             if (i > 0)
             {   i--;
-                tputs(tgetstr("le", NULL), 0, ft_putchar);
+                tputs(tgetstr("le", NULL), 0, ft_iputchar);
             }
         }
+        else if (rb == K_CTRL_LEFT)
+        {
+             if (i)
+             {
+                //переместиться к началу предыдущего слова
+                
+             }
+        }
         else if (rb == K_ENTER)
-            {
-                //i--; index points to next character
-                //printf("\n");
-                //передавать в лексер сo '\n'???
-                line[len] = '\n';
-                /*
-                if (len)
-                {
-                    //printf("[GOT:] %s [len = %d, index = %d]\n", line, len, i);
-                    //bzero(line, len);
-                    i = 0;
-                    len = 0;
-                }*/
-                //ft_prompt();
-                return;
-            }
+        {
+            line[len] = '\n';
+            return;
+        }
         else if (isprint(rb))
         {
             if (len + 1 == MAXLINE)
             {
-                tputs(tgetstr("bl", NULL), 0, ft_putchar);          // bell
+                tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
                 printf("\nLine is too long\n");
                 return;
             }
             write(STDOUT_FILENO, &rb, rr);
-            tputs(tgetstr("im", NULL), 0, ft_putchar);          //insert mode
-            if (line[i ])   //if it's at the middle of line
+            tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
+            if (line[i])   //if it's at the middle of line
             {
                     j = len + 1;
                     while (j > i)
@@ -172,38 +180,51 @@ void    read_loop(char *line)
                     }
                     //and insert in termcap
                 
-                tputs(tgetstr("sc", NULL), 0, ft_putchar);      // save cursor position
-                tputs(tgetstr("ce", NULL), 0, ft_putchar);      // delete end of line
+                tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+                tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
                 write(STDOUT_FILENO, line + i + 1, len);
-                tputs(tgetstr("rc", NULL), 0, ft_putchar);      // restore cursor position
-                //tputs(tgetstr("nd", NULL), 0, ft_putchar);
-            //  tputs(tgetstr("ip", NULL), 0, ft_putchar);
+                tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
             }
             
-            line[i] = (char)rb;
-
+                line[i] = (char)rb;
                 len++;
             if (i < len)
-            {
                 i++;
-            }
-            tputs(tgetstr("ei", NULL), 0, ft_putchar);          //end of insertion mode
+            tputs(tgetstr("ei", NULL), 0, ft_iputchar);          //end of insertion mode
         }
         else if (rb == K_DOWN)
         {
-            tputs(tgetstr("bl", NULL), 0, ft_putchar);          // bell
+            //  here will be history navigation
+            tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
         }
         else if (rb == K_UP)
         {
-            tputs(tgetstr("bl", NULL), 0, ft_putchar);          // bell
+            //  here will be history navigation
+            tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
+        }
+        else if (rb == K_HOME)
+        {
+            if (i)
+            {
+                tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);    
+                i = 0;
+            }
+        }
+        else if (rb == K_END)
+        {
+            if (i < len)
+            {
+                tputs(tgoto(tgetstr("RI", NULL), 0, len - i), 0, ft_iputchar);  
+                i = len;
+            }
         }
         else if (rb == K_DELETE)
         {
             if (len > 0 && i >= 0 && i < len)
             {
-                tputs(tgetstr("dm", NULL), 0, ft_putchar);      //turn on deleting mode
-                tputs(tgetstr("dc", NULL), 0, ft_putchar);      //delete 1 char on cursor position
-                tputs(tgetstr("ed", NULL), 0, ft_putchar);      // turn off deleting mode
+                tputs(tgetstr("dm", NULL), 0, ft_iputchar);      //turn on deleting mode
+                tputs(tgetstr("dc", NULL), 0, ft_iputchar);      //delete 1 char on cursor position
+                tputs(tgetstr("ed", NULL), 0, ft_iputchar);      // turn off deleting mode
                 len--;
                 j = i;
                 while (line[j])
@@ -225,21 +246,21 @@ void    read_loop(char *line)
                     line[j] = line[j + 1];
                     j++;
                 }
-                tputs(tgetstr("le", NULL), 0, ft_putchar);  //1 position to left
-                tputs(tgetstr("dm", NULL), 0, ft_putchar);  //turn on deleting mode
-                tputs(tgetstr("dc", NULL), 0, ft_putchar);  //delete 1 char on cursor position
-                tputs(tgetstr("ed", NULL), 0, ft_putchar);  // turn off deleting mode
+                tputs(tgetstr("le", NULL), 0, ft_iputchar);  //1 position to left
+                tputs(tgetstr("dm", NULL), 0, ft_iputchar);  //turn on deleting mode
+                tputs(tgetstr("dc", NULL), 0, ft_iputchar);  //delete 1 char on cursor position
+                tputs(tgetstr("ed", NULL), 0, ft_iputchar);  // turn off deleting mode
             }
         }
         
         else if (rb == K_ESC)
             ft_exit();
-        //ft_print_forward(g_attr.args);
         rb = 0;
     }
     line[i] = '\n';
     return;
 }
+
 
 
 
