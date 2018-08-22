@@ -13,6 +13,8 @@
 # define K_RIGHT    4414235
 # define K_UP       4283163
 # define K_DOWN     4348699
+# define K_CTRL_LEFT     74995417045787
+# define K_CTRL_RIGHT    73895905418011
 
 # define K_ENTER    10
 # define K_TAB      9
@@ -20,6 +22,8 @@
 # define K_ESC      27
 # define K_DELETE   2117294875L
 # define K_BSPACE   127
+# define K_HOME		4741915
+# define K_END		4610843
 
 struct termios saved;
 extern char **environ;
@@ -100,7 +104,7 @@ void    read_line(char *line)
     ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
-        ft_printf("\n-> %lld\n", rb);
+        //ft_printf("\n-> %lld\n", rb);
         if (rb == K_RIGHT)
         {
             if (i < len)
@@ -109,6 +113,14 @@ void    read_line(char *line)
                 tputs(tgetstr("nd", NULL), 0, ft_iputchar);
             }
         }
+        if (rb == K_CTRL_RIGHT)
+        {
+        	 if (i < len)
+        	 {
+        	 	//переместиться к началу следующего слова
+
+        	 }
+        }
         else if (rb == K_LEFT )
         {
             if (i > 0)
@@ -116,11 +128,19 @@ void    read_line(char *line)
                 tputs(tgetstr("le", NULL), 0, ft_iputchar);
             }
         }
+        else if (rb == K_CTRL_LEFT)
+        {
+        	 if (i)
+        	 {
+        	 	//переместиться к началу предыдущего слова
+        	 	
+        	 }
+        }
         else if (rb == K_ENTER)
-            {
-                line[len] = '\n';
-                return;
-            }
+        {
+            line[len] = '\n';
+            return;
+        }
         else if (ft_isprint(rb))
         {
             if (len + 1 == MAXLINE)
@@ -162,6 +182,22 @@ void    read_line(char *line)
         {
         	//	here will be history navigation
             tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
+        }
+        else if (rb == K_HOME)
+        {
+        	if (i)
+        	{
+        		tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);	
+        		i = 0;
+        	}
+        }
+        else if (rb == K_END)
+        {
+        	if (i < len)
+        	{
+        		tputs(tgoto(tgetstr("RI", NULL), 0, len - i), 0, ft_iputchar);	
+        		i = len;
+        	}
         }
         else if (rb == K_DELETE)
         {
