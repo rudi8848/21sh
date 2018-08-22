@@ -100,7 +100,7 @@ void    read_line(char *line)
     ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
-        
+        ft_printf("\n-> %lld\n", rb);
         if (rb == K_RIGHT)
         {
             if (i < len)
@@ -637,7 +637,7 @@ int		main(void)
 	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
 	t_process *process;
-	
+/*	
 first_job = (t_job*)ft_memalloc(sizeof(t_job));
 
 	process = (t_process*)ft_memalloc(sizeof(t_process));
@@ -658,7 +658,6 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	process->next = (t_process*)ft_memalloc(sizeof(t_process));
 	process->next->argv = (char**)ft_memalloc(sizeof(char) * 2);
 	process->next->argv[0] = "/usr/bin/base64";
-	//process->next->argv[1] = "-l";
 	process->next->argv[1] = NULL;
 
 
@@ -667,23 +666,23 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	first_job->first_process = process;
 	first_job->next = NULL;
 	first_job->command = "";
-
+*/
 	//--------------------------------------------------------
 	
 
 	init_shell();
-/*
+
 	cbreak_settings();
 	read_line(&line[0]);
 	ft_restore();
-	//ft_printf("\n[GOT:] %s", line);
-*/
+	ft_printf("\n[GOT:] %s", line);
+/*
 
-	//if (pack_argv(&first_job, &line[0], 0, 0, NULL))
+	if (pack_argv(&first_job, &line[0], 0, 0, NULL))
 		launch_job(first_job, 1);
 
 	do_job_notification();
 	continue_job(first_job, 0);
-
+*/
 	return 0;
 }
