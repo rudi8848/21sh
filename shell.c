@@ -732,7 +732,7 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 
 	while (1)
 	{
-		switch (t = ft_gettoken(line, *i, word, sizeof(word)))
+		switch (t = ft_gettoken(line, &i, word, sizeof(word)))
 		{
 			case T_WORD:
 			{
@@ -801,6 +801,7 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 				exit(0);
 			}
 		}
+	}
 
 /*
 
