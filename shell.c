@@ -112,7 +112,7 @@ void    read_line(char *line)
             if (i < len)
             {
                 i++;
-                tputs(tgetstr("nd", NULL), 0, ft_iputchar);
+                TERM_CRS_RIGHT
             }
         }
         if (rb == K_CTRL_RIGHT)
@@ -127,7 +127,7 @@ void    read_line(char *line)
         {
             if (i > 0)
             {   i--;
-                tputs(tgetstr("le", NULL), 0, ft_iputchar);
+                TERM_CRS_LEFT
             }
         }
         else if (rb == K_CTRL_LEFT)
@@ -147,8 +147,8 @@ void    read_line(char *line)
         {
             if (len + 1 == MAXLINE)
             {
-                tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
-                printf("\nLine is too long\n");
+                TERM_BELL          // bell
+                ft_printf("\nLine is too long\n");
                 return;
             }
             write(STDOUT_FILENO, &rb, rr);
@@ -178,18 +178,18 @@ void    read_line(char *line)
         else if (rb == K_DOWN)
         {
         	//	here will be history navigation
-            tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
+            TERM_BELL         // bell
         }
         else if (rb == K_UP)
         {
         	//	here will be history navigation
-            tputs(tgetstr("bl", NULL), 0, ft_iputchar);          // bell
+           TERM_BELL          // bell
         }
         else if (rb == K_HOME)
         {
         	if (i)
         	{
-        		tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);	
+        		TERM_HOME	
         		i = 0;
         	}
         }
@@ -197,7 +197,7 @@ void    read_line(char *line)
         {
         	if (i < len)
         	{
-        		tputs(tgoto(tgetstr("RI", NULL), 0, len - i), 0, ft_iputchar);	
+        		TERM_END	
         		i = len;
         	}
         }
@@ -205,9 +205,7 @@ void    read_line(char *line)
         {
             if (len > 0 && i >= 0 && i < len)
             {
-                tputs(tgetstr("dm", NULL), 0, ft_iputchar);      //turn on deleting mode
-                tputs(tgetstr("dc", NULL), 0, ft_iputchar);      //delete 1 char on cursor position
-                tputs(tgetstr("ed", NULL), 0, ft_iputchar);      // turn off deleting mode
+                TERM_DEL     // turn off deleting mode
                 len--;
                 j = i;
                 while (line[j])
@@ -229,10 +227,7 @@ void    read_line(char *line)
                     line[j] = line[j + 1];
                     j++;
                 }
-                tputs(tgetstr("le", NULL), 0, ft_iputchar);  //1 position to left
-                tputs(tgetstr("dm", NULL), 0, ft_iputchar);  //turn on deleting mode
-                tputs(tgetstr("dc", NULL), 0, ft_iputchar);  //delete 1 char on cursor position
-                tputs(tgetstr("ed", NULL), 0, ft_iputchar);  // turn off deleting mode
+                TERM_BACK
             }
         }
         
