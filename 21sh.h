@@ -34,20 +34,7 @@
 # define COMPLETED 1		//for state in t_process
 # define STOPPED 2		//for state in t_process
 
-# define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
-# define TERM_BACK	tputs(tgetstr("le", NULL), 0, ft_iputchar);\  //1 position to left
-                	tputs(tgetstr("dm", NULL), 0, ft_iputchar);\  //turn on deleting mode
-                	tputs(tgetstr("dc", NULL), 0, ft_iputchar);\  //delete 1 char on cursor position
-                	tputs(tgetstr("ed", NULL), 0, ft_iputchar);  // turn off deleting mode
 
-# define TERM_DEL	tputs(tgetstr("dm", NULL), 0, ft_iputchar);\      //turn on deleting mode
-                	tputs(tgetstr("dc", NULL), 0, ft_iputchar);\      //delete 1 char on cursor position
-                	tputs(tgetstr("ed", NULL), 0, ft_iputchar); 
-
-# define TERM_END tputs(tgoto(tgetstr("RI", NULL), 0, len - i), 0, ft_iputchar);
-# define TERM_HOME tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);
-# define TERM_CRS_RIGHT tputs(tgetstr("nd", NULL), 0, ft_iputchar);
-# define TERM_CRS_LEFT	tputs(tgetstr("le", NULL), 0, ft_iputchar);
 
 
 typedef int t_bool;
