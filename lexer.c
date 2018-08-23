@@ -34,12 +34,10 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 
 	while ((c = line[(*i)++]) != '\0')
 	{
-		//printf("[%d]\n", c);
 		switch (state)
 		{
 			case PLANE:
 			{
-		//		printf("State is PLANE\n");
 				switch (c)
 				{
 					case ';':
@@ -69,14 +67,13 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					{
 						state = INWORD;
 						if (!store_char(word, maxword, c, &wordn))
-							fprintf(stderr, "ERROR\n");
+							return T_ERROR;
 						continue;
 					}
 				}
 			}
 			case GGREAT:
 			{
-		//		printf("State is GGREAT\n");
 				if (c == '>')
 					return T_GGREAT;
 				(*i)--;
@@ -85,7 +82,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 
 			case INQUOTE:
 			{
-		//		printf("State is QUOTE\n");
 				switch (c)
 				{
 					case '\\':
@@ -93,26 +89,25 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 						if ((c = line[*i]) == EOF)		// ???
 							c = '\\';
 						if (!store_char(word, maxword, c, &wordn))
-							fprintf(stderr, "ERROR\n");
+							return T_ERROR;
 						continue;
 					}
 					case '"':
 					{
 						if (!store_char(word, maxword, '\0', &wordn))
-							fprintf(stderr, "ERROR\n");
+							return T_ERROR;
 						return T_WORD;
 					}
 					default:
 					{
 						if (!store_char(word, maxword, c, &wordn))
-							fprintf(stderr, "ERROR\n");
+							return T_ERROR;
 						continue;
 					}
 				}
 			}
 			case INWORD:
 			{
-		//		printf("State is INWORD\n");
 				switch (c)
 				{
 					case ';':
@@ -125,11 +120,11 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					case ' ':
 					(*i)--;
 					if (!store_char(word, maxword, '\0', &wordn))
-							fprintf(stderr, "ERROR\n");
+							return T_ERROR;
 					return T_WORD;
 					default:
 					if (!store_char(word, maxword, c, &wordn))
-							fprintf(stderr, "ERROR\n");
+							return T_ERROR;
 					continue;
 				}
 			}
@@ -137,7 +132,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 		
 	}
 	return T_EOF;
-//	return T_ERROR;			// ???
 }
 
 

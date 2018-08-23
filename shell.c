@@ -724,6 +724,84 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	read_line(&line[0]);
 	ft_restore();
 	ft_printf("\n[GOT:] %s", line);
+
+	char word[200];
+	int t;
+	int i = 0;
+	bzero(word, 200);
+
+	while (1)
+	{
+		switch (t = ft_gettoken(line, *i, word, sizeof(word)))
+		{
+			case T_WORD:
+			{
+				//printf("[%i] ", t);
+				printf("T_WORD %s\n", word);
+				break;
+			}
+			case T_PIPE:
+			{
+				//printf("[%i] ", t);
+				printf("T_PIPE\n");
+				break;
+			}
+			case T_BG:
+			{
+				//printf("[%i] ", t);
+				printf("T_BG\n");
+				break;
+			}
+			case T_SEMI:
+			{
+				//printf("[%i] ", t);
+				printf("T_SEMI\n");
+				break;
+			}
+			case T_GREAT:
+			{
+				//printf("[%i] ", t);
+				printf("T_GREAT\n");
+				break;
+			}
+			case T_GGREAT:
+			{
+				//printf("[%i] ", t);
+				printf("T_GGREAT\n");
+				break;
+			}
+			case T_LESS:
+			{
+				//printf("[%i] ", t);
+				printf("T_LESS\n");
+				break;
+			}
+			case T_LLESS:
+			{
+				//printf("[%i] ", t);
+				printf("T_LLESS\n");
+				break;
+			}
+			case T_NLINE:
+			{
+				//printf("[%i] ", t);
+				printf("T_NLINE\n");
+				break;
+			}
+			case T_EOF:
+			{
+				//printf("[%i] ", t);
+				printf("T_EOF\n");
+				exit(0);
+			}
+			case T_ERROR:
+			{
+				//printf("[%i] ", t);
+				printf("T_ERROR\n");
+				exit(0);
+			}
+		}
+
 /*
 
 	if (pack_argv(&first_job, &line[0], 0, 0, NULL))
