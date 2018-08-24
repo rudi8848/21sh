@@ -805,10 +805,34 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	}
 label:
 */
+	ft_printf("addr. of first_job before pack [%p]\n", &first_job);
 	if (pack_args(line, &first_job))
 		ft_printf("OK\n");
 	else
 		ft_printf("not valid\n");
+	ft_printf("addr. of first_job after pack [%p]\n", &first_job);
+
+	int i;
+	t_job *j = first_job;
+	t_process *p;
+	while (j)
+	{
+		p = j->first_process;
+		while (p)
+		{
+		//ft_printf("[%p][%p]\n", j, p);
+			i = 0;
+			while (p->argv[i])
+			{
+				ft_printf("[%d] %s\n",i, p->argv[i]);
+				i++;
+			}
+			ft_printf("-----------\n");
+			p = p->next;
+		}
+		ft_printf("===========\n");
+		j = j->next;
+	}
 
 /*
 

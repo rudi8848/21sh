@@ -8,10 +8,10 @@ FLAGS = -lncurses -ltermcap
 all:	$(NAME)
 
 $(NAME): $(OBJS) $(LIB) $(HDRS)
-	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -g3
+	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS)
 
 $(OBJ):	$(SRCS) $(LIB)
-	gcc -c $(SRCS) -g3
+	gcc -g3 -c $(SRCS)
 
 #$(NAME): $(SRCS)
 #	gcc -o $(NAME) -L. $(LIB) $(FLAGS) $(SRCS) 

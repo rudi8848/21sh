@@ -4,7 +4,7 @@ int	pack_args(char *line, t_job **first_job)
 {
 	ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
-	char word[MAXWORD] = "";
+	char word[MAXWORD];
 	int append;
 	int pfd[2] = {-1, -1};
 	int argc;
@@ -23,6 +23,9 @@ int	pack_args(char *line, t_job **first_job)
 	int i = 0;
 	while (1)
 	{
+		ft_printf("loop\n");
+//		ft_printf("--> j[%p], p[%p]\n", j, p);
+		ft_bzero(word, sizeof(word));
 		token = ft_gettoken(line, &i, word, sizeof(word));
 		if (token == T_WORD)
 		{
@@ -36,7 +39,8 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Out of memory\n");
 				continue;
 			}
-			ft_strcpy(p->argv[argc], word);
+			strcpy(p->argv[argc], word);
+			ft_printf("> [%d] : [%s]\n", argc, p->argv[argc]);
 			argc++;
 			continue;
 		}
@@ -82,9 +86,23 @@ int	pack_args(char *line, t_job **first_job)
 					return 0;
 				}
 				//one simple command ends, need to create next process and pipe()
-				//p->next  = (t_process*)ft_memalloc(sizeof(t_process));
+				p->next  = (t_process*)ft_memalloc(sizeof(t_process));
+				p = p->next;
 				ft_printf("PIPE\n");
 				makepipe = 1;
+				argc = 0;
+				continue;
+			}
+			if (token == T_SEMI)
+			{
+				//new job
+				ft_printf("SEMI\n");
+				j->next = (t_job*)ft_memalloc(sizeof(t_job));
+				p->next = NULL;
+				j = j->next;
+				j->first_process = (t_process*)ft_memalloc(sizeof(t_process));
+				p = j->first_process;
+				argc = 0;
 				continue;
 			}
 			if (makepipe)
