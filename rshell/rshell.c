@@ -409,7 +409,7 @@
  /*[]*/
  #else
  /*[gettoken-test]*/
-/* 
+
 int main(void)
  {
      char word[200];
@@ -448,6 +448,6 @@ int main(void)
              exit(EXIT_SUCCESS);
          }
  }
- */
+ 
  /*[]*/
  #endif

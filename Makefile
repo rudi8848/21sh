@@ -1,5 +1,5 @@
 NAME = test
-SRCS = shell.c lexer.c
+SRCS = shell.c lexer.c pack.c
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)
@@ -8,7 +8,7 @@ FLAGS = -lncurses -ltermcap
 all:	$(NAME)
 
 $(NAME): $(OBJS) $(LIB) $(HDRS)
-	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS)
+	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -g3
 
 $(OBJ):	$(SRCS) $(LIB)
 	gcc -c $(SRCS) -g3

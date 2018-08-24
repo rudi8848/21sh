@@ -88,11 +88,17 @@ typedef struct s_cmds
 } t_cmds;
 */
 
+#define MAXARG 50
+#define MAXFILENAME 500
+#define MAXWORD 500
+
 typedef struct s_process
 {
 	struct s_process *next;
-	char **argv;
+	char *argv[MAXARG];
 	pid_t pid;
+	int in_fd;
+	int out_fd;
 	uint8_t state;	// COMPLETED | STOPPED
 	int status;
 } t_process;
@@ -107,9 +113,11 @@ typedef struct s_job
 	int in_fd;
 	int out_fd;
 	int err_fd;
+	char srcfile[MAXFILENAME];
+	char dstfile[MAXFILENAME];
 	struct termios tmodes;
 } t_job;
 
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
-
+int	pack_args(char *line, t_job **j);
 #endif

@@ -259,13 +259,13 @@ void    read_line(char *line)
 #define MAXWORD 500
 //===================================================
 
-
+/*
 int 	pack_argv(t_job **first_job, char *line, int *i, int makepipe, int *pipefd)
 {
 	t_token		token;
 	t_token		term;
 	
-	ft_printf("\n[GOT:] %s", line);
+	//ft_printf("\n[GOT:] %s", line);
 
 
 	int argc = 0;
@@ -346,7 +346,7 @@ int 	pack_argv(t_job **first_job, char *line, int *i, int makepipe, int *pipefd)
 
 	return 0;
 }
-
+*/
 void 	init_terminal()
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -685,7 +685,7 @@ int		main(void)
 	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
 	t_process *process;
-/*	
+
 first_job = (t_job*)ft_memalloc(sizeof(t_job));
 
 	process = (t_process*)ft_memalloc(sizeof(t_process));
@@ -694,7 +694,8 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 		perror("ft_memalloc");
 		return 1;
 	}
-	
+	first_job->first_process = process;
+/*	
 	process->argv = (char**)ft_memalloc(sizeof(char) * 3);
 	process->argv[0] = "/bin/echo";
 	process->argv[1] = "hello world!";
@@ -724,13 +725,13 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	read_line(&line[0]);
 	ft_restore();
 	ft_printf("\n[GOT:] %s", line);
-
+/*
 	char word[200];
 	int t;
 	int i = 0;
 	bzero(word, 200);
 
-	while (1)
+	while (t != T_EOF || t != T_ERROR)
 	{
 		switch (t = ft_gettoken(line, &i, word, sizeof(word)))
 		{
@@ -792,16 +793,22 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 			{
 				//printf("[%i] ", t);
 				printf("T_EOF\n");
-				exit(0);
+				goto label;
 			}
 			case T_ERROR:
 			{
 				//printf("[%i] ", t);
 				printf("T_ERROR\n");
-				exit(0);
+				goto label;
 			}
 		}
 	}
+label:
+*/
+	if (pack_args(line, &first_job))
+		ft_printf("OK\n");
+	else
+		ft_printf("not valid\n");
 
 /*
 
