@@ -28,7 +28,7 @@ static int store_char(char *word, size_t maxword, int c, size_t *np);
 
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
-	ft_printf("---> %s\n", __FUNCTION__);
+	//ft_printf("---> %s\n", __FUNCTION__);
 	t_state state = PLANE;
 	int c;
 	size_t wordn = 0;

@@ -805,12 +805,12 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	}
 label:
 */
-	ft_printf("addr. of first_job before pack [%p]\n", &first_job);
+	//ft_printf("addr. of first_job before pack [%p]\n", &first_job);
 	if (pack_args(line, &first_job))
 		ft_printf("OK\n");
 	else
 		ft_printf("not valid\n");
-	ft_printf("addr. of first_job after pack [%p]\n", &first_job);
+	//ft_printf("addr. of first_job after pack [%p]\n", &first_job);
 
 	int i;
 	t_job *j = first_job;

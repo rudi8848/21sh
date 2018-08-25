@@ -23,7 +23,7 @@ int	pack_args(char *line, t_job **first_job)
 	int i = 0;
 	while (1)
 	{
-		ft_printf("loop\n");
+
 //		ft_printf("--> j[%p], p[%p]\n", j, p);
 		ft_bzero(word, sizeof(word));
 		token = ft_gettoken(line, &i, word, sizeof(word));
@@ -40,7 +40,7 @@ int	pack_args(char *line, t_job **first_job)
 				continue;
 			}
 			strcpy(p->argv[argc], word);
-			ft_printf("> [%d] : [%s]\n", argc, p->argv[argc]);
+			//ft_printf("> [%d] : [%s]\n", argc, p->argv[argc]);
 			argc++;
 			continue;
 		}
@@ -88,7 +88,7 @@ int	pack_args(char *line, t_job **first_job)
 				//one simple command ends, need to create next process and pipe()
 				p->next  = (t_process*)ft_memalloc(sizeof(t_process));
 				p = p->next;
-				ft_printf("PIPE\n");
+				//ft_printf("PIPE\n");
 				makepipe = 1;
 				argc = 0;
 				continue;
@@ -96,7 +96,7 @@ int	pack_args(char *line, t_job **first_job)
 			if (token == T_SEMI)
 			{
 				//new job
-				ft_printf("SEMI\n");
+				//ft_printf("SEMI\n");
 				j->next = (t_job*)ft_memalloc(sizeof(t_job));
 				p->next = NULL;
 				j = j->next;
@@ -115,7 +115,7 @@ int	pack_args(char *line, t_job **first_job)
 					p->in_fd = pfd[0];
 					p->out_fd = pfd[1];
 			}
-			if (argc == 0 && token != T_NLINE || j->in_fd > 1)
+			if (argc == 0 && (token != T_NLINE || j->in_fd > 1))
 			{
 				ft_printf("missing command\n");
 				return 0;
