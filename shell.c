@@ -596,8 +596,8 @@ void	launch_job(t_job *j, int foreground)
 	t_process	*p;
 	pid_t		pid;
 	int		mypipe[2];
-	int		infile;
-	int		outfile;
+	int		infile = -1;
+	int		outfile = -1;
 
 	infile = j->in_fd;
 	for(p = j->first_process; p; p = p->next)
