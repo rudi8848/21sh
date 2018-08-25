@@ -34,7 +34,7 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Too many args\n");
 				continue;
 			}
-			if (!(p->argv[argc] = (char*)ft_memalloc(strlen(word) + 1)))
+			if (!(p->argv[argc] = (char*)ft_memalloc(ft_strlen(word) + 1)))
 			{
 				ft_printf("Out of memory\n");
 				continue;

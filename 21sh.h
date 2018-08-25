@@ -120,4 +120,7 @@ typedef struct s_job
 
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
 int	pack_args(char *line, t_job **j);
+int     cbreak_settings();
+void    read_line(char *line);
+void    ft_restore();
 #endif

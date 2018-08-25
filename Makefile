@@ -10,11 +10,8 @@ all:	$(NAME)
 $(NAME): $(OBJS) $(LIB) $(HDRS)
 	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS)
 
-$(OBJ):	$(SRCS) $(LIB)
+$(OBJS):	$(SRCS) $(LIB)
 	gcc -g3 -c $(SRCS)
-
-#$(NAME): $(SRCS)
-#	gcc -o $(NAME) -L. $(LIB) $(FLAGS) $(SRCS) 
 
 $(LIB):
 	make -C libft
