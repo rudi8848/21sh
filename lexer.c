@@ -35,6 +35,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 
 	while ((c = line[(*i)++]) != '\0')
 	{
+		ft_printf("loop %s [%d]\n", line, state);
 		switch (state)
 		{
 			case PLANE:
@@ -83,14 +84,13 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 
 			case INQUOTE:
 			{
-				if (!(c = line[*i + 1]))
+				if (c != '\"' && !line[(*i) + 1])
 				{
 					ft_printf(">dquote ");
 					cbreak_settings();
 					read_line(&line[(*i)+1]);
 					ft_restore();
-					*i += ft_strlen(&line[*i]);
-					ft_printf("[LINE]: %s\n", line);
+					//ft_printf("[LINE]: %s\n", line);
 					continue;
 				}
 				switch (c)
