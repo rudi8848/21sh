@@ -103,9 +103,12 @@ int	pack_args(char *line, t_job **first_job)
 				j->first_process = (t_process*)ft_memalloc(sizeof(t_process));
 				p = j->first_process;
 				argc = 0;
+				j->in_fd = STDIN_FILENO;
+				j->out_fd = STDOUT_FILENO;
+				j->err_fd = STDERR_FILENO;
 				continue;
 			}
-			if (makepipe)
+			/*if (makepipe)
 			{
 				if (pipe(pfd) == -1)
 				{
@@ -114,7 +117,7 @@ int	pack_args(char *line, t_job **first_job)
 				}
 					p->in_fd = pfd[0];
 					p->out_fd = pfd[1];
-			}
+			}*/
 			if (argc == 0 && (token != T_NLINE || j->in_fd > 1))
 			{
 				ft_printf("missing command\n");
