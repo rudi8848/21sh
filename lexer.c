@@ -35,7 +35,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 
 	while ((c = line[(*i)++]) != '\0')
 	{
-		ft_printf("loop %s [%d]\n", line, state);
+		//ft_printf("loop %s [%d]\n", line, state);
 		switch (state)
 		{
 			case PLANE:
@@ -91,7 +91,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					read_line(&line[(*i)+1]);
 					ft_restore();
 					//ft_printf("[LINE]: %s\n", line);
-					continue;
+					//continue;
 				}
 				switch (c)
 				{

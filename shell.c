@@ -833,10 +833,17 @@ label:
 		ft_printf("===========\n");
 		j = j->next;
 	}
+	ft_printf("OK\n");
 
-/*
+j = first_job;
+while (j)
+{
+	launch_job(j, 1);
+	do_job_notification();
+	j = j->next;
+}
 
-	if (pack_argv(&first_job, &line[0], 0, 0, NULL))
+/*	
 		launch_job(first_job, 1);
 
 	do_job_notification();
