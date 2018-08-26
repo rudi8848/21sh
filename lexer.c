@@ -86,12 +86,10 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			{
 				if (c != '\"' && !line[(*i) + 1])
 				{
-					ft_printf(">dquote ");
+					ft_printf("\ndquote> ");
 					cbreak_settings();
 					read_line(&line[(*i)+1], *i);
 					ft_restore();
-					//ft_printf("[LINE]: %s\n", line);
-					//continue;
 				}
 				switch (c)
 				{

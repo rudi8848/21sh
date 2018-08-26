@@ -133,7 +133,8 @@ void    read_line(char *line, int start)
     rb = 0;
     int len = 0;
     int i = 0;
-    ft_prompt();
+    if (!start)
+	    ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         //ft_printf("\n-> %lld\n", rb);
@@ -393,7 +394,7 @@ void 	init_terminal()
 
 void	set_stopsignals(sig_t func)
 {
-	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	signal(SIGINT, func);
 	signal(SIGQUIT, func);
 	signal(SIGTSTP, func);
@@ -739,7 +740,7 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	cbreak_settings();
 	read_line(&line[0], 0);
 	ft_restore();
-	ft_printf("\n[GOT:] %s", line);
+	//ft_printf("\n[GOT:] %s", line);
 /*
 	char word[200];
 	int t;

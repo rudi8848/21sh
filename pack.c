@@ -2,7 +2,7 @@
 
 int	pack_args(char *line, t_job **first_job)
 {
-	ft_printf("---> %s\n", __FUNCTION__);
+	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	char word[MAXWORD];
 	int append;
