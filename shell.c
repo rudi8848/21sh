@@ -3,11 +3,6 @@
 #include <errno.h>
 
 #define MAXLINE 500
-/*
-	разбираем строку на лексемы, пакуем в t_process->argv
-
-	читаем и записываем по слову, пока не дойдем до не слова или конца строки
-*/
 
 # define K_LEFT     4479771
 # define K_RIGHT    4414235
@@ -270,99 +265,6 @@ void    read_line(char *line, int start)
     return;
 }
 
-//===================================================
-#define MAXARG 50
-#define MAXWORD 500
-//===================================================
-
-/*
-int 	pack_argv(t_job **first_job, char *line, int *i, int makepipe, int *pipefd)
-{
-	t_token		token;
-	t_token		term;
-	
-	//ft_printf("\n[GOT:] %s", line);
-
-
-	int argc = 0;
-	int srcfd = STDIN_FILENO;
-	int dstfd = STDOUT_FILENO;
-	t_bool append;
-	char *argv[MAXARG];
-	char word[MAXWORD];
-
-	if (!(*first_job = (t_job*)ft_memalloc(sizeof(t_job))))
-		return 0;
-(*first_job)->first_process = (t_process*)ft_memalloc(sizeof(t_process));
-	while (TRUE)
-	{
-		token = ft_gettoken(line, i, word, sizeof(word));
-		if (token == T_WORD)
-		{
-			if (argc >= MAXARG - 1)
-			{
-				fprintf(stderr, "To many args\n");
-				continue;
-			}
-			if ((argv[argc] = malloc(strlen(word) + 1)) == NULL)
-			{
-				fprintf(stderr, "Out of arg memory\n");
-				continue;
-			}
-			strcpy(argv[argc], word);
-			argc++;
-			continue;
-		}
-		else if (token == T_LESS)
-		{
-			if (makepipe)
-				{
-					fprintf(stderr, "Extra <\n");
-					break;
-				}
-				srcfd = -1;
-				continue;
-		}
-		else if (token == T_GREAT || token == T_GGREAT)
-		{
-			if (dstfd != STDOUT_FILENO)
-			{
-				fprintf(stderr, "Extra > or >>\n");
-				break;
-			}
-			dstfd = -1;
-			append = token == T_GGREAT;
-			continue;
-		}
-		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
-		{
-			argv[argc] = NULL;
-			
-			(*first_job)->first_process->argv = argv;
-			//(*first_job)->first_process = (*first_job)->first_process->next;
-			if (token == T_PIPE)
-			{
-				t_process *last = (*first_job)->first_process;
-				while (last->next)
-					last = last->next;
-				(*first_job)->first_process->next = (t_process*)ft_memalloc(sizeof(t_process));
-
-					if (dstfd != STDOUT_FILENO)
-					{
-						fprintf(stderr, "> of >> conflicts with |\n");
-						break;
-					}
-					term = pack_argv(first_job, line, i, TRUE, &dstfd);
-					if (term == T_ERROR)
-						return 0;
-			}
-			return 1;
-		}
-	}
-
-	return 0;
-}
-*/
 void 	init_terminal()
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -664,7 +566,30 @@ void	launch_job(t_job *j, int foreground)
 		put_job_in_background(j, 0);
 }
 
-
+void 	print_jobs(t_job *first_job)
+{
+		int i;
+	t_job *j = first_job;
+	t_process *p;
+	while (j)
+	{
+		p = j->first_process;
+		while (p)
+		{
+			i = 0;
+			while (p->argv[i])
+			{
+				printf("[%d] %s\n",i, p->argv[i]);
+				i++;
+			}
+			ft_printf("-----------\n");
+			p = p->next;
+		}
+		ft_printf("===========\n");
+		j = j->next;
+	}
+	ft_printf("OK\n");
+}
 
 void	init_shell(void)
 {
@@ -702,38 +627,14 @@ int		main(void)
 	char line[MAXLINE];
 	t_process *process;
 
-first_job = (t_job*)ft_memalloc(sizeof(t_job));
-
+	first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	process = (t_process*)ft_memalloc(sizeof(t_process));
-	if (!process)
+	if (!first_job || !process)
 	{
 		perror("ft_memalloc");
 		return 1;
 	}
 	first_job->first_process = process;
-/*	
-	process->argv = (char**)ft_memalloc(sizeof(char) * 3);
-	process->argv[0] = "/bin/echo";
-	process->argv[1] = "hello world!";
-	process->argv[2] = NULL;
-	first_job->in_fd = STDIN_FILENO;
-	first_job->out_fd = STDOUT_FILENO;
-	first_job->err_fd = STDERR_FILENO;
-
-	process->next = (t_process*)ft_memalloc(sizeof(t_process));
-	process->next->argv = (char**)ft_memalloc(sizeof(char) * 2);
-	process->next->argv[0] = "/usr/bin/base64";
-	process->next->argv[1] = NULL;
-
-
-
-
-	first_job->first_process = process;
-	first_job->next = NULL;
-	first_job->command = "";
-*/
-	//--------------------------------------------------------
-	
 
 	init_shell();
 
@@ -741,116 +642,15 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	read_line(&line[0], 0);
 	ft_restore();
 	//ft_printf("\n[GOT:] %s", line);
-/*
-	char word[200];
-	int t;
-	int i = 0;
-	bzero(word, 200);
 
-	while (t != T_EOF || t != T_ERROR)
-	{
-		switch (t = ft_gettoken(line, &i, word, sizeof(word)))
-		{
-			case T_WORD:
-			{
-				//printf("[%i] ", t);
-				printf("T_WORD %s\n", word);
-				break;
-			}
-			case T_PIPE:
-			{
-				//printf("[%i] ", t);
-				printf("T_PIPE\n");
-				break;
-			}
-			case T_BG:
-			{
-				//printf("[%i] ", t);
-				printf("T_BG\n");
-				break;
-			}
-			case T_SEMI:
-			{
-				//printf("[%i] ", t);
-				printf("T_SEMI\n");
-				break;
-			}
-			case T_GREAT:
-			{
-				//printf("[%i] ", t);
-				printf("T_GREAT\n");
-				break;
-			}
-			case T_GGREAT:
-			{
-				//printf("[%i] ", t);
-				printf("T_GGREAT\n");
-				break;
-			}
-			case T_LESS:
-			{
-				//printf("[%i] ", t);
-				printf("T_LESS\n");
-				break;
-			}
-			case T_LLESS:
-			{
-				//printf("[%i] ", t);
-				printf("T_LLESS\n");
-				break;
-			}
-			case T_NLINE:
-			{
-				//printf("[%i] ", t);
-				printf("T_NLINE\n");
-				break;
-			}
-			case T_EOF:
-			{
-				//printf("[%i] ", t);
-				printf("T_EOF\n");
-				goto label;
-			}
-			case T_ERROR:
-			{
-				//printf("[%i] ", t);
-				printf("T_ERROR\n");
-				goto label;
-			}
-		}
-	}
-label:
-*/
-	//ft_printf("addr. of first_job before pack [%p]\n", &first_job);
 	if (pack_args(line, &first_job))
 		ft_printf("OK\n");
 	else
 		ft_printf("not valid\n");
-	//ft_printf("addr. of first_job after pack [%p]\n", &first_job);
 
-	int i;
-	t_job *j = first_job;
-	t_process *p;
-	while (j)
-	{
-		p = j->first_process;
-		while (p)
-		{
-		//ft_printf("[%p][%p]\n", j, p);
-			i = 0;
-			while (p->argv[i])
-			{
-				printf("[%d] %s\n",i, p->argv[i]);
-				i++;
-			}
-			ft_printf("-----------\n");
-			p = p->next;
-		}
-		ft_printf("===========\n");
-		j = j->next;
-	}
-	ft_printf("OK\n");
 
+print_jobs(first_job);
+t_job *j;
 j = first_job;
 while (j)
 {

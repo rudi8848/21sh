@@ -60,34 +60,6 @@ typedef enum {
 	INWORD
 } t_state;
 
-/*
-	1) структура с глобальной таблицей команд
-	2) структура с каждой отдельной командой (список? массив?(доступ по инд.))
-		
-*/
-/*
-typedef struct s_cmd
-{
-	char **cmd_args;
-	struct s_cmd *next;
-} t_cmd;
-
-typedef struct s_cmds
-{
-	char *infile;
-	int in_fd;		//fd of input file
-	char *outfile;
-	int out_fd;
-	char *errfile;
-	int err_fd;
-	int bg;			// background & 
-
-	int nbr_of_cmds;
-	char ***cmd_list;
-	
-} t_cmds;
-*/
-
 #define MAXARG 50
 #define MAXFILENAME 500
 #define MAXWORD 500
