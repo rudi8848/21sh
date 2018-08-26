@@ -52,7 +52,22 @@ void    ft_restore()
 
 void	free_job(t_job *j)
 {
-	;
+	t_job *jprev = j;
+	t_process *pprev;
+
+	while (j)
+	{
+		jprev = j;
+		while (jprev->first_process)
+		{
+			pprev = jprev->first_process;
+			jprev->first_process = jprev->first_process->next;
+			free(pprev);
+		}
+		j = j->next;
+		free(jprev);
+	}
+
 }
 
 void    ft_exit(void)
@@ -107,14 +122,14 @@ int     cbreak_settings()
     return 0;
 }
 
-void    read_line(char *line)
+void    read_line(char *line, int start)
 {
     
     int         rr;
     uint64_t    rb;
     int j;
 
-    bzero(line, MAXLINE);
+    bzero(line, MAXLINE - start);
     rb = 0;
     int len = 0;
     int i = 0;
@@ -160,7 +175,7 @@ void    read_line(char *line)
         }
         else if (ft_isprint(rb))
         {
-            if (len + 1 == MAXLINE)
+            if (len + 1 + start  == MAXLINE)
             {
                 TERM_BELL          // bell
                 ft_printf("\nLine is too long\n");
@@ -722,7 +737,7 @@ first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	init_shell();
 
 	cbreak_settings();
-	read_line(&line[0]);
+	read_line(&line[0], 0);
 	ft_restore();
 	ft_printf("\n[GOT:] %s", line);
 /*
@@ -824,7 +839,7 @@ label:
 			i = 0;
 			while (p->argv[i])
 			{
-				ft_printf("[%d] %s\n",i, p->argv[i]);
+				printf("[%d] %s\n",i, p->argv[i]);
 				i++;
 			}
 			ft_printf("-----------\n");
@@ -842,7 +857,7 @@ while (j)
 	do_job_notification();
 	j = j->next;
 }
-
+//free_job(first_job);
 /*	
 		launch_job(first_job, 1);
 

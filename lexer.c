@@ -88,7 +88,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				{
 					ft_printf(">dquote ");
 					cbreak_settings();
-					read_line(&line[(*i)+1]);
+					read_line(&line[(*i)+1], *i);
 					ft_restore();
 					//ft_printf("[LINE]: %s\n", line);
 					//continue;
