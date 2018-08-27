@@ -22,7 +22,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 
 	while ((c = line[(*i)++]) != '\0')
 	{
-		//ft_printf("loop %s [%d]\n", line, state);
+		
 		switch (state)
 		{
 			case PLANE:
@@ -47,9 +47,14 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 						state = GGREAT;
 						continue;
 					}
-					case '"':
+					case '\'':
 					{
 						state = INQUOTE;
+						continue;
+					}
+					case '"':
+					{
+						state = INDQUOTE;
 						continue;
 					}
 					default:
@@ -68,10 +73,43 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				(*i)--;
 				return T_GREAT;
 			}
-
-			case INQUOTE:
+			case INQUOTE:	//hard quotes
 			{
-				if (c != '\"' && !line[(*i) + 1])
+				if (c != '\'' && !line[(*i) + 1])
+				{
+					ft_printf("\nquote> ");
+					cbreak_settings();
+					read_line(&line[(*i)+1], *i);
+					ft_restore();
+				}
+				switch (c)
+				{
+					
+					case '\\':
+					{
+						if ((c = line[*i]) == EOF)		// ???
+							c = '\\';
+						if (!store_char(word, maxword, c, &wordn))
+							return T_ERROR;
+						continue;
+					}
+					case '\'':
+					{
+						if (!store_char(word, maxword, '\0', &wordn))
+							return T_ERROR;
+						return T_WORD;
+					}
+					default:
+					{
+						if (!store_char(word, maxword, c, &wordn))
+							return T_ERROR;
+						continue;
+					}
+				}
+			}
+			case INDQUOTE:
+			{
+				if (c != '"' && !line[(*i) + 1])
 				{
 					ft_printf("\ndquote> ");
 					cbreak_settings();
@@ -80,7 +118,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				}
 				switch (c)
 				{
-					
 					case '\\':
 					{
 						if ((c = line[*i]) == EOF)		// ???
@@ -118,6 +155,8 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					(*i)--;
 					if (!store_char(word, maxword, '\0', &wordn))
 							return T_ERROR;
+					if (word[0] == '$')
+						word = ft_strcpy(word, getenv(&word[1]));
 					return T_WORD;
 					default:
 					if (!store_char(word, maxword, c, &wordn))

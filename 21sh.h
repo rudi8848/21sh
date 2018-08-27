@@ -57,7 +57,8 @@ typedef enum {
 	PLANE,
 	GGREAT,
 	INQUOTE,
-	INWORD
+	INWORD,
+	INDQUOTE
 } t_state;
 
 #define MAXARG 50

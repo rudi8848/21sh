@@ -520,7 +520,7 @@ void	launch_job(t_job *j, int foreground)
 	//ft_printf("---> %s\n",__FUNCTION__);
 	t_process	*p;
 	pid_t		pid;
-	int		mypipe[2];
+	int		mypipe[2] = {-1, -1};
 	int		infile = -1;
 	int		outfile = -1;
 
@@ -666,7 +666,7 @@ while (j)
 	j = j->next;
 }
 free_job(first_job);
-system("leaks test");
+//system("leaks test");
 /*	
 		launch_job(first_job, 1);
 
