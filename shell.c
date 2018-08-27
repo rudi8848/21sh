@@ -22,20 +22,20 @@
 # define K_ALT_C	42947		//for copy
 # define K_ALT_V	10127586	//for paste
 
-# define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
-# define TERM_BACK	tputs(tgetstr("le", NULL), 0, ft_iputchar);\
-                	tputs(tgetstr("dm", NULL), 0, ft_iputchar);\
-                	tputs(tgetstr("dc", NULL), 0, ft_iputchar);\
-                	tputs(tgetstr("ed", NULL), 0, ft_iputchar);
+# define TERM_BELL	tputs(tgetstr("bl", tbuf), 0, ft_iputchar);
+# define TERM_BACK	tputs(tgetstr("le", tbuf), 0, ft_iputchar);\
+                	tputs(tgetstr("dm", tbuf), 0, ft_iputchar);\
+                	tputs(tgetstr("dc", tbuf), 0, ft_iputchar);\
+                	tputs(tgetstr("ed", tbuf), 0, ft_iputchar);
 
-# define TERM_DEL	tputs(tgetstr("dm", NULL), 0, ft_iputchar);\
-                	tputs(tgetstr("dc", NULL), 0, ft_iputchar);\
-                	tputs(tgetstr("ed", NULL), 0, ft_iputchar); 
+# define TERM_DEL	tputs(tgetstr("dm", tbuf), 0, ft_iputchar);\
+                	tputs(tgetstr("dc", tbuf), 0, ft_iputchar);\
+                	tputs(tgetstr("ed", tbuf), 0, ft_iputchar); 
 
-# define TERM_END tputs(tgoto(tgetstr("RI", NULL), 0, len - i), 0, ft_iputchar);
-# define TERM_HOME tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);
-# define TERM_CRS_RIGHT tputs(tgetstr("nd", NULL), 0, ft_iputchar);
-# define TERM_CRS_LEFT	tputs(tgetstr("le", NULL), 0, ft_iputchar);
+# define TERM_END tputs(tgoto(tgetstr("RI", tbuf), 0, len - i), 0, ft_iputchar);
+# define TERM_HOME tputs(tgoto(tgetstr("LE", tbuf), 0, i), 0, ft_iputchar);
+# define TERM_CRS_RIGHT tputs(tgetstr("nd", tbuf), 0, ft_iputchar);
+# define TERM_CRS_LEFT	tputs(tgetstr("le", tbuf), 0, ft_iputchar);
 
 struct termios saved;
 extern char **environ;
@@ -135,6 +135,9 @@ void    read_line(char *line, int start)
     rb = 0;
     int len = 0;
     int i = 0;
+    char buf[MAXWORD];
+    char *ptr = &buf[0];
+    char **tbuf = &ptr;
     if (!start)
 	    ft_prompt();
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
@@ -186,7 +189,7 @@ void    read_line(char *line, int start)
                 return;
             }
             write(STDOUT_FILENO, &rb, rr);
-            tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
+            tputs(tgetstr("im", tbuf), 0, ft_iputchar);          //insert mode
             if (line[i])   //if it's at the middle of line
             {
                     j = len + 1;
@@ -197,17 +200,17 @@ void    read_line(char *line, int start)
                     }
                     //and insert in termcap
                 
-                tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-                tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+                tputs(tgetstr("sc", tbuf), 0, ft_iputchar);      // save cursor position
+                tputs(tgetstr("ce", tbuf), 0, ft_iputchar);      // delete end of line
                 write(STDOUT_FILENO, line + i + 1, len);
-                tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+                tputs(tgetstr("rc", tbuf), 0, ft_iputchar);      // restore cursor position
             }
             
            		line[i] = (char)rb;
                 len++;
             if (i < len)
                 i++;
-            tputs(tgetstr("ei", NULL), 0, ft_iputchar);          //end of insertion mode
+            tputs(tgetstr("ei", tbuf), 0, ft_iputchar);          //end of insertion mode
         }
         else if (rb == K_DOWN)
         {
