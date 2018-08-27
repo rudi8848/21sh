@@ -27,6 +27,7 @@ int	pack_args(char *line, t_job **first_job)
 //		ft_printf("--> j[%p], p[%p]\n", j, p);
 		ft_bzero(word, sizeof(word));
 		token = ft_gettoken(line, &i, word, sizeof(word));
+
 		if (token == T_WORD)
 		{
 			if (argc >= MAXARG-1)
