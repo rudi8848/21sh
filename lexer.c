@@ -15,33 +15,30 @@ static int store_char(char *word, size_t maxword, int c, size_t *np)
 
 static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 {
-	ft_printf("\n>>> [%s] [%s] [%d] [%d]\n", line, word, *i, *wordn);
 	int j = *i;
 	int vname_len = 0;
 	char var[256];
 	char *ptr = &var[0];
-	//char val[256];
+
 	while (line[j] != '\0') 
 	{
 		if (line[j] == ';' || line[j] == '&' ||
 		line[j] == '|' || line[j] == '<' || line[j] == '>' ||
 		line[j] == '\n' || line[j] == '\t' || line[j] == ' ')
 			break;
-		ft_printf("-> [%c]\n", line[j]);
 		var[vname_len] = line[j];
 		vname_len++;
 		j++;
 	}
 	var[vname_len] = '\0';
-	ft_printf("[%s]\n", var);
 	if ((ptr = getenv(var + 1)) != NULL)
 	{
 		ft_strcpy(var, getenv(var + 1));
-		ft_printf("[%s]\n", var);
 		word = ft_strcat(word, var);
 		*wordn += ft_strlen(var);
 	}
-	*i += vname_len - 1;
+	if (vname_len)
+		*i += vname_len - 1;
 	
 }
 
@@ -139,10 +136,10 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 		}
 		else if (state == INDQUOTE)
 		{
-			if (c == '\\' && line[(*i) + 1] && line[(*i) + 1] != '$')
+			if (c == '\\' && line[(*i) + 1])
 			{
 				(*i)++;
-				if (!store_char(word, maxword, c, &wordn))
+				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
 			}
@@ -183,7 +180,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
-					//word = ft_strcpy(word, getenv(&word[1]));
 				return T_WORD;
 			}
 			else
