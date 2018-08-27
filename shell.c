@@ -671,7 +671,7 @@ while (j)
 	j = j->next;
 }
 free_job(first_job);
-system("leaks test");
+//system("leaks test");
 /*	
 		launch_job(first_job, 1);
 
