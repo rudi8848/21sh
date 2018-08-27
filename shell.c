@@ -279,6 +279,7 @@ void    read_line(char *line, int start)
 void 	init_terminal()
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
+	char buf[MAXWORD];
 	 if ((tcgetattr(STDOUT_FILENO, &saved)) == -1)
     {
         perror("cannot get terminal settings");
@@ -290,7 +291,7 @@ void 	init_terminal()
         perror("getenv");
         exit(EXIT_FAILURE);
     }
-    if (tgetent(NULL, name) < 1)
+    if (tgetent(buf, name) < 1)
     {
         perror("tgetent");
         exit(EXIT_FAILURE);
@@ -670,7 +671,7 @@ while (j)
 	j = j->next;
 }
 free_job(first_job);
-//system("leaks test");
+system("leaks test");
 /*	
 		launch_job(first_job, 1);
 
