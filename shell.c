@@ -47,19 +47,26 @@ void    ft_restore()
 
 void	free_job(t_job *j)
 {
-	t_job *jprev = j;
+	t_job *jprev;
 	t_process *pprev;
-
+	int i;
 	while (j)
 	{
 		jprev = j;
+		j = j->next;
 		while (jprev->first_process)
 		{
 			pprev = jprev->first_process;
 			jprev->first_process = jprev->first_process->next;
+			i = 0;
+			while (pprev->argv[i])
+			{
+				free(pprev->argv[i]);
+				i++;
+			}
 			free(pprev);
 		}
-		j = j->next;
+		
 		free(jprev);
 	}
 
@@ -658,7 +665,8 @@ while (j)
 	do_job_notification();
 	j = j->next;
 }
-//free_job(first_job);
+free_job(first_job);
+system("leaks test");
 /*	
 		launch_job(first_job, 1);
 
