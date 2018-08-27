@@ -46,73 +46,92 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_state state = PLANE;
-	int c;
+	//int c;
 	size_t wordn = 0;
 
 
-	while ((c = line[*i]) != '\0')
+	while (line[*i])
 	{
 		if (state == PLANE)
 		{
-			if (c == ';')
+			if (line[*i] == ';')
 			{
 				(*i)++;
 				return T_SEMI;
 			}
-			else if (c == '&')
+			else if (line[*i] == '&')
 			{
 				(*i)++;
 				return T_BG;
 			}
-			else if (c == '|')
+			else if (line[*i] == '|')
 			{
 				(*i)++;
 				return T_PIPE;
 			}
-			else if (c == '<')
+			else if (line[*i] == '<')
 			{
 				(*i)++;
 				return T_LESS;
 			}					
-			else if (c == '\n')
+			else if (line[*i] == '\n')
 			{
 				(*i)++;
 				return T_NLINE;
 			}
-			else if (c == ' ' || c == '\t')
+			else if (line[*i] == ' ' || line[*i] == '\t')
 				(*i)++;
-			else if (c == '>')
+			else if (line[*i] == '>')
 			{
 				state = GGREAT;
 				(*i)++;
+				continue;
 			}
-			else if (c == '\'')
+			else if (line[*i] == '\'')
 			{
 				state = INQUOTE;
 				(*i)++;
+				continue;
 			}
-			else if (c == '"')
+			else if (line[*i] == '"')
 			{
 				state = INDQUOTE;
 				(*i)++;
+				continue;
 			}
 			else
 			{
 				state = INWORD;
-				if (!store_char(word, maxword, c, &wordn))
-					return T_ERROR;
-				(*i)++;
+				if (line[*i] == '\\' && line[(*i) + 1])
+				{
+					(*i)++;
+					if (!store_char(word, maxword, line[*i], &wordn))
+						return T_ERROR;
+					(*i)++;
+				}
+				else if (line[*i] == '$')
+				{
+					insert_variable(line, word, i, &wordn);
+					(*i)++;
+				}
+				else
+				{
+					if (!store_char(word, maxword, line[*i], &wordn))
+						return T_ERROR;
+						(*i)++;
+				}
+				continue;
 			}
 		}
 		else if (state == GGREAT)
 		{
-			if (c == '>')
+			if (line[*i] == '>')
 					return T_GGREAT;
 				return T_GREAT;
 		}
 		else if (state == INQUOTE)
 		{
-			 if (c == '\'')
+			 if (line[*i] == '\'')
 			{
 				(*i)++;
 				if (!store_char(word, maxword, '\0', &wordn))
@@ -129,26 +148,26 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					ft_restore();
 					//ft_printf("[%d][%s]\n", *i, line);
 				}
-				if (!store_char(word, maxword, c, &wordn))
+				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
 			}
 		}
 		else if (state == INDQUOTE)
 		{
-			if (c == '\\' && line[(*i) + 1])
+			if (line[*i] == '\\' && line[(*i) + 1])
 			{
 				(*i)++;
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
 			}
-			else if (c == '$')
+			else if (line[*i] == '$')
 			{
 				insert_variable(line, word, i, &wordn);
 				(*i)++;
 			}
-			else if (c == '"')
+			else if (line[*i] == '"')
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
@@ -164,19 +183,30 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					read_line(&line[(*i) + 1], (*i) + 1);
 					ft_restore();
 				}
-				if (!store_char(word, maxword, c, &wordn))
+				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
 			}
 		}
 		else if (state == INWORD)
 		{
-			if (c == '$')
+		/*	ft_printf("\n[%c]\n", line[*i]);*/
+			
+			if (line[*i] == '\\' && line[(*i) + 1])
+			{
+				(*i)++;
+				
+				if (!store_char(word, maxword, line[*i], &wordn))
+					return T_ERROR;
+				(*i)++;
+			}
+			
+			else if (line[*i] == '$')
 			{
 					insert_variable(line, word, i, &wordn);
 					(*i)++;
 			}
-			else if ( c == ';' || c == '&' || c == '|' || c == '<' || c == '>' || c == '\n' || c == '\t' || c == ' ')
+			else if ( line[*i] == ';' || line[*i]== '&' || line[*i]== '|' || line[*i]== '<' || line[*i]== '>' || line[*i]== '\n' || line[*i]== '\t' || line[*i]== ' ')
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
@@ -184,7 +214,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			}
 			else
 			{
-				if (!store_char(word, maxword, c, &wordn))
+				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
 			}
