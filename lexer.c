@@ -12,168 +12,38 @@ static int store_char(char *word, size_t maxword, int c, size_t *np)
 	else
 		return 0;
 }
-/*
-t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
+
+static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
-	t_state state = PLANE;
-	int c;
-	size_t wordn = 0;
-
-
-	while ((c = line[(*i)++]) != '\0' && c)
+	ft_printf("\n>>> [%s] [%s] [%d] [%d]\n", line, word, *i, *wordn);
+	int j = *i;
+	int vname_len = 0;
+	char var[256];
+	char *ptr = &var[0];
+	//char val[256];
+	while (line[j] != '\0') 
 	{
-		ft_printf("\n>>>[%d][%d][%d][%s]\n", *i, c, state, line);
-		switch (state)
-		{
-			case PLANE:
-			{
-				switch (c)
-				{
-					case ';':
-						return T_SEMI;
-					case '&':
-						return T_BG;
-					case '|':
-						return T_PIPE;
-					case '<':
-						return T_LESS;
-					case '\n':
-						return T_NLINE;
-					case ' ':
-					case '\t':
-						continue;
-					case '>':
-					{
-						state = GGREAT;
-						continue;
-					}
-					case '\'':
-					{
-						state = INQUOTE;
-						continue;
-					}
-					case '"':
-					{
-						state = INDQUOTE;
-						continue;
-					}
-					default:
-					{
-						state = INWORD;
-						if (!store_char(word, maxword, c, &wordn))
-							return T_ERROR;
-						continue;
-					}
-				}
-			}
-			case GGREAT:
-			{
-				if (c == '>')
-					return T_GGREAT;
-				(*i)--;
-				return T_GREAT;
-			}
-			case INQUOTE:	//hard quotes
-			{
-				if (c != '\'' && !line[(*i) + 1])
-				{
-					ft_printf("\nquote> ");
-					cbreak_settings();
-					read_line(&line[(*i)+1], *i);
-					ft_restore();
-				}
-				switch (c)
-				{
-					
-					case '\\':
-					{
-						if ((c = line[*i]) == EOF)		// ???
-							c = '\\';
-						if (!store_char(word, maxword, c, &wordn))
-							return T_ERROR;
-						continue;
-					}
-					case '\'':
-					{
-						if (!store_char(word, maxword, '\0', &wordn))
-							return T_ERROR;
-						return T_WORD;
-					}
-					default:
-					{
-						if (!store_char(word, maxword, c, &wordn))
-							return T_ERROR;
-						continue;
-					}
-				}
-			}
-			case INDQUOTE:
-			{
-				
-				
-				switch (c)
-				{
-					case '\\':
-					{
-						if ((c = line[*i]) == '\0')		// ???
-							c = '\\';
-						if (!store_char(word, maxword, c, &wordn))
-							return T_ERROR;
-						continue;
-					}
-					case '"':
-					{
-						if (!store_char(word, maxword, '\0', &wordn))
-							return T_ERROR;
-						return T_WORD;
-					}
-					default:
-					{
-						if (line[(*i) + 1] == '\0' || line[*i] == '\n')
-						{
-							ft_printf("\ndquote> ");
-							cbreak_settings();
-							read_line(&line[(*i) + 1], (*i) + 1);
-							ft_restore();
-							ft_printf("[%d][%s]\n", *i, line);
-						}
-						if (!store_char(word, maxword, c, &wordn))
-							return T_ERROR;
-						continue;
-					}
-				}
-			}
-			case INWORD:
-			{
-				switch (c)
-				{
-					case ';':
-					case '&':
-					case '|':
-					case '<':
-					case '>':
-					case '\n':
-					case '\t':
-					case ' ':
-					(*i)--;
-					if (!store_char(word, maxword, '\0', &wordn))
-							return T_ERROR;
-					if (word[0] == '$')
-						word = ft_strcpy(word, getenv(&word[1]));
-					return T_WORD;
-					default:
-					if (!store_char(word, maxword, c, &wordn))
-							return T_ERROR;
-					continue;
-				}
-			}
-		}
-		
+		if (line[j] == ';' || line[j] == '&' ||
+		line[j] == '|' || line[j] == '<' || line[j] == '>' ||
+		line[j] == '\n' || line[j] == '\t' || line[j] == ' ')
+			break;
+		ft_printf("-> [%c]\n", line[j]);
+		var[vname_len] = line[j];
+		vname_len++;
+		j++;
 	}
-	return T_EOF;
+	var[vname_len] = '\0';
+	ft_printf("[%s]\n", var);
+	if ((ptr = getenv(var + 1)) != NULL)
+	{
+		ft_strcpy(var, getenv(var + 1));
+		ft_printf("[%s]\n", var);
+		word = ft_strcat(word, var);
+		*wordn += ft_strlen(var);
+	}
+	*i += vname_len - 1;
+	
 }
-*/
 
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
@@ -245,15 +115,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 		}
 		else if (state == INQUOTE)
 		{
-			if (c == '\\')
-			{
-				if ((c = line[*i]) == '\0')		// ???
-					c = '\\';
-				if (!store_char(word, maxword, c, &wordn))
-					return T_ERROR;
-				(*i)++;
-			}
-			else if (c == '\'')
+			 if (c == '\'')
 			{
 				(*i)++;
 				if (!store_char(word, maxword, '\0', &wordn))
@@ -277,7 +139,19 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 		}
 		else if (state == INDQUOTE)
 		{
-			if (c == '"')
+			if (c == '\\' && line[(*i) + 1] && line[(*i) + 1] != '$')
+			{
+				(*i)++;
+				if (!store_char(word, maxword, c, &wordn))
+					return T_ERROR;
+				(*i)++;
+			}
+			else if (c == '$')
+			{
+				insert_variable(line, word, i, &wordn);
+				(*i)++;
+			}
+			else if (c == '"')
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
@@ -300,12 +174,16 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 		}
 		else if (state == INWORD)
 		{
-			if ( c == ';' || c == '&' || c == '|' || c == '<' || c == '>' || c == '\n' || c == '\t' || c == ' ')
+			if (c == '$')
+			{
+					insert_variable(line, word, i, &wordn);
+					(*i)++;
+			}
+			else if ( c == ';' || c == '&' || c == '|' || c == '<' || c == '>' || c == '\n' || c == '\t' || c == ' ')
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
-				if (word[0] == '$')
-					word = ft_strcpy(word, getenv(&word[1]));
+					//word = ft_strcpy(word, getenv(&word[1]));
 				return T_WORD;
 			}
 			else
