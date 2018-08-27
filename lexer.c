@@ -20,9 +20,10 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 	int c;
 	size_t wordn = 0;
 
+
 	while ((c = line[(*i)++]) != '\0')
 	{
-		
+		//ft_printf("\n>>>[%d][%d][%d][%s]\n", *i, c, state, line);
 		switch (state)
 		{
 			case PLANE:
@@ -109,18 +110,21 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			}
 			case INDQUOTE:
 			{
-				if (c != '"' && !line[(*i) + 1])
+				/*
+				if (c != '"' && line[(*i) + 1] == '\0')
 				{
 					ft_printf("\ndquote> ");
 					cbreak_settings();
-					read_line(&line[(*i)+1], *i);
+					read_line(&line[(*i) ], *i );
 					ft_restore();
+					//ft_printf("[%d][%s]\n", *i, line);
 				}
+				*/
 				switch (c)
 				{
 					case '\\':
 					{
-						if ((c = line[*i]) == EOF)		// ???
+						if ((c = line[*i]) == '\0')		// ???
 							c = '\\';
 						if (!store_char(word, maxword, c, &wordn))
 							return T_ERROR;
@@ -134,6 +138,14 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					}
 					default:
 					{
+						if (line[(*i) + 1] == '\0')
+						{
+							ft_printf("\ndquote> ");
+							cbreak_settings();
+							read_line(&line[(*i) + 1], (*i) + 1);
+							ft_restore();
+							//ft_printf("[%d][%s]\n", *i, line);
+						}
 						if (!store_char(word, maxword, c, &wordn))
 							return T_ERROR;
 						continue;

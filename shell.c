@@ -174,6 +174,7 @@ void    read_line(char *line, int start)
         else if (rb == K_ENTER)
         {
             line[len] = '\n';
+            //ft_printf("[PASS][%s]\n", line);
             return;
         }
         else if (ft_isprint(rb))
