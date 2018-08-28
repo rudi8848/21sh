@@ -107,7 +107,15 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					(*i)++;
 					if (!store_char(word, maxword, line[*i], &wordn))
 						return T_ERROR;
+					if (line[*i] == '\n' && !line[(*i) + 1])
+					{
+						ft_printf("\n>");
+						cbreak_settings();
+						read_line(&line[(*i) + 1], (*i)+1);
+						ft_restore();
+					}
 					(*i)++;
+					continue;
 				}
 				else if (line[*i] == '$')
 				{
