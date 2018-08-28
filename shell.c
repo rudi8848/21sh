@@ -131,6 +131,7 @@ void    read_line(char *line, int start)
     uint64_t    rb;
     int j;
 
+    static char cp_buf[MAXLINE];
     bzero(line, MAXLINE - start);
     rb = 0;
     int len = 0;
@@ -168,10 +169,20 @@ void    read_line(char *line, int start)
         }
         else if (rb == K_CTRL_LEFT)
         {
+		//ft_printf("\n CTRL LEFT\n");
         	 if (i)
         	 {
+			 int n = i;
         	 	//переместиться к началу предыдущего слова
-        	 	
+			if (line[i] == ' ' || line[i] == 't' || line[i]== '\0')
+				i--;
+			 while (i > 0 && (line[i] == ' ' || line[i] == '\t'))
+				i--;
+        	 	while (i > 0 && (line[i] != ' ' || line[i] != '\t'))
+				i--;
+			if (i)
+				i++;
+			tputs(tgoto(tgetstr("LE", tbuf), 0, n - i), 0, ft_iputchar);
         	 }
         }
         else if (rb == K_ENTER)
