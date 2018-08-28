@@ -42,13 +42,20 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 	
 }
 
+static void	read_more(char *line, int i, char *prompt)
+{
+	ft_printf("%s", prompt);
+	cbreak_settings();
+	read_line(line, i);
+	ft_restore();
+}
+
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_state state = PLANE;
 	//int c;
 	size_t wordn = 0;
-
 
 	while (line[*i])
 	{
@@ -108,12 +115,13 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					if (!store_char(word, maxword, line[*i], &wordn))
 						return T_ERROR;
 					if (line[*i] == '\n' && !line[(*i) + 1])
-					{
+						read_more(&line[(*i) + 1], (*i)+1, "\n>");
+					/*{
 						ft_printf("\n>");
 						cbreak_settings();
 						read_line(&line[(*i) + 1], (*i)+1);
 						ft_restore();
-					}
+					}*/
 					(*i)++;
 					continue;
 				}
@@ -149,13 +157,14 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			else
 			{
 				if (line[(*i) + 1] == '\0')
-				{
+					read_more(&line[(*i) + 1], (*i) + 1, "\nquote> ");
+				/*{
 					ft_printf("\nquote> ");
 					cbreak_settings();
 					read_line(&line[(*i) + 1], (*i) + 1);
 					ft_restore();
 					//ft_printf("[%d][%s]\n", *i, line);
-				}
+				}*/
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
@@ -168,6 +177,8 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				(*i)++;
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
+				if (line[*i] == '\n' && !line[(*i) + 1])
+						read_more(&line[(*i) + 1], (*i)+1, "\n>");
 				(*i)++;
 			}
 			else if (line[*i] == '$')
@@ -185,12 +196,15 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			else
 			{
 				if (line[(*i) + 1] == '\0')
+					read_more(&line[(*i) + 1], (*i) + 1, "\ndquote> ");
+				/*
 				{
 					ft_printf("\ndquote> ");
 					cbreak_settings();
 					read_line(&line[(*i) + 1], (*i) + 1);
 					ft_restore();
 				}
+				*/
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
