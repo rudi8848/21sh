@@ -555,8 +555,8 @@ void	launch_job(t_job *j, int foreground)
 			outfile = mypipe[1];
 		}
 		else
-			outfile = mypipe[1];
-
+			outfile = j->out_fd;
+			
 		pid = fork();
 		if (pid == CHILD)
 			launch_process(p, j->pgid, infile, outfile, j->err_fd, foreground);
