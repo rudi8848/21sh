@@ -610,7 +610,7 @@ void 	print_jobs(t_job *first_job)
 			ft_printf("-----------\n");
 			p = p->next;
 		}
-		ft_printf("SRC[%s], DST[%s], pgid[%d]\n", j->srcfile, j->dstfile, j->pgid);
+//		ft_printf("SRC[%s][%d],DST[%s][%d], pgid[%d]\n", j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
 		ft_printf("===========\n");
 		j = j->next;
 	}
@@ -672,8 +672,10 @@ int		main(void)
 	if (pack_args(line, &first_job))
 		ft_printf("OK\n");
 	else
+	{
 		ft_printf("not valid\n");
-
+		//return 1;
+	}
 
 print_jobs(first_job);
 t_job *j;

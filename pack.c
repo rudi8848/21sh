@@ -5,8 +5,8 @@ int	pack_args(char *line, t_job **first_job)
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	char word[MAXWORD];
-	int append;
-	int pfd[2] = {-1, -1};
+	int flags = O_WRONLY;
+	//int pfd[2] = {-1, -1};
 	int argc;
 	t_job *j = *first_job;
 	t_process *p = j->first_process;
@@ -15,7 +15,8 @@ int	pack_args(char *line, t_job **first_job)
 	j->in_fd = STDIN_FILENO;
 	j->out_fd = STDOUT_FILENO;
 	j->err_fd = STDERR_FILENO;
-
+	ft_bzero(j->srcfile, sizeof(j->srcfile));
+	ft_bzero(j->dstfile, sizeof(j->dstfile));
 	p->in_fd = j->in_fd;
 	p->out_fd = j->out_fd;
 	
@@ -57,7 +58,11 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Illegal <\n");
 				return 0;
 			}
-			j->in_fd = -1;
+			if ((j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
+			{
+				perror("open");
+				return 0;
+			}
 			continue;
 		}
 		else if (token == T_GREAT || token == T_GGREAT)
@@ -72,8 +77,16 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Illegal > or >>\n");
 				return 0;
 			}
-			j->out_fd = -1;
-			append = token == T_GGREAT;
+			ft_printf("DST [%s]\n", j->dstfile);
+			if ( token == T_GGREAT)
+				flags |= O_APPEND;
+			else
+				flags |= O_TRUNC;
+			if ((j->out_fd = open(j->dstfile, flags)) == -1)
+			{
+				perror("open");
+				return 0;
+			}
 			continue;
 		}
 		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
@@ -129,7 +142,7 @@ int	pack_args(char *line, t_job **first_job)
 		}
 		else if (token == T_EOF)
 		{
-			return 0;
+			return 1;
 		}
 		else if (token == T_ERROR)
 		{
