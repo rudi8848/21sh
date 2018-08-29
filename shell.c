@@ -132,7 +132,7 @@ void    read_line(char *line, int start)
     int j;
 
     static char cp_buf[MAXLINE];
-    bzero(line, MAXLINE - start);
+    
     rb = 0;
     int len = 0;
     int i = 0;
@@ -141,6 +141,8 @@ void    read_line(char *line, int start)
     char **tbuf = &ptr;
     if (!start)
 	    ft_prompt();
+	ft_bzero(line, MAXLINE - start);
+	ft_bzero(buf, MAXWORD);
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         //ft_printf("\n-> %lld\n", rb);
@@ -608,6 +610,7 @@ void 	print_jobs(t_job *first_job)
 			ft_printf("-----------\n");
 			p = p->next;
 		}
+		ft_printf("SRC[%s], DST[%s], pgid[%d]\n", j->srcfile, j->dstfile, j->pgid);
 		ft_printf("===========\n");
 		j = j->next;
 	}
