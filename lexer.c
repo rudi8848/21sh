@@ -116,12 +116,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 						return T_ERROR;
 					if (line[*i] == '\n' && !line[(*i) + 1])
 						read_more(&line[(*i) + 1], (*i)+1, "\n>");
-					/*{
-						ft_printf("\n>");
-						cbreak_settings();
-						read_line(&line[(*i) + 1], (*i)+1);
-						ft_restore();
-					}*/
 					(*i)++;
 					continue;
 				}
@@ -158,13 +152,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			{
 				if (line[(*i) + 1] == '\0')
 					read_more(&line[(*i) + 1], (*i) + 1, "\nquote> ");
-				/*{
-					ft_printf("\nquote> ");
-					cbreak_settings();
-					read_line(&line[(*i) + 1], (*i) + 1);
-					ft_restore();
-					//ft_printf("[%d][%s]\n", *i, line);
-				}*/
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
@@ -197,14 +184,6 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			{
 				if (line[(*i) + 1] == '\0')
 					read_more(&line[(*i) + 1], (*i) + 1, "\ndquote> ");
-				/*
-				{
-					ft_printf("\ndquote> ");
-					cbreak_settings();
-					read_line(&line[(*i) + 1], (*i) + 1);
-					ft_restore();
-				}
-				*/
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
