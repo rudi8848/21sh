@@ -136,8 +136,11 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 		else if (state == GGREAT)
 		{
 			if (line[*i] == '>')
-					return T_GGREAT;
-				return T_GREAT;
+			{
+				(*i)++;
+				return T_GGREAT;
+			}
+			return T_GREAT;
 		}
 		else if (state == INQUOTE)
 		{

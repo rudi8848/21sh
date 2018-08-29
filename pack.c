@@ -5,7 +5,7 @@ int	pack_args(char *line, t_job **first_job)
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	char word[MAXWORD];
-	int flags = O_WRONLY;
+	int flags = O_WRONLY | O_CREAT;
 	//int pfd[2] = {-1, -1};
 	int argc;
 	t_job *j = *first_job;
@@ -82,7 +82,7 @@ int	pack_args(char *line, t_job **first_job)
 				flags |= O_APPEND;
 			else
 				flags |= O_TRUNC;
-			if ((j->out_fd = open(j->dstfile, flags)) == -1)
+			if ((j->out_fd = open(j->dstfile, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
 			{
 				perror("open");
 				return 0;
