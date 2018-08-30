@@ -47,7 +47,7 @@ typedef enum {
 	T_GREAT,
 	T_GGREAT,
 	T_LESS,
-	T_LLESS,
+	T_HRDOC,
 	T_NLINE,
 	T_EOF,
 	T_ERROR

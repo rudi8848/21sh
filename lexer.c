@@ -193,16 +193,16 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			}
 		}
 		else if (state == INWORD)
-		{
-		/*	ft_printf("\n[%c]\n", line[*i]);*/
-			
+		{			
 			if (line[*i] == '\\' && line[(*i) + 1])
 			{
 				(*i)++;
-				
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
-				(*i)++;
+				if (line[*i] == '\n' && !line[(*i) + 1])
+						read_more(&line[(*i) + 1], (*i)+1, "\n>");
+					(*i)++;
+				continue;
 			}
 			
 			else if (line[*i] == '$')

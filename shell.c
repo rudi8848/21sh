@@ -674,7 +674,7 @@ int		main(void)
 	else
 	{
 		ft_printf("not valid\n");
-		//return 1;
+		return 1;
 	}
 
 print_jobs(first_job);

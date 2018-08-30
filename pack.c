@@ -137,12 +137,14 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("missing command\n");
 				return 0;
 			}
+			else if (argc == 0 && token == T_NLINE)
+				return 0;
 			return 1;
 
 		}
 		else if (token == T_EOF)
 		{
-			return 1;
+			return 0;
 		}
 		else if (token == T_ERROR)
 		{
