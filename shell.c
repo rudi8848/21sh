@@ -2,40 +2,7 @@
 #include <term.h>
 #include <errno.h>
 
-#define MAXLINE 500
 
-# define K_LEFT     4479771
-# define K_RIGHT    4414235
-# define K_UP       4283163
-# define K_DOWN     4348699
-# define K_CTRL_LEFT     74995417045787
-# define K_CTRL_RIGHT    73895905418011
-
-# define K_ENTER    10
-# define K_TAB      9
-# define K_SPACE    32
-# define K_ESC      27
-# define K_DELETE   2117294875L
-# define K_BSPACE   127
-# define K_HOME		4741915
-# define K_END		4610843
-# define K_ALT_C	42947		//for copy
-# define K_ALT_V	10127586	//for paste
-
-# define TERM_BELL	tputs(tgetstr("bl", tbuf), 0, ft_iputchar);
-# define TERM_BACK	tputs(tgetstr("le", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("dm", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("dc", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("ed", tbuf), 0, ft_iputchar);
-
-# define TERM_DEL	tputs(tgetstr("dm", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("dc", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("ed", tbuf), 0, ft_iputchar); 
-
-# define TERM_END tputs(tgoto(tgetstr("RI", tbuf), 0, len - i), 0, ft_iputchar);
-# define TERM_HOME tputs(tgoto(tgetstr("LE", tbuf), 0, i), 0, ft_iputchar);
-# define TERM_CRS_RIGHT tputs(tgetstr("nd", tbuf), 0, ft_iputchar);
-# define TERM_CRS_LEFT	tputs(tgetstr("le", tbuf), 0, ft_iputchar);
 
 struct termios saved;
 extern char **environ;
@@ -88,12 +55,42 @@ void    ft_prompt(void)
 {
     write(STDOUT_FILENO, "# ", 2);
 }
+
+void	type_prompt()
+{
+	char	*user;
+	char	*pwd;
+	char	*home;
+	int		len;
+	char	*tmp;
+
+	user = get_copy_env("LOGNAME", MUTE);
+	pwd = get_current_wd();
+	home = get_copy_env("HOME",  MUTE);
+	if (home)
+		len = ft_strlen(home);
+	if (ft_strnequ(home, pwd, len))
+	{
+		home = "~";
+		tmp = ft_strsub(pwd, len, ft_strlen(pwd) - len);
+	}
+	else
+	{
+		home = "";
+		tmp = pwd;
+	}
+	ft_printf("%s%s: %s%s%s>%s ", RED, user, GREEN, home, tmp, RESET);
+	if (tmp != pwd)
+		ft_strdel(&tmp);
+}
 /*
 
 static void     ft_int_handler(int signum)
 {
     ft_exit();
 }
+
+
 
 void            ft_set_signals(void)
 {
@@ -106,6 +103,8 @@ void            ft_set_signals(void)
     //signal(SIGWINCH, ft_winch_handler);
 }
 */
+
+
 int     cbreak_settings()
 {
 	struct termios changed;
@@ -133,6 +132,8 @@ void    read_line(char *line, int start)
 
     static char cp_buf[MAXLINE];
     
+int n;
+
     rb = 0;
     int len = 0;
     int i = 0;
@@ -140,7 +141,7 @@ void    read_line(char *line, int start)
     char *ptr = &buf[0];
     char **tbuf = &ptr;
     if (!start)
-	    ft_prompt();
+	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
 	ft_bzero(buf, MAXWORD);
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
@@ -154,7 +155,7 @@ void    read_line(char *line, int start)
                 TERM_CRS_RIGHT
             }
         }
-        if (rb == K_CTRL_RIGHT)
+        else if (rb == K_CTRL_RIGHT)
         {
         	 if (i < len)
         	 {
@@ -170,27 +171,30 @@ void    read_line(char *line, int start)
             }
         }
         else if (rb == K_CTRL_LEFT)
-        {
+        {/*
 		//ft_printf("\n CTRL LEFT\n");
         	 if (i)
         	 {
-			 int n = i;
-        	 	//переместиться к началу предыдущего слова
-			if (line[i] == ' ' || line[i] == 't' || line[i]== '\0')
-				i--;
-			 while (i > 0 && (line[i] == ' ' || line[i] == '\t'))
-				i--;
-        	 	while (i > 0 && (line[i] != ' ' || line[i] != '\t'))
-				i--;
-			if (i)
-				i++;
-			tputs(tgoto(tgetstr("LE", tbuf), 0, n - i), 0, ft_iputchar);
-        	 }
+				 n = i;
+	        	 	//переместиться к началу предыдущего слова
+				if (line[i] == ' ' || line[i] == 't' || line[i] == '\0')
+					i--;
+				 while (i > 0 && (line[i] == ' ' || line[i] == '\t'))
+					i--;
+				if (line[i] != ' ' || line[i] != '\t' || line[i] != '\0')
+	        	 	while (i > 0 && (line[i] != ' ' && line[i] != '\t'))
+					i--;
+				if (i)
+					i++;
+				if (n - i)
+				tputs(tgoto(tgetstr("LE", tbuf), 0, n - i), 0, ft_iputchar);
+				//n = 0;
+        	 }*/
         }
         else if (rb == K_ENTER)
         {
             line[len] = '\n';
-            //ft_printf("[PASS][%s]\n", line);
+            //ft_printf("\n[%s]\nlen[%i], i[%i] {%i}\n", line, len, i, n);
             return;
         }
         else if (ft_isprint(rb))
@@ -251,7 +255,7 @@ void    read_line(char *line, int start)
         		i = len;
         	}
         }
-        else if (rb == K_DELETE)
+        else if (rb == K_DELETE || rb == 4)	// CTRL + D the same
         {
             if (len > 0 && i >= 0 && i < len)
             {
@@ -309,6 +313,7 @@ void 	init_terminal()
         perror("tgetent");
         exit(EXIT_FAILURE);
     }
+    copy_env();
 }
 
 //===========================================
@@ -647,6 +652,7 @@ void	init_shell(void)
 			fprintf(stderr, "shell is not interactive\n");
 }
 
+
 int		main(void)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -687,12 +693,13 @@ while (j)
 	j = j->next;
 }
 free_job(first_job);
-//system("leaks test");
-/*	
-		launch_job(first_job, 1);
 
-	do_job_notification();
-	continue_job(first_job, 0);
-*/
+//system("leaks test");
+//	
+//		launch_job(first_job, 1);
+
+//	do_job_notification();
+//	continue_job(first_job, 0);
+//
 	return 0;
 }

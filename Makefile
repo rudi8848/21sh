@@ -1,5 +1,6 @@
 NAME = test
-SRCS = shell.c lexer.c pack.c
+SRCS = shell.c lexer.c pack.c \
+		builtin.c built_func.c environement.c find.c help_func.c
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)
@@ -15,6 +16,10 @@ $(OBJS):	$(SRCS) $(LIB)
 
 $(LIB):
 	make -C libft
+
+left: left.c $(SRCS) $(LIB)
+	gcc -g3 -c left.c shell.c
+	gcc -o left left.o shell.o -L. $(LIB) $(FLAGS)
 
 clean:
 	/bin/rm -f $(OBJS)

@@ -6,7 +6,6 @@ int	pack_args(char *line, t_job **first_job)
 	t_token	token;
 	char word[MAXWORD];
 	int flags = O_WRONLY | O_CREAT;
-	//int pfd[2] = {-1, -1};
 	int argc;
 	t_job *j = *first_job;
 	t_process *p = j->first_process;
@@ -122,16 +121,6 @@ int	pack_args(char *line, t_job **first_job)
 				j->err_fd = STDERR_FILENO;
 				continue;
 			}
-			/*if (makepipe)
-			{
-				if (pipe(pfd) == -1)
-				{
-					perror("pipe()");
-					return 0;
-				}
-					p->in_fd = pfd[0];
-					p->out_fd = pfd[1];
-			}*/
 			if (argc == 0 && (token != T_NLINE || j->in_fd > 1))
 			{
 				ft_printf("missing command\n");
