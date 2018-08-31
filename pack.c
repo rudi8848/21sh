@@ -127,7 +127,7 @@ int	pack_args(char *line, t_job **first_job)
 			}
 			if (argc == 0 && (token != T_NLINE || j->in_fd /*> 1*/ != -1))
 			{
-				ft_printf("\nmissing command\n");
+				ft_printf("\nMissing command\n");
 				return 0;
 			}
 			else if (argc == 0 && token == T_NLINE)

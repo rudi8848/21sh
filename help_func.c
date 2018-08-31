@@ -39,14 +39,15 @@ char	**ft_cp_array(char **src)
 	return (dest);
 }
 
-int		ft_print_env(char **args)
+int		ft_print_env(char **args, int infile, int outfile)
 {
 	int i;
 
 	i = 0;
 	while (g_envp[i] != NULL)
 	{
-		ft_printf("%s\n", g_envp[i]);
+		ft_putstr_fd(g_envp[i], outfile);
+		ft_putstr_fd("\n", outfile);
 		i++;
 	}
 	return (0);

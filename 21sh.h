@@ -135,6 +135,19 @@ typedef struct s_job
 	int flags;
 } t_job;
 
+typedef	int	(*t_pfb) (char**, int , int);
+
+typedef enum {
+	B_ECHO,
+	B_CD,
+	B_SETENV,
+	B_UNSETENV,
+	B_ENV,
+	B_EXIT,
+	B_END,
+	BUILT
+}	t_built;
+
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
 int	pack_args(char *line, t_job **j);
 int     cbreak_settings();
@@ -144,13 +157,15 @@ int ft_iputchar(int c);
 void	copy_env(void);
 
 //------------------------------
-int		ft_cd(char **args);
+
 int		ft_find(t_process *cmd);
 char	*get_copy_env(char *needle,  int warning);
-int		ft_cd(char **args);
-int		ft_setenv(char **args);
-int		ft_unsetenv(char **args);
-int		ft_env(char **args);
+int		ft_cd(char **args, int infile, int outfile);
+int		ft_echo(char **args, int infile, int outfile);
+//int		ft_exit(char **args, int infile, int outfile);
+int		ft_setenv(char **args, int infile, int outfile);
+int		ft_unsetenv(char **args, int infile, int outfile);
+int		ft_env(char **args, int infile, int outfile);
 int		env_size(char **envp);
 char			*get_current_wd(void);
 
@@ -162,13 +177,16 @@ void			ft_change_env(char *new, char *old);
 char			*ft_env_var(char *s);
 int				ft_env_rewrite(char *str, int size);
 int				ft_check_symb(char *s, int index);
-void			ft_cmd_exe(char **args);
-int				ft_print_env(char **args);
+int		check_built(char *cmd);
+void			ft_cmd_exe(char **args, int infile, int outfile);
+int				ft_print_env(char **args, int infile, int outfile);
 int				ft_check_dir(char *name);
 char			*ft_set_new_path(char **args);
 char			**ft_cp_array(char **src);
 void		free_arr(char **array);
 void			type_prompt();
 char	*ft_check_args(char **args);
+void	ft_built_exe(char **args, t_built cmd, int infile, int outfile);
 //------------------------------
+
 #endif

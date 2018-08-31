@@ -545,7 +545,7 @@ void	launch_job(t_job *j, int foreground)
 	int		mypipe[2] = {-1, -1};
 	int		infile = -1;
 	int		outfile = -1;
-
+	int ret;
 	infile = j->in_fd;
 	for(p = j->first_process; p; p = p->next)
 	{
@@ -554,8 +554,7 @@ void	launch_job(t_job *j, int foreground)
 			perror("open");
 			return ;
 		}
-		if (!ft_find(p))
-			return;
+		
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
 		{
 			perror("open");
@@ -572,23 +571,30 @@ void	launch_job(t_job *j, int foreground)
 		}
 		else
 			outfile = j->out_fd;
-			
-		pid = fork();
-		if (pid == CHILD)
-			launch_process(p, j->pgid, infile, outfile, j->err_fd, foreground);
-		else if (pid == ERROR)
-		{
-			perror("fork");
-			exit(1);
-		}
+		if ((ret = check_built(p->argv[0])) >= 0)
+			ft_built_exe(p->argv, ret, infile, outfile);
 		else
-		{
-			p->pid = pid;
-			if (shell_is_interactive)
+		{	
+			if (!ft_find(p))
+				return;
+			ft_printf(">>> FORK <<<\n");
+			pid = fork();
+			if (pid == CHILD)
+				launch_process(p, j->pgid, infile, outfile, j->err_fd, foreground);
+			else if (pid == ERROR)
 			{
-				if (!j->pgid)
-					j->pgid = pid;
-				setpgid(pid, j->pgid);
+				perror("fork");
+				exit(1);
+			}
+			else
+			{
+				p->pid = pid;
+				if (shell_is_interactive)
+				{
+					if (!j->pgid)
+						j->pgid = pid;
+					setpgid(pid, j->pgid);
+				}
 			}
 		}
 		if (infile != j->in_fd)

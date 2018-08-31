@@ -1,18 +1,18 @@
 #include "21sh.h"
-/*
+
 int		check_built(char *cmd)
 {
 	int		i;
 	char	*built[BUILT];
 
 	i = 0;
-	built[ECHO] = "echo";
-	built[CD] = "cd";
-	built[SETENV] = "setenv";
-	built[UNSETENV] = "unsetenv";
-	built[ENV] = "env";
-	built[EXIT] = "exit";
-	built[END] = NULL;
+	built[B_ECHO] = "echo";
+	built[B_CD] = "cd";
+	built[B_SETENV] = "setenv";
+	built[B_UNSETENV] = "unsetenv";
+	built[B_ENV] = "env";
+	//built[B_EXIT] = "exit";
+	built[B_END] = NULL;
 	while (built[i])
 	{
 		if (ft_strequ(cmd, built[i]))
@@ -24,33 +24,51 @@ int		check_built(char *cmd)
 
 void	ft_set_builtins(t_pfb *built_tab)
 {
-	built_tab[ECHO] = &ft_echo;
-	built_tab[CD] = &ft_cd;
-	built_tab[SETENV] = &ft_setenv;
-	built_tab[UNSETENV] = &ft_unsetenv;
-	built_tab[ENV] = &ft_env;
-	built_tab[EXIT] = &ft_exit;
-	built_tab[END] = NULL;
+	built_tab[B_ECHO] = &ft_echo;
+	built_tab[B_CD] = &ft_cd;
+	built_tab[B_SETENV] = &ft_setenv;
+	built_tab[B_UNSETENV] = &ft_unsetenv;
+	built_tab[B_ENV] = &ft_env;
+	//built_tab[B_EXIT] = &ft_exit;
+	built_tab[B_END] = NULL;
 }
-*/
+void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
+{
+	static t_pfb	*built_tab = NULL;
+	t_pfb			ft_run;
 
-int		ft_echo(t_process *p)
+	if (!built_tab)
+	{
+		built_tab = (t_pfb*)ft_memalloc(sizeof(t_pfb) * BUILT);
+		if (!built_tab)
+		{
+			ft_printf("Error\n");
+			return ;
+		}
+		ft_set_builtins(built_tab);
+	}
+	ft_run = built_tab[cmd];
+	ft_run(args, infile, outfile);
+}
+
+int		ft_echo(char **argv, int infile, int outfile)
 {
 	int			i;
 
 	i = 1;
-	while (p->argv[i])
+	while (argv[i])
 	{
-		ft_putstr_fd(p->argv[i], p->out_fd);
-		if (p->argv[i + 1])
-			ft_putchar_fd(' ', p->out_fd);
+		ft_putchar_fd('*', outfile);
+		ft_putstr_fd(argv[i], outfile);
+		if (argv[i + 1])
+			ft_putchar_fd(' ', outfile);
 		i++;
 	}
-	ft_putchar_fd('\n', p->out_fd);
+	ft_putchar_fd('\n', outfile);
 	return (0);
 }
 
-int		ft_cd(char **args)
+int		ft_cd(char **args, int infile, int outfile)
 {
 	int		ret;
 	int		i;
@@ -74,7 +92,7 @@ int		ft_cd(char **args)
 	return (ret);
 }
 
-int		ft_setenv(char **args)
+int		ft_setenv(char **args, int infile, int outfile)
 {
 	int		size;
 	int		i;
@@ -103,7 +121,7 @@ int		ft_setenv(char **args)
 	return (0);
 }
 
-int		ft_unsetenv(char **args)
+int		ft_unsetenv(char **args, int infile, int outfile)
 {
 	int		i;
 	int		len;
@@ -128,12 +146,12 @@ int		ft_unsetenv(char **args)
 	}
 	return (0);
 }
-/*
-int		ft_env(char **args)
+
+int		ft_env(char **args, int infile, int outfile)
 {
 	char		**envp_cp;
 	char		**ptr;
-	t_process	*cmd;
+	/*t_process	*cmd;
 
 	cmd = NULL;
 	if (ft_strequ(args[1], "-i"))
@@ -148,7 +166,7 @@ int		ft_env(char **args)
 		free(envp_cp[0]);
 		free(envp_cp);
 	}
-	else
-		ft_print_env(args);
+	else*/
+		ft_print_env(args, infile, outfile);
 	return (0);
-}*/
+}

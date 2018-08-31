@@ -30,13 +30,13 @@ void	ft_change_env(char *new, char *old)
 	arr[2] = new;
 	arr[3] = NULL;
 	if (get_copy_env("PWD", MUTE))
-		ft_unsetenv(arr);
-	ft_setenv(arr);
+		ft_unsetenv(arr, -1, -1);
+	ft_setenv(arr,  -1, -1);
 	arr[1] = "OLDPWD";
 	arr[2] = old;
 	if (get_copy_env("OLDPWD", MUTE))
-		ft_unsetenv(arr);
-	ft_setenv(arr);
+		ft_unsetenv(arr, -1, -1);
+	ft_setenv(arr, -1, -1);
 	free(new);
 }
 
