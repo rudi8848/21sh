@@ -13,14 +13,14 @@ static int store_char(char *word, size_t maxword, int c, size_t *np)
 		return 0;
 }
 
-int		ft_len(int nbr)
+size_t		ft_len(int nbr)
 {
-	int			i;
+	size_t			i;
 	
 	i = 0;
 	if (nbr == 0)
 		return (1);
-	while (nbr > 0)
+	while (nbr != 0)
 	{
 		nbr /= 10;
 		i++;
@@ -28,20 +28,18 @@ int		ft_len(int nbr)
 	return (i);
 }
 
-int	ft_itoa_buf(int value, char *buf)
+size_t	ft_itoa_buf(int value, char *buf)
 {
-	int			len;
-	
+	size_t			len;
+	int i;
+
 	len = ft_len(value);
-	//res = (value < 0) ? -value : value;
-	//neg = (value < 0) ? 1 : 0;
-	//nbr = (char*)malloc(sizeof(char) * len + neg + 1);
-	//if (!nbr)
-		//return (NULL);
+	i = len;
 	buf[len] = '\0';
-	while (len-- > 0)
+	while (i-- > 0)
 	{
-		buf[len] = (value % 10) + '0';
+
+		buf[i] = (value % 10) + '0';
 		value = value / 10;
 	}
 	return len;
@@ -250,7 +248,8 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					insert_variable(line, word, i, &wordn);
 					(*i)++;
 			}
-			else if ( line[*i] == ';' || line[*i]== '&' || line[*i]== '|' || line[*i]== '<' || line[*i]== '>' || line[*i]== '\n' || line[*i]== '\t' || line[*i]== ' ')
+			else if ( line[*i] == ';' || line[*i]== '&' || line[*i]== '|' || line[*i]== '<'
+				|| line[*i]== '>' || line[*i]== '\n' || line[*i]== '\t' || line[*i]== ' ')
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
