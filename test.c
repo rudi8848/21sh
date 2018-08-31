@@ -39,5 +39,8 @@ int		main()
 	printf("getpgid: %d\n", curr2);
 	printf("tcgetpgrp: %d\n", fg);
 
+	printf("\n%d\n", getpid());
+	printf("\n%d\n", getpid());
+
 	return 0;
 }

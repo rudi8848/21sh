@@ -41,6 +41,7 @@ char	**ft_cp_array(char **src)
 
 int		ft_print_env(char **args, int infile, int outfile)
 {
+	ft_printf("---> %s\n", __FUNCTION__);
 	int i;
 
 	i = 0;

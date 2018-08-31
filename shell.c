@@ -369,11 +369,12 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
 	pid_t	pid;
-
+//ft_printf("--- line [%d]\n", __LINE__);
 	if (shell_is_interactive)
 	{
+		//ft_printf("--- line [%d]\n", __LINE__);
 		pid = getpid();
-
+		//ft_printf("--- line [%d]\n", __LINE__);
 		if (pgid == 0)
 			pgid = pid;
 		setpgid(pid, pgid);
@@ -396,8 +397,8 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		dup2(errfile, STDERR_FILENO);
 		close(errfile);
 	}
-	
-	if (execve(p->argv[0], p->argv, environ) < 0)
+	//ft_printf("--- line [%d]\n", __LINE__);
+	if (execve(p->argv[0], p->argv, g_envp) < 0)
 		perror("execve");
 	exit(1);
 }
@@ -546,7 +547,7 @@ void	launch_job(t_job *j, int foreground)
 	int		infile = -1;
 	int		outfile = -1;
 	int ret;
-	infile = j->in_fd;
+	infile = j->in_fd;	// <-- don't touch!
 	for(p = j->first_process; p; p = p->next)
 	{
 		if (j->in_fd == -1 && (j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
@@ -560,6 +561,7 @@ void	launch_job(t_job *j, int foreground)
 			perror("open");
 			return ;
 		}
+
 		if (p->next)
 		{
 			if (pipe(mypipe) < 0)
@@ -572,15 +574,22 @@ void	launch_job(t_job *j, int foreground)
 		else
 			outfile = j->out_fd;
 		if ((ret = check_built(p->argv[0])) >= 0)
+		{
+			//ft_printf(">>> BUILT %d <<<\n", ret);
 			ft_built_exe(p->argv, ret, infile, outfile);
+		}
 		else
 		{	
 			if (!ft_find(p))
 				return;
-			ft_printf(">>> FORK <<<\n");
+			//ft_printf(">>> FORK <<<\n");
 			pid = fork();
+			//ft_printf("--- line [%d]\n", __LINE__);
 			if (pid == CHILD)
+			{//ft_printf("--- line [%d]\n", __LINE__);
 				launch_process(p, j->pgid, infile, outfile, j->err_fd, foreground);
+				//ft_printf("--- line [%d]\n", __LINE__);
+			}
 			else if (pid == ERROR)
 			{
 				perror("fork");
@@ -588,6 +597,7 @@ void	launch_job(t_job *j, int foreground)
 			}
 			else
 			{
+				//ft_printf("--- line [%d]\n", __LINE__);
 				p->pid = pid;
 				if (shell_is_interactive)
 				{
@@ -595,8 +605,10 @@ void	launch_job(t_job *j, int foreground)
 						j->pgid = pid;
 					setpgid(pid, j->pgid);
 				}
+				//ft_printf("--- line [%d]\n", __LINE__);
 			}
 		}
+		//ft_printf("--- line [%d]\n", __LINE__);
 		if (infile != j->in_fd)
 			close(infile);
 		if (j->in_fd != STDIN_FILENO)
