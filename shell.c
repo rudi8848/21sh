@@ -550,6 +550,8 @@ void	launch_job(t_job *j, int foreground)
 	infile = j->in_fd;
 	for(p = j->first_process; p; p = p->next)
 	{
+		if (!ft_find(p))
+			return;
 		if (p->next)
 		{
 			if (pipe(mypipe) < 0)
@@ -580,9 +582,9 @@ void	launch_job(t_job *j, int foreground)
 				setpgid(pid, j->pgid);
 			}
 		}
-		if (infile != j->in_fd)
+		//if (infile != j->in_fd)
 			close(infile);
-		if (outfile != j->out_fd)
+		//if (outfile != j->out_fd)
 			close(outfile);
 		infile = mypipe[0];
 	}
@@ -652,6 +654,19 @@ void	init_shell(void)
 			fprintf(stderr, "shell is not interactive\n");
 }
 
+static void fd_check(void)
+ {
+     int fd;
+     bool ok = true;
+ 
+     for (fd = 3; fd < 20; fd++)
+         if (fcntl(fd, F_GETFL) != -1 || errno != EBADF) {
+             ok = false;
+             fprintf(stderr, "*** fd %d is open ***\n", fd);
+         }
+     if (!ok)
+         _exit(EXIT_FAILURE);
+ }
 
 int		main(void)
 {
@@ -693,7 +708,7 @@ while (j)
 	j = j->next;
 }
 free_job(first_job);
-
+fd_check();
 //system("leaks test");
 //	
 //		launch_job(first_job, 1);

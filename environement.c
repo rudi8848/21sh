@@ -103,4 +103,5 @@ void	copy_env(void)
 		i++;
 	}
 	copy[i] = NULL;
+	g_envp = copy;
 }
