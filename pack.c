@@ -70,12 +70,12 @@ int	pack_args(char *line, t_job **first_job)
 		{
 			if (j->out_fd != STDOUT_FILENO)
 			{
-				ft_printf("Extra > or >>\n");
+				ft_printf("\nExtra > or >>\n");
 				return 0;
 			}
 			if (ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile)) != T_WORD)
 			{
-				ft_printf("Illegal > or >>\n");
+				ft_printf("\nIllegal > or >>\n");
 				return 0;
 			}
 			j->out_fd = -1;
@@ -98,7 +98,7 @@ int	pack_args(char *line, t_job **first_job)
 			{
 				if (j->out_fd != STDOUT_FILENO)
 				{
-					ft_printf("> or >> conflicts with |\n");
+					ft_printf("\n> or >> conflicts with |\n");
 					return 0;
 				}
 				//one simple command ends, need to create next process and pipe()
@@ -125,9 +125,9 @@ int	pack_args(char *line, t_job **first_job)
 				j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
 				continue;
 			}
-			if (argc == 0 && (token != T_NLINE || j->in_fd > 1))
+			if (argc == 0 && (token != T_NLINE || j->in_fd /*> 1*/ != -1))
 			{
-				ft_printf("missing command\n");
+				ft_printf("\nmissing command\n");
 				return 0;
 			}
 			else if (argc == 0 && token == T_NLINE)

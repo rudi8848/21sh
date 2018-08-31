@@ -13,6 +13,40 @@ static int store_char(char *word, size_t maxword, int c, size_t *np)
 		return 0;
 }
 
+int		ft_len(int nbr)
+{
+	int			i;
+	
+	i = 0;
+	if (nbr == 0)
+		return (1);
+	while (nbr > 0)
+	{
+		nbr /= 10;
+		i++;
+	}
+	return (i);
+}
+
+int	ft_itoa_buf(int value, char *buf)
+{
+	int			len;
+	
+	len = ft_len(value);
+	//res = (value < 0) ? -value : value;
+	//neg = (value < 0) ? 1 : 0;
+	//nbr = (char*)malloc(sizeof(char) * len + neg + 1);
+	//if (!nbr)
+		//return (NULL);
+	buf[len] = '\0';
+	while (len-- > 0)
+	{
+		buf[len] = (value % 10) + '0';
+		value = value / 10;
+	}
+	return len;
+}
+
 static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 {
 	int j = *i;
@@ -20,6 +54,12 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 	char var[256];
 	char *ptr = &var[0];
 
+	if (line[j + 1] == '$')
+	{
+		*i += 1;
+		*wordn += ft_itoa_buf(getpid(), word);
+		return;
+	}
 	while (line[j] != '\0') 
 	{
 		if (line[j] == ';' || line[j] == '&' ||
@@ -33,7 +73,7 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 	var[vname_len] = '\0';
 	if ((ptr = getenv(var + 1)) != NULL)
 	{
-		ft_strcpy(var, getenv(var + 1));
+		ft_strcpy(var, get_copy_env(var + 1, MUTE));
 		word = ft_strcat(word, var);
 		*wordn += ft_strlen(var);
 	}

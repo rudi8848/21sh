@@ -33,6 +33,23 @@ void	ft_set_builtins(t_pfb *built_tab)
 	built_tab[END] = NULL;
 }
 */
+
+int		ft_echo(t_process *p)
+{
+	int			i;
+
+	i = 1;
+	while (p->argv[i])
+	{
+		ft_putstr_fd(p->argv[i], p->out_fd);
+		if (p->argv[i + 1])
+			ft_putchar_fd(' ', p->out_fd);
+		i++;
+	}
+	ft_putchar_fd('\n', p->out_fd);
+	return (0);
+}
+
 int		ft_cd(char **args)
 {
 	int		ret;

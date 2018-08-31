@@ -303,7 +303,7 @@ void 	init_terminal()
     char *name = NULL;
     if (!(name = getenv("TERM")))
     {
-        perror("getenv");
+        ft_printf("TERM is not set\n");
         exit(EXIT_FAILURE);
     }
     if (tgetent(buf, name) < 1)
@@ -705,10 +705,10 @@ int		main(void)
 	//ft_printf("\n[GOT:] %s", line);
 
 	if (pack_args(line, &first_job))
-		ft_printf("OK\n");
+		ft_printf("\nCommand OK\n");
 	else
 	{
-		ft_printf("not valid\n");
+		ft_printf("Command is not valid\n");
 		return 1;
 	}
 
@@ -732,3 +732,6 @@ fd_check();
 //
 	return 0;
 }
+/*
+		*	pipes with builtins
+*/

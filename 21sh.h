@@ -146,12 +146,12 @@ void	copy_env(void);
 //------------------------------
 int		ft_cd(char **args);
 int		ft_find(t_process *cmd);
-char			*get_copy_env(char *needle,  int warning);
-int				ft_cd(char **args);
-int				ft_setenv(char **args);
-int				ft_unsetenv(char **args);
-int				ft_env(char **args);
-int				env_size(char **envp);
+char	*get_copy_env(char *needle,  int warning);
+int		ft_cd(char **args);
+int		ft_setenv(char **args);
+int		ft_unsetenv(char **args);
+int		ft_env(char **args);
+int		env_size(char **envp);
 char			*get_current_wd(void);
 
 char			*ft_path_substitute(char *path);
