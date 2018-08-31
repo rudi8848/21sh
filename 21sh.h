@@ -93,20 +93,20 @@ typedef enum {
 # define K_ALT_C	42947		//for copy
 # define K_ALT_V	10127586	//for paste
 
-# define TERM_BELL	tputs(tgetstr("bl", tbuf), 0, ft_iputchar);
-# define TERM_BACK	tputs(tgetstr("le", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("dm", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("dc", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("ed", tbuf), 0, ft_iputchar);
+# define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
+# define TERM_BACK	tputs(tgetstr("le", NULL), 0, ft_iputchar);\
+                	tputs(tgetstr("dm", NULL), 0, ft_iputchar);\
+                	tputs(tgetstr("dc", NULL), 0, ft_iputchar);\
+                	tputs(tgetstr("ed", NULL), 0, ft_iputchar);
 
-# define TERM_DEL	tputs(tgetstr("dm", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("dc", tbuf), 0, ft_iputchar);\
-                	tputs(tgetstr("ed", tbuf), 0, ft_iputchar); 
+# define TERM_DEL	tputs(tgetstr("dm", NULL), 0, ft_iputchar);\
+                	tputs(tgetstr("dc", NULL), 0, ft_iputchar);\
+                	tputs(tgetstr("ed", NULL), 0, ft_iputchar); 
 
-# define TERM_END tputs(tgoto(tgetstr("RI", tbuf), 0, len - i), 0, ft_iputchar);
-# define TERM_HOME tputs(tgoto(tgetstr("LE", tbuf), 0, i), 0, ft_iputchar);
-# define TERM_CRS_RIGHT tputs(tgetstr("nd", tbuf), 0, ft_iputchar);
-# define TERM_CRS_LEFT	tputs(tgetstr("le", tbuf), 0, ft_iputchar);
+# define TERM_END tputs(tgoto(tgetstr("RI", NULL), 0, len - i), 0, ft_iputchar);
+# define TERM_HOME tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);
+# define TERM_CRS_RIGHT tputs(tgetstr("nd", NULL), 0, ft_iputchar);
+# define TERM_CRS_LEFT	tputs(tgetstr("le", NULL), 0, ft_iputchar);
 
 typedef struct s_process
 {
@@ -132,6 +132,7 @@ typedef struct s_job
 	char srcfile[MAXFILENAME];
 	char dstfile[MAXFILENAME];
 	struct termios tmodes;
+	int flags;
 } t_job;
 
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);

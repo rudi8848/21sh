@@ -137,13 +137,11 @@ int n;
     rb = 0;
     int len = 0;
     int i = 0;
-    char buf[MAXWORD];
-    char *ptr = &buf[0];
-    char **tbuf = &ptr;
+    
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
-	ft_bzero(buf, MAXWORD);
+	
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         //ft_printf("\n-> %lld\n", rb);
@@ -187,7 +185,7 @@ int n;
 				if (i)
 					i++;
 				if (n - i)
-				tputs(tgoto(tgetstr("LE", tbuf), 0, n - i), 0, ft_iputchar);
+				tputs(tgoto(tgetstr("LE", NULL), 0, n - i), 0, ft_iputchar);
 				//n = 0;
         	 }*/
         }
@@ -206,7 +204,7 @@ int n;
                 return;
             }
             write(STDOUT_FILENO, &rb, rr);
-            tputs(tgetstr("im", tbuf), 0, ft_iputchar);          //insert mode
+            tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
             if (line[i])   //if it's at the middle of line
             {
                     j = len + 1;
@@ -217,17 +215,17 @@ int n;
                     }
                     //and insert in termcap
                 
-                tputs(tgetstr("sc", tbuf), 0, ft_iputchar);      // save cursor position
-                tputs(tgetstr("ce", tbuf), 0, ft_iputchar);      // delete end of line
+                tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+                tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
                 write(STDOUT_FILENO, line + i + 1, len);
-                tputs(tgetstr("rc", tbuf), 0, ft_iputchar);      // restore cursor position
+                tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
             }
             
            		line[i] = (char)rb;
                 len++;
             if (i < len)
                 i++;
-            tputs(tgetstr("ei", tbuf), 0, ft_iputchar);          //end of insertion mode
+            tputs(tgetstr("ei", NULL), 0, ft_iputchar);          //end of insertion mode
         }
         else if (rb == K_DOWN)
         {
@@ -540,6 +538,7 @@ void	continue_job(t_job *j, int foreground)
 
 void	launch_job(t_job *j, int foreground)
 {
+	// in_fd, out_fd open here, not in pack!
 	//ft_printf("---> %s\n",__FUNCTION__);
 	t_process	*p;
 	pid_t		pid;
@@ -550,8 +549,18 @@ void	launch_job(t_job *j, int foreground)
 	infile = j->in_fd;
 	for(p = j->first_process; p; p = p->next)
 	{
+		if (j->in_fd == -1 && (j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
+		{
+			perror("open");
+			return ;
+		}
 		if (!ft_find(p))
 			return;
+		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
+		{
+			perror("open");
+			return ;
+		}
 		if (p->next)
 		{
 			if (pipe(mypipe) < 0)
@@ -582,10 +591,14 @@ void	launch_job(t_job *j, int foreground)
 				setpgid(pid, j->pgid);
 			}
 		}
-		//if (infile != j->in_fd)
+		if (infile != j->in_fd)
 			close(infile);
-		//if (outfile != j->out_fd)
+		if (j->in_fd != STDIN_FILENO)
+			close(j->in_fd);
+		if (outfile != j->out_fd)
 			close(outfile);
+		if (j->out_fd != STDOUT_FILENO)
+			close(j->out_fd);
 		infile = mypipe[0];
 	}
 	format_job_info(j, "launched");
@@ -611,13 +624,14 @@ void 	print_jobs(t_job *first_job)
 			i = 0;
 			while (p->argv[i])
 			{
-				printf("[%d] %s\n",i, p->argv[i]);
+				ft_printf("[%d] %s\n",i, p->argv[i]);
+//				ft_printf("src: [%s][%d], dst: [%s][%d]\n", j->srcfile, j->in_fd, j->);
 				i++;
 			}
 			ft_printf("-----------\n");
 			p = p->next;
 		}
-//		ft_printf("SRC[%s][%d],DST[%s][%d], pgid[%d]\n", j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
+		ft_printf("SRC[%s][%d],DST[%s][%d], pgid[%d]\n", j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
 		ft_printf("===========\n");
 		j = j->next;
 	}

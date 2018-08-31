@@ -5,7 +5,7 @@ int	pack_args(char *line, t_job **first_job)
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	char word[MAXWORD];
-	int flags = O_WRONLY | O_CREAT;
+	//int flags = O_WRONLY | O_CREAT;
 	int argc;
 	t_job *j = *first_job;
 	t_process *p = j->first_process;
@@ -16,11 +16,12 @@ int	pack_args(char *line, t_job **first_job)
 	j->err_fd = STDERR_FILENO;
 	ft_bzero(j->srcfile, sizeof(j->srcfile));
 	ft_bzero(j->dstfile, sizeof(j->dstfile));
-	p->in_fd = j->in_fd;
-	p->out_fd = j->out_fd;
-	
+	//p->in_fd = j->in_fd;
+	//p->out_fd = j->out_fd;
+	j->flags = O_WRONLY | O_CREAT;
 	int makepipe = 0;
 	int i = 0;
+	//j->command = ft_strdup(line);
 	while (1)
 	{
 
@@ -57,11 +58,12 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Illegal <\n");
 				return 0;
 			}
-			if ((j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
+			j->in_fd = -1;
+			/*if ((j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
 			{
 				perror("open");
 				return 0;
-			}
+			}*/
 			continue;
 		}
 		else if (token == T_GREAT || token == T_GGREAT)
@@ -76,16 +78,17 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Illegal > or >>\n");
 				return 0;
 			}
-			ft_printf("DST [%s]\n", j->dstfile);
+			j->out_fd = -1;
+			//ft_printf("DST [%s]\n", j->dstfile);
 			if ( token == T_GGREAT)
-				flags |= O_APPEND;
+				j->flags |= O_APPEND;
 			else
-				flags |= O_TRUNC;
-			if ((j->out_fd = open(j->dstfile, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
+				j->flags |= O_TRUNC;
+			/*if ((j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
 			{
 				perror("open");
 				return 0;
-			}
+			}*/
 			continue;
 		}
 		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
@@ -119,6 +122,7 @@ int	pack_args(char *line, t_job **first_job)
 				j->in_fd = STDIN_FILENO;
 				j->out_fd = STDOUT_FILENO;
 				j->err_fd = STDERR_FILENO;
+				j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
 				continue;
 			}
 			if (argc == 0 && (token != T_NLINE || j->in_fd > 1))
