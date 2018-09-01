@@ -574,6 +574,7 @@ void	launch_job(t_job *j, int foreground)
 		}
 		else
 			outfile = j->out_fd;
+
 		  if ((ret = check_built(p->argv[0])) >= 0)
 		  {
 		  	//ft_printf(">>> BUILT %d <<<\n", ret);
@@ -613,14 +614,16 @@ void	launch_job(t_job *j, int foreground)
 		//ft_printf("--- line [%d]\n", __LINE__);
 		if (infile != j->in_fd)
 			close(infile);
-		if (j->in_fd != STDIN_FILENO)
-			close(j->in_fd);
+		
 		if (outfile != j->out_fd)
 			close(outfile);
-		if (j->out_fd != STDOUT_FILENO)
-			close(j->out_fd);
+		
 		infile = mypipe[0];
 	}
+	if (j->in_fd != STDIN_FILENO)
+			close(j->in_fd);
+	if (j->out_fd != STDOUT_FILENO)
+			close(j->out_fd);
 	format_job_info(j, "launched");
 
 	if (!shell_is_interactive)
