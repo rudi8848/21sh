@@ -11,7 +11,7 @@ int		check_built(char *cmd)
 	built[B_SETENV] = "setenv";
 	built[B_UNSETENV] = "unsetenv";
 	built[B_ENV] = "env";
-	//built[B_EXIT] = "exit";
+	built[B_EXIT] = "exit";
 	built[B_END] = NULL;
 	while (built[i])
 	{
@@ -29,7 +29,7 @@ void	ft_set_builtins(t_pfb *built_tab)
 	built_tab[B_SETENV] = &ft_setenv;
 	built_tab[B_UNSETENV] = &ft_unsetenv;
 	built_tab[B_ENV] = &ft_env;
-	//built_tab[B_EXIT] = &ft_exit;
+	built_tab[B_EXIT] = &b_exit;
 	built_tab[B_END] = NULL;
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
@@ -38,6 +38,7 @@ void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 	static t_pfb	*built_tab = NULL;
 	t_pfb			ft_run;
 
+	ft_run = NULL;
 	if (!built_tab)
 	{
 		built_tab = (t_pfb*)ft_memalloc(sizeof(t_pfb) * BUILT);
@@ -171,4 +172,10 @@ int		ft_env(char **args, int infile, int outfile)
 	else*/
 		ft_print_env(args, infile, outfile);
 	return (0);
+}
+
+int		b_exit(char **args, int infile, int outfile)
+{
+	ft_exit();
+	return 0;
 }

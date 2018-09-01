@@ -78,6 +78,7 @@ void		free_arr(char **array)
 	while (array[i] != NULL)
 	{
 		free(array[i]);
+		array[i] = NULL;
 		i++;
 	}
 	free(array);

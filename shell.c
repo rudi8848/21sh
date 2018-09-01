@@ -404,6 +404,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 }
 
 void	wait_for_job(t_job *j);
+
 void	put_job_in_foreground(t_job *j, int cont)
 {
 	tcsetpgrp(shell_terminal, j->pgid);
@@ -573,14 +574,14 @@ void	launch_job(t_job *j, int foreground)
 		}
 		else
 			outfile = j->out_fd;
-		if ((ret = check_built(p->argv[0])) >= 0)
-		{
-			//ft_printf(">>> BUILT %d <<<\n", ret);
-			ft_built_exe(p->argv, ret, infile, outfile);
-		}
-		else
-		{	
-			if (!ft_find(p))
+		  if ((ret = check_built(p->argv[0])) >= 0)
+		  {
+		  	//ft_printf(">>> BUILT %d <<<\n", ret);
+		  	ft_built_exe(p->argv, ret, infile, outfile);
+		  }
+		  else
+		  {	
+			if (!ft_find(p))	//	<--- here need to close all fd
 				return;
 			//ft_printf(">>> FORK <<<\n");
 			pid = fork();
@@ -601,9 +602,10 @@ void	launch_job(t_job *j, int foreground)
 				p->pid = pid;
 				if (shell_is_interactive)
 				{
-					if (!j->pgid)
+					if (!j->pgid)			//first process sets pgid for new group
 						j->pgid = pid;
 					setpgid(pid, j->pgid);
+					//ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 				}
 				//ft_printf("--- line [%d]\n", __LINE__);
 			}
@@ -705,8 +707,15 @@ int		main(void)
 	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
 	t_process *process;
+	g_envp = NULL;
 
-	first_job = (t_job*)ft_memalloc(sizeof(t_job));
+	
+
+	init_shell();
+
+	while (1)
+	{
+		first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	process = (t_process*)ft_memalloc(sizeof(t_process));
 	if (!first_job || !process)
 	{
@@ -714,33 +723,31 @@ int		main(void)
 		return 1;
 	}
 	first_job->first_process = process;
+		cbreak_settings();
+		read_line(&line[0], 0);
+		ft_restore();
+		//ft_printf("\n[GOT:] %s", line);
 
-	init_shell();
+		if (pack_args(line, &first_job))
+			ft_printf("\nCommand OK\n");
+		else
+		{
+			ft_printf("Command is not valid\n");
+			return 1;
+		}
 
-	cbreak_settings();
-	read_line(&line[0], 0);
-	ft_restore();
-	//ft_printf("\n[GOT:] %s", line);
-
-	if (pack_args(line, &first_job))
-		ft_printf("\nCommand OK\n");
-	else
-	{
-		ft_printf("Command is not valid\n");
-		return 1;
+		print_jobs(first_job);
+		t_job *j;
+		j = first_job;
+		while (j)
+		{
+			launch_job(j, 1);
+			do_job_notification();
+			j = j->next;
+		}
+		free_job(first_job);
+		fd_check();
 	}
-
-print_jobs(first_job);
-t_job *j;
-j = first_job;
-while (j)
-{
-	launch_job(j, 1);
-	do_job_notification();
-	j = j->next;
-}
-free_job(first_job);
-fd_check();
 //system("leaks test");
 //	
 //		launch_job(first_job, 1);
@@ -752,4 +759,5 @@ fd_check();
 }
 /*
 		*	pipes with builtins
+		*	group for builtins? they're not separated process
 */

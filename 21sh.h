@@ -155,17 +155,18 @@ void    read_line(char *line, int start);
 void    ft_restore();
 int ft_iputchar(int c);
 void	copy_env(void);
-
+void	ft_exit(void);
 //------------------------------
 
 int		ft_find(t_process *cmd);
 char	*get_copy_env(char *needle,  int warning);
 int		ft_cd(char **args, int infile, int outfile);
 int		ft_echo(char **args, int infile, int outfile);
-//int		ft_exit(char **args, int infile, int outfile);
+int		b_exit(char **args, int infile, int outfile);
 int		ft_setenv(char **args, int infile, int outfile);
 int		ft_unsetenv(char **args, int infile, int outfile);
 int		ft_env(char **args, int infile, int outfile);
+int		b_exit(char **args, int infile, int outfile);
 int		env_size(char **envp);
 char			*get_current_wd(void);
 
