@@ -548,21 +548,20 @@ void	launch_job(t_job *j, int foreground)
 	int		infile = -1;
 	int		outfile = -1;
 	int ret;
-	infile = j->in_fd;	// <-- don't touch!
+
+	if (j->in_fd == -1 && (j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
+	{
+		perror("open");
+		return ;
+	}
+	infile = j->in_fd;	// <-- don't touch! if change - doesn't work > (outfile)
 	for(p = j->first_process; p; p = p->next)
 	{
-		if (j->in_fd == -1 && (j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
-		{
-			perror("open");
-			return ;
-		}
-		
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
 		{
 			perror("open");
 			return ;
 		}
-
 		if (p->next)
 		{
 			if (pipe(mypipe) < 0)
@@ -575,23 +574,16 @@ void	launch_job(t_job *j, int foreground)
 		else
 			outfile = j->out_fd;
 
-		  if ((ret = check_built(p->argv[0])) >= 0)
-		  {
-		  	//ft_printf(">>> BUILT %d <<<\n", ret);
-		  	ft_built_exe(p->argv, ret, infile, outfile);
-		  }
-		  else
-		  {	
+		if ((ret = check_built(p->argv[0])) >= 0)
+		   	ft_built_exe(p->argv, ret, infile, outfile);
+		else
+		{	
 			if (!ft_find(p))	//	<--- here need to close all fd
 				return;
-			//ft_printf(">>> FORK <<<\n");
+
 			pid = fork();
-			//ft_printf("--- line [%d]\n", __LINE__);
 			if (pid == CHILD)
-			{//ft_printf("--- line [%d]\n", __LINE__);
 				launch_process(p, j->pgid, infile, outfile, j->err_fd, foreground);
-				//ft_printf("--- line [%d]\n", __LINE__);
-			}
 			else if (pid == ERROR)
 			{
 				perror("fork");
@@ -599,7 +591,6 @@ void	launch_job(t_job *j, int foreground)
 			}
 			else
 			{
-				//ft_printf("--- line [%d]\n", __LINE__);
 				p->pid = pid;
 				if (shell_is_interactive)
 				{
@@ -608,10 +599,9 @@ void	launch_job(t_job *j, int foreground)
 					setpgid(pid, j->pgid);
 					//ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 				}
-				//ft_printf("--- line [%d]\n", __LINE__);
 			}
-		}
-		//ft_printf("--- line [%d]\n", __LINE__);
+		}		//END not built
+
 		if (infile != j->in_fd)
 			close(infile);
 		
@@ -619,7 +609,7 @@ void	launch_job(t_job *j, int foreground)
 			close(outfile);
 		
 		infile = mypipe[0];
-	}
+	}	// END for loop
 	if (j->in_fd != STDIN_FILENO)
 			close(j->in_fd);
 	if (j->out_fd != STDOUT_FILENO)
