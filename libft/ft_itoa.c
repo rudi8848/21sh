@@ -32,7 +32,7 @@ static int		ft_len(int nbr)
 	return (i);
 }
 
-char	*ft_itoa(int value)
+char			*ft_itoa(int value)
 {
 	char		*nbr;
 	int			neg;

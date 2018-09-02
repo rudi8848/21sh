@@ -618,7 +618,7 @@ void	launch_job(t_job *j, int foreground)
 			close(j->in_fd);
 	if (j->out_fd != STDOUT_FILENO)
 			close(j->out_fd);
-	//format_job_info(j, "launched");
+	format_job_info(j, "launched");
 
 	if (!shell_is_interactive)
 		wait_for_job(j);

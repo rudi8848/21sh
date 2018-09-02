@@ -88,6 +88,7 @@ void	copy_env(void)
 	int				size;
 	char			**copy;
 	int				i;
+	int				shlvl;
 
 	i = 0;
 	size = env_size(environ);
@@ -104,4 +105,12 @@ void	copy_env(void)
 	}
 	copy[i] = NULL;
 	g_envp = copy;
+	shlvl = (ft_atoi(get_copy_env("SHLVL", MUTE))) + 1;
+	
+	char *args[4];
+	args[0] = "";
+	args[1] = "SHLVL";
+	args[2] = ft_itoa(shlvl);
+	args[3] = NULL;
+	ft_setenv(args, -1, -1);
 }
