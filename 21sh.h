@@ -133,6 +133,7 @@ typedef struct s_job
 	char dstfile[MAXFILENAME];
 	struct termios tmodes;
 	int flags;
+	int foreground;
 } t_job;
 
 typedef	int	(*t_pfb) (char**, int , int);

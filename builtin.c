@@ -34,7 +34,7 @@ void	ft_set_builtins(t_pfb *built_tab)
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 {
-	ft_printf("---> %s\n", __FUNCTION__);
+	//ft_printf("---> %s\n", __FUNCTION__);
 	static t_pfb	*built_tab = NULL;
 	t_pfb			ft_run;
 
@@ -60,7 +60,6 @@ int		ft_echo(char **argv, int infile, int outfile)
 	i = 1;
 	while (argv[i])
 	{
-		ft_putchar_fd('*', outfile);
 		ft_putstr_fd(argv[i], outfile);
 		if (argv[i + 1])
 			ft_putchar_fd(' ', outfile);
@@ -151,7 +150,7 @@ int		ft_unsetenv(char **args, int infile, int outfile)
 
 int		ft_env(char **args, int infile, int outfile)
 {
-	ft_printf("---> %s\n", __FUNCTION__);
+	//ft_printf("---> %s\n", __FUNCTION__);
 	char		**envp_cp;
 	char		**ptr;
 	/*t_process	*cmd;

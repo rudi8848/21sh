@@ -555,7 +555,8 @@ void	launch_job(t_job *j, int foreground)
 		return ;
 	}
 	infile = j->in_fd;	// <-- don't touch! if change - doesn't work > (outfile)
-	for(p = j->first_process; p; p = p->next)
+	p = j->first_process;
+	while(p)
 	{
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
 		{
@@ -609,12 +610,15 @@ void	launch_job(t_job *j, int foreground)
 			close(outfile);
 		
 		infile = mypipe[0];
-	}	// END for loop
+		p = p->next;
+	}	// END loop
+
+
 	if (j->in_fd != STDIN_FILENO)
 			close(j->in_fd);
 	if (j->out_fd != STDOUT_FILENO)
 			close(j->out_fd);
-	format_job_info(j, "launched");
+	//format_job_info(j, "launched");
 
 	if (!shell_is_interactive)
 		wait_for_job(j);
@@ -719,23 +723,21 @@ int		main(void)
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
-		//ft_printf("\n[GOT:] %s", line);
+		ft_printf("\n");
 
-		if (pack_args(line, &first_job))
-			ft_printf("\nCommand OK\n");
-		else
+		if (!pack_args(line, &first_job))
 		{
 			ft_printf("Command is not valid\n");
 			return 1;
 		}
 
-		print_jobs(first_job);
+		//print_jobs(first_job);
 		t_job *j;
 		j = first_job;
 		while (j)
 		{
-			launch_job(j, 1);
-			do_job_notification();
+			launch_job(j, j->foreground);
+			do_job_notification();	// <--- in jobs 
 			j = j->next;
 		}
 		free_job(first_job);

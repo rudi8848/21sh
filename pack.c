@@ -1,5 +1,16 @@
 #include "21sh.h"
 
+static void	init_job(t_job *j)
+{
+	j->in_fd = STDIN_FILENO;
+	j->out_fd = STDOUT_FILENO;
+	j->err_fd = STDERR_FILENO;
+	j->foreground = 1;
+	ft_bzero(j->srcfile, sizeof(j->srcfile));
+	ft_bzero(j->dstfile, sizeof(j->dstfile));
+	j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
+}
+
 int	pack_args(char *line, t_job **first_job)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
@@ -11,21 +22,13 @@ int	pack_args(char *line, t_job **first_job)
 	t_process *p = j->first_process;
 
 	argc = 0;
-	j->in_fd = STDIN_FILENO;
-	j->out_fd = STDOUT_FILENO;
-	j->err_fd = STDERR_FILENO;
-	ft_bzero(j->srcfile, sizeof(j->srcfile));
-	ft_bzero(j->dstfile, sizeof(j->dstfile));
-	//p->in_fd = j->in_fd;
-	//p->out_fd = j->out_fd;
-	j->flags = O_WRONLY | O_CREAT;
+
+	init_job(j);
 	int makepipe = 0;
 	int i = 0;
-	//j->command = ft_strdup(line);
+
 	while (1)
 	{
-
-//		ft_printf("--> j[%p], p[%p]\n", j, p);
 		ft_bzero(word, sizeof(word));
 		token = ft_gettoken(line, &i, word, sizeof(word));
 
@@ -42,7 +45,6 @@ int	pack_args(char *line, t_job **first_job)
 				continue;
 			}
 			strcpy(p->argv[argc], word);
-			//ft_printf("> [%d] : [%s]\n", argc, p->argv[argc]);
 			argc++;
 			continue;
 		}
@@ -59,11 +61,6 @@ int	pack_args(char *line, t_job **first_job)
 				return 0;
 			}
 			j->in_fd = -1;
-			/*if ((j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
-			{
-				perror("open");
-				return 0;
-			}*/
 			continue;
 		}
 		else if (token == T_GREAT || token == T_GGREAT)
@@ -79,21 +76,20 @@ int	pack_args(char *line, t_job **first_job)
 				return 0;
 			}
 			j->out_fd = -1;
-			//ft_printf("DST [%s]\n", j->dstfile);
 			if ( token == T_GGREAT)
 				j->flags |= O_APPEND;
 			else
 				j->flags |= O_TRUNC;
-			/*if ((j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
-			{
-				perror("open");
-				return 0;
-			}*/
 			continue;
 		}
 		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
 		{
 			p->argv[argc] = NULL;
+			if (token == T_BG)
+			{
+				j->foreground = 0;
+				continue;
+			}
 			if (token == T_PIPE)
 			{
 				if (j->out_fd != STDOUT_FILENO)
@@ -111,23 +107,23 @@ int	pack_args(char *line, t_job **first_job)
 			}
 			if (token == T_SEMI)
 			{
-				//new job
-				//ft_printf("SEMI\n");
-				j->next = (t_job*)ft_memalloc(sizeof(t_job));
-				p->next = NULL;
-				j = j->next;
-				j->first_process = (t_process*)ft_memalloc(sizeof(t_process));
-				p = j->first_process;
-				argc = 0;
-				j->in_fd = STDIN_FILENO;
-				j->out_fd = STDOUT_FILENO;
-				j->err_fd = STDERR_FILENO;
-				j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
-				continue;
+				if (line[i] && line[i] != '\n')
+				{
+					j->next = (t_job*)ft_memalloc(sizeof(t_job));
+					p->next = NULL;
+					j = j->next;
+					j->first_process = (t_process*)ft_memalloc(sizeof(t_process));
+					p = j->first_process;
+					argc = 0;
+					init_job(j);
+					continue;
+				}
+				else
+					return 1;
 			}
 			if (argc == 0 && (token != T_NLINE || j->in_fd /*> 1*/ != -1))
 			{
-				ft_printf("\nMissing command\n");
+				ft_printf("Missing command\n");
 				return 0;
 			}
 			else if (argc == 0 && token == T_NLINE)
