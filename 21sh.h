@@ -144,6 +144,7 @@ typedef enum {
 	B_SETENV,
 	B_UNSETENV,
 	B_ENV,
+	B_HRDOC,
 	B_EXIT,
 	B_END,
 	BUILT
@@ -157,6 +158,9 @@ void    ft_restore();
 int ft_iputchar(int c);
 void	copy_env(void);
 void	ft_exit(void);
+void	init_job(t_job *j);
+void	read_more(char *line, int i, char *prompt);
+int		ft_heredoc(char **argv, int infile, int outfile);
 //------------------------------
 
 int		ft_find(t_process *cmd);
@@ -179,7 +183,7 @@ void			ft_change_env(char *new, char *old);
 char			*ft_env_var(char *s);
 int				ft_env_rewrite(char *str, int size);
 int				ft_check_symb(char *s, int index);
-int		check_built(char *cmd);
+int				check_built(char *cmd);
 void			ft_cmd_exe(char **args, int infile, int outfile);
 int				ft_print_env(char **args, int infile, int outfile);
 int				ft_check_dir(char *name);

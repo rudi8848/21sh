@@ -1,6 +1,6 @@
 #include "21sh.h"
 
-static void	init_job(t_job *j)
+void	init_job(t_job *j)
 {
 	j->in_fd = STDIN_FILENO;
 	j->out_fd = STDOUT_FILENO;
@@ -44,7 +44,7 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Out of memory\n");
 				continue;
 			}
-			strcpy(p->argv[argc], word);
+			ft_strcpy(p->argv[argc], word);
 			argc++;
 			continue;
 		}
@@ -61,6 +61,27 @@ int	pack_args(char *line, t_job **first_job)
 				return 0;
 			}
 			j->in_fd = -1;
+			continue;
+		}
+		else if (token == T_HRDOC)
+		{
+			//ft_printf("Heredoc\n");
+			if (ft_gettoken(line, &i, word, sizeof(word)) != T_WORD)
+			{
+				ft_printf("Error near << \n");
+				return 0;
+			}
+			//ft_printf("stopword: %s\n", word);
+			t_process *prev = ft_memalloc(sizeof(t_process));
+			prev->argv[0] = ft_strdup("heredoc");
+			prev->argv[1] = ft_strdup(word);
+			if (p == j->first_process)
+			{
+				prev->next = p;
+				j->first_process = prev;
+			}
+			//ft_printf("OK\n");
+			//	malloc new process before current process, makepipe, infile = 0
 			continue;
 		}
 		else if (token == T_GREAT || token == T_GGREAT)

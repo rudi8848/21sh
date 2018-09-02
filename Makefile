@@ -1,6 +1,6 @@
 NAME = test
 SRCS = shell.c lexer.c pack.c \
-		builtin.c built_func.c environement.c find.c help_func.c
+		builtin.c built_func.c environement.c find.c help_func.c heredoc.c
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)

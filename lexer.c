@@ -80,7 +80,7 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 	
 }
 
-static void	read_more(char *line, int i, char *prompt)
+void	read_more(char *line, int i, char *prompt)
 {
 	ft_printf("%s", prompt);
 	cbreak_settings();
@@ -117,6 +117,11 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			else if (line[*i] == '<')
 			{
 				(*i)++;
+					if (line[*i] == '<')
+					{
+						(*i)++;
+						return T_HRDOC;
+					}
 				return T_LESS;
 			}					
 			else if (line[*i] == '\n')
@@ -192,7 +197,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			else
 			{
 				if (line[(*i) + 1] == '\0')
-					read_more(&line[(*i) + 1], (*i) + 1, "\nquote> ");
+					read_more(&line[(*i) + 1], (*i) + 1, "quote> ");
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
@@ -206,7 +211,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				if (line[*i] == '\n' && !line[(*i) + 1])
-						read_more(&line[(*i) + 1], (*i)+1, "\n>");
+						read_more(&line[(*i) + 1], (*i)+1, ">");
 				(*i)++;
 			}
 			else if (line[*i] == '$')
@@ -224,7 +229,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			else
 			{
 				if (line[(*i) + 1] == '\0')
-					read_more(&line[(*i) + 1], (*i) + 1, "\ndquote> ");
+					read_more(&line[(*i) + 1], (*i) + 1, "dquote> ");
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				(*i)++;
@@ -238,7 +243,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
 				if (line[*i] == '\n' && !line[(*i) + 1])
-						read_more(&line[(*i) + 1], (*i)+1, "\n>");
+						read_more(&line[(*i) + 1], (*i)+1, ">");
 					(*i)++;
 				continue;
 			}

@@ -192,6 +192,7 @@ int n;
         else if (rb == K_ENTER)
         {
             line[len] = '\n';
+            ft_printf("\n");
             //ft_printf("\n[%s]\nlen[%i], i[%i] {%i}\n", line, len, i, n);
             return;
         }
@@ -713,18 +714,16 @@ int		main(void)
 	while (1)
 	{
 		first_job = (t_job*)ft_memalloc(sizeof(t_job));
-	process = (t_process*)ft_memalloc(sizeof(t_process));
-	if (!first_job || !process)
-	{
-		perror("ft_memalloc");
-		return 1;
-	}
-	first_job->first_process = process;
+		process = (t_process*)ft_memalloc(sizeof(t_process));
+		if (!first_job || !process)
+		{
+			perror("ft_memalloc");
+			return 1;
+		}
+		first_job->first_process = process;
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
-		ft_printf("\n");
-
 		if (!pack_args(line, &first_job))
 		{
 			ft_printf("Command is not valid\n");

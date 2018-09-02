@@ -11,6 +11,7 @@ int		check_built(char *cmd)
 	built[B_SETENV] = "setenv";
 	built[B_UNSETENV] = "unsetenv";
 	built[B_ENV] = "env";
+	built[B_HRDOC] = "heredoc";
 	built[B_EXIT] = "exit";
 	built[B_END] = NULL;
 	while (built[i])
@@ -29,6 +30,7 @@ void	ft_set_builtins(t_pfb *built_tab)
 	built_tab[B_SETENV] = &ft_setenv;
 	built_tab[B_UNSETENV] = &ft_unsetenv;
 	built_tab[B_ENV] = &ft_env;
+	built_tab[B_HRDOC] = &ft_heredoc;
 	built_tab[B_EXIT] = &b_exit;
 	built_tab[B_END] = NULL;
 }
