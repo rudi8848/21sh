@@ -65,7 +65,6 @@ int	pack_args(char *line, t_job **first_job)
 		}
 		else if (token == T_HRDOC)
 		{
-			//ft_printf("Heredoc\n");
 			if (ft_gettoken(line, &i, word, sizeof(word)) != T_WORD)
 			{
 				ft_printf("Error near << \n");
@@ -79,8 +78,11 @@ int	pack_args(char *line, t_job **first_job)
 				prev->next = p;
 				j->first_process = prev;
 			}
-			//ft_printf("OK\n");
-			//	malloc new process before current process, makepipe, infile = 0
+			else
+			{
+				ft_printf("Wrong input for heredoc\n");
+				return 0;
+			}
 			continue;
 		}
 		else if (token == T_GREAT || token == T_GGREAT)
