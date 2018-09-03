@@ -3,17 +3,17 @@
 int		ft_heredoc(char **argv, int infile, int outfile)
 {
 	char line[MAXLINE];
+	int res;
 
 	ft_bzero(line, MAXLINE);
-	read_more(line, 1, "heredoc> ");
-	ft_putstr_fd(line, outfile);
-	//ft_bzero(line, MAXLINE);
-	while(ft_strcmp(line, argv[1]))
+	res = 0;
+	while(!res)
 	{
 
 		read_more(line, 1, "heredoc> ");
-		ft_putstr_fd(line, outfile);
-		ft_bzero(line, MAXLINE);
+		res = ft_strequ(line, argv[1]);
+		if (!res)
+			ft_putstr_fd(line, outfile);
 	}
 	return 0;
 }

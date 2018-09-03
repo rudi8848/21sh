@@ -71,10 +71,9 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Error near << \n");
 				return 0;
 			}
-			//ft_printf("stopword: %s\n", word);
 			t_process *prev = ft_memalloc(sizeof(t_process));
 			prev->argv[0] = ft_strdup("heredoc");
-			prev->argv[1] = ft_strdup(word);
+			prev->argv[1] = ft_strjoin(word, "\n");
 			if (p == j->first_process)
 			{
 				prev->next = p;
