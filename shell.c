@@ -752,6 +752,13 @@ int		main(void)
 	return 0;
 }
 /*
-		*	pipes with builtins
-		*	group for builtins? they're not separated process
+		*	pipe heredoc
+		*	edit few lines
+		*	history
+		*	ctrl+c
+		*	ctrl + left/right
+		*	copy/paste
+		*	2>&-
+		-	pipes with builtins
+		-	group for builtins? they're not separated process
 */
