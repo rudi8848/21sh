@@ -110,7 +110,7 @@ int     cbreak_settings()
 	struct termios changed;
 
     changed = saved;
-    changed.c_lflag &= ~(ICANON | ECHO);
+    changed.c_lflag &= ~(ICANON | ECHO| ISIG);
     changed.c_cc[VMIN] = 1;
     changed.c_cc[VTIME] = 0;
 
@@ -121,6 +121,14 @@ int     cbreak_settings()
     }
 
     return 0;
+}
+
+void	line_sig_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+
+	}
 }
 
 void    read_line(char *line, int start)
@@ -141,10 +149,10 @@ int n;
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
-	
+	//signal(SIGINT, line_sig_handler);
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
-        //ft_printf("\n-> %lld\n", rb);
+       // ft_printf("\n-> %lld\n", rb);
         if (rb == K_RIGHT)
         {
             if (i < len)
@@ -254,7 +262,13 @@ int n;
         		i = len;
         	}
         }
-        else if (rb == K_DELETE || rb == 4)	// CTRL + D the same
+        else if (rb == K_CTRL_C)
+        {
+        	ft_printf("\n");
+        	ft_bzero(line, MAXLINE);
+        	return;
+        }
+        else if (rb == K_DELETE || rb == K_CTRL_D)	// CTRL + D the same
         {
             if (len > 0 && i >= 0 && i < len)
             {
@@ -724,23 +738,20 @@ int		main(void)
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
-		if (!pack_args(line, &first_job))
+		if (line[0] != '\n' && pack_args(line, &first_job))
 		{
-			ft_printf("Command is not valid\n");
-			return 1;
+			//print_jobs(first_job);
+			t_job *j;
+			j = first_job;
+			while (j)
+			{
+				launch_job(j, j->foreground);
+				do_job_notification();	// <--- in jobs 
+				j = j->next;
+			}
+			free_job(first_job);
+			fd_check();
 		}
-
-		//print_jobs(first_job);
-		t_job *j;
-		j = first_job;
-		while (j)
-		{
-			launch_job(j, j->foreground);
-			do_job_notification();	// <--- in jobs 
-			j = j->next;
-		}
-		free_job(first_job);
-		fd_check();
 	}
 //system("leaks test");
 //	
@@ -759,6 +770,7 @@ int		main(void)
 		*	ctrl + left/right
 		*	copy/paste
 		*	2>&-
+		*	jobs builtins (%, %%, bg, fg, jobs)
 		-	pipes with builtins
 		-	group for builtins? they're not separated process
 */

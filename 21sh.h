@@ -81,6 +81,8 @@ typedef enum {
 # define K_DOWN     4348699
 # define K_CTRL_LEFT     74995417045787
 # define K_CTRL_RIGHT    73895905418011
+# define K_CTRL_C		3
+# define K_CTRL_D		4
 
 # define K_ENTER    10
 # define K_TAB      9
