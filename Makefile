@@ -25,6 +25,9 @@ clean:
 	/bin/rm -f $(OBJS)
 	make clean -C libft
 
+clear history:	.history
+	/bin/rm .history
+
 fclean: clean
 	@/bin/rm -f $(NAME)
 	make fclean -C libft

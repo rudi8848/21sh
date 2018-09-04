@@ -24,6 +24,7 @@
 # include <term.h>
 # include "libft/includes/libft.h"
 # include "libft/includes/ft_printf.h"
+# include "libft/includes/get_next_line.h"
 # define CHILD 0
 # define PARENT 1
 # define ERROR -1
@@ -41,6 +42,7 @@
 # define RESET "\033[0m"
 # define GREEN "\033[1;32m"
 # define RED "\033[1;31m"
+# define BLUE		"\033[0;34m"
 
 char		**g_envp;
 

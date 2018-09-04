@@ -79,7 +79,7 @@ void	type_prompt()
 		home = "";
 		tmp = pwd;
 	}
-	ft_printf("%s%s: %s%s%s>%s ", RED, user, GREEN, home, tmp, RESET);
+	ft_printf("%s%s: %s%s%s>%s ", RED, user, BLUE, home, tmp, RESET);
 	if (tmp != pwd)
 		ft_strdel(&tmp);
 }
@@ -116,19 +116,11 @@ int     cbreak_settings()
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &changed) == -1)
     {
-        perror(__FUNCTION__);
+        ft_putstr_fd("Cannot set terminal attributes\n", STDERR_FILENO);
         ft_exit();
     }
 
     return 0;
-}
-
-void	line_sig_handler(int signum)
-{
-	if (signum == SIGINT)
-	{
-
-	}
 }
 
 void    read_line(char *line, int start)
@@ -239,7 +231,9 @@ int n;
         else if (rb == K_DOWN)
         {
         	//	here will be history navigation
-            TERM_BELL         // bell
+        	get_next_line(3, &line);
+        	ft_printf(line);
+            //TERM_BELL         // bell
         }
         else if (rb == K_UP)
         {
@@ -312,7 +306,7 @@ void 	init_terminal()
 	char buf[MAXWORD];
 	 if ((tcgetattr(STDOUT_FILENO, &saved)) == -1)
     {
-        perror("cannot get terminal settings");
+        ft_putstr_fd("Cannot get terminal settings\n", STDERR_FILENO);
         exit(EXIT_FAILURE);
     }
     char *name = NULL;
@@ -323,7 +317,7 @@ void 	init_terminal()
     }
     if (tgetent(buf, name) < 1)
     {
-        perror("tgetent");
+        ft_putstr_fd("Error at tgetent\n", STDERR_FILENO);
         exit(EXIT_FAILURE);
     }
     copy_env();
@@ -735,11 +729,16 @@ int		main(void)
 			return 1;
 		}
 		first_job->first_process = process;
+
+		int history;
+
+		history = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
 		if (line[0] != '\n' && pack_args(line, &first_job))
 		{
+			ft_putstr_fd(line, history);
 			//print_jobs(first_job);
 			t_job *j;
 			j = first_job;
@@ -750,6 +749,7 @@ int		main(void)
 				j = j->next;
 			}
 			free_job(first_job);
+			close(history);
 			fd_check();
 		}
 	}
@@ -763,14 +763,16 @@ int		main(void)
 	return 0;
 }
 /*
-		*	pipe heredoc
+
 		*	edit few lines
 		*	history
-		*	ctrl+c
 		*	ctrl + left/right
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)
+
 		-	pipes with builtins
 		-	group for builtins? they're not separated process
+		-	ctrl+c
+		-	pipe heredoc
 */
