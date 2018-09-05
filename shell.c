@@ -772,7 +772,7 @@ int		main(void)
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
-		ft_printf("[%s]", line);
+		//ft_printf("[%s]", line);
 		if (line[0] != '\n' && pack_args(line, &first_job))
 		{
 			ft_putstr_fd(line, history);

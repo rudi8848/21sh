@@ -55,7 +55,7 @@ int	pack_args(char *line, t_job **first_job)
 				ft_printf("Extra <\n");
 				return 0;
 			}
-			if (ft_gettoken(line, &i, j->srcfile, sizeof(j->srcfile)) != T_WORD)
+			if (ft_gettoken(line, &i, j->srcfile, sizeof(j->srcfile)) != T_WORD)	// OR BG
 			{
 				ft_printf("Illegal <\n");
 				return 0;
