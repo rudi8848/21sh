@@ -158,7 +158,23 @@ int n;
         	 if (i < len)
         	 {
         	 	//переместиться к началу следующего слова
-        	 	
+        	 	j = i;
+        	 	if (line[j] && line[j] != ' ' && line[j] != '\t')		//start in word
+        	 	{
+        	 		while(line[j] && line[j] != ' ' && line[j] != '\t')	//go to next space
+        	 			j++;
+        	 		//ft_printf("\n->line[%d] = [%c]\n", j, line[j]);
+        	 	}
+        	 	if (line[j] && (line[j] == ' ' || line[j] == '\t'))		//we're in space
+        	 	{
+        	 		while (line[j] && (line[j] == ' ' || line[j] == '\t'))	//go to next not space
+        	 			j++;
+        	 		//ft_printf("\n-->line[%d] = [%c]\n", j, line[j]);
+        	 	}
+        	 	//ft_printf("\n--->line[%d] = [%c]\n", j, line[j]);
+        	 	if (j - i >= 0)
+        		tputs(tgoto(tgetstr("RI", NULL), 0, j - i), 0, ft_iputchar);
+        	 	i = j;
         	 }
         }
         else if (rb == K_LEFT )
@@ -204,7 +220,6 @@ int n;
 	        		}
 	        		//ft_printf("\n--->line[%d] = [%c]\n", j, line[j]);
 	        	}
-        		
         	}
         	//ft_printf("\n---->line[%d] = [%c]\n", j, line[j]);
         	if (i - j >= 0)
