@@ -42,7 +42,7 @@
 # define RESET "\033[0m"
 # define GREEN "\033[1;32m"
 # define RED "\033[1;31m"
-# define BLUE		"\033[0;34m"
+# define BLUE	"\033[0;34m"
 
 char		**g_envp;
 
@@ -71,31 +71,33 @@ typedef enum {
 	INDQUOTE
 } t_state;
 
-#define MAXARG 50
-#define MAXFILENAME 500
-#define MAXWORD 500
+#define MAXARG 			50
+#define MAXFILENAME 	500
+#define MAXWORD 		500
 
-#define MAXLINE 500
+#define MAXLINE 		500
 
-# define K_LEFT     4479771
-# define K_RIGHT    4414235
-# define K_UP       4283163
-# define K_DOWN     4348699
-# define K_CTRL_LEFT     74995417045787
-# define K_CTRL_RIGHT    73895905418011
+# define K_LEFT  		4479771
+# define K_RIGHT		4414235
+# define K_UP     	 	4283163
+# define K_DOWN     	4348699
+# define K_CTRL_LEFT    74995417045787
+# define K_CTRL_RIGHT   73895905418011
+# define K_CTRL_UP		71696882162459
+# define K_CTRL_DOWN	72796393790235
 # define K_CTRL_C		3
 # define K_CTRL_D		4
 
-# define K_ENTER    10
-# define K_TAB      9
-# define K_SPACE    32
-# define K_ESC      27
-# define K_DELETE   2117294875L
-# define K_BSPACE   127
-# define K_HOME		4741915
-# define K_END		4610843
-# define K_ALT_C	42947		//for copy
-# define K_ALT_V	10127586	//for paste
+# define K_ENTER		10
+# define K_TAB      	9
+# define K_SPACE    	32
+# define K_ESC      	27
+# define K_DELETE   	2117294875L
+# define K_BSPACE   	127
+# define K_HOME			4741915
+# define K_END			4610843
+# define K_ALT_C		42947		//for copy
+# define K_ALT_V		10127586	//for paste
 
 # define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
 # define TERM_BACK	tputs(tgetstr("le", NULL), 0, ft_iputchar);\

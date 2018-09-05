@@ -152,13 +152,15 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			else
 			{
 				state = INWORD;
-				if (line[*i] == '\\' && line[(*i) + 1])
+				if (line[*i] == '\\' && line[(*i) + 1])			//		BEGINNING of the word
 				{
 					(*i)++;
-					if (!store_char(word, maxword, line[*i], &wordn))
-						return T_ERROR;
 					if (line[*i] == '\n' && !line[(*i) + 1])
-						read_more(&line[(*i) + 1], (*i)+1, "\n>");
+						read_more(&line[(*i) + 1], (*i)+1, ">");
+					else 
+						if (!store_char(word, maxword, line[*i], &wordn))
+						return T_ERROR;
+					
 					(*i)++;
 					continue;
 				}
@@ -208,10 +210,13 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			if (line[*i] == '\\' && line[(*i) + 1])
 			{
 				(*i)++;
-				if (!store_char(word, maxword, line[*i], &wordn))
-					return T_ERROR;
 				if (line[*i] == '\n' && !line[(*i) + 1])
 						read_more(&line[(*i) + 1], (*i)+1, ">");
+				else
+				{
+					if (!store_char(word, maxword, line[*i], &wordn))
+						return T_ERROR;
+				}
 				(*i)++;
 			}
 			else if (line[*i] == '$')
@@ -240,11 +245,12 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			if (line[*i] == '\\' && line[(*i) + 1])
 			{
 				(*i)++;
-				if (!store_char(word, maxword, line[*i], &wordn))
-					return T_ERROR;
 				if (line[*i] == '\n' && !line[(*i) + 1])
-						read_more(&line[(*i) + 1], (*i)+1, ">");
-					(*i)++;
+					read_more(&line[(*i) + 1], (*i)+1, ">");
+				else 
+					if (!store_char(word, maxword, line[*i], &wordn))
+						return T_ERROR;
+				(*i)++;
 				continue;
 			}
 			

@@ -141,10 +141,9 @@ int n;
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
-	//signal(SIGINT, line_sig_handler);
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
-       // ft_printf("\n-> %lld\n", rb);
+        //ft_printf("\n-> %lld\n", rb);
         if (rb == K_RIGHT)
         {
             if (i < len)
@@ -157,21 +156,17 @@ int n;
         {
         	 if (i < len)
         	 {
-        	 	//переместиться к началу следующего слова
         	 	j = i;
         	 	if (line[j] && line[j] != ' ' && line[j] != '\t')		//start in word
         	 	{
         	 		while(line[j] && line[j] != ' ' && line[j] != '\t')	//go to next space
         	 			j++;
-        	 		//ft_printf("\n->line[%d] = [%c]\n", j, line[j]);
         	 	}
         	 	if (line[j] && (line[j] == ' ' || line[j] == '\t'))		//we're in space
         	 	{
         	 		while (line[j] && (line[j] == ' ' || line[j] == '\t'))	//go to next not space
         	 			j++;
-        	 		//ft_printf("\n-->line[%d] = [%c]\n", j, line[j]);
         	 	}
-        	 	//ft_printf("\n--->line[%d] = [%c]\n", j, line[j]);
         	 	if (j - i >= 0)
         		tputs(tgoto(tgetstr("RI", NULL), 0, j - i), 0, ft_iputchar);
         	 	i = j;
@@ -186,30 +181,25 @@ int n;
         }
         else if (rb == K_CTRL_LEFT)
         {
-		//ft_printf("\n CTRL LEFT\n");
         	j = i;
 			if (j && !line[j])	// if cursor stands at the end of line
         		j--;
-        	//ft_printf("\n->line[%d] = [%c]\n", j, line[j]);
         	if (j && line[j] != ' ' && line[j] != '\t' && line[j - 1] != ' ' && line[j - 1] != '\t' )	//if we are in word
         	{
         		while(j && (line[j] != ' ' && line[j] != '\t'))
         			j--;
         		if (line[j] == ' ' || line[j] == '\t')
         				j++;
-        		//ft_printf("\n-->line[%d] = [%c]\n", j, line[j]);
         	}
         	else if (j && line[j] != ' ' && line[j] != '\t' && (line[j-1] == ' ' || line[j-1] == '\t'))
         		j--;
         	if (j && (line[j] == ' ' || line[j] == '\t'))
         	{
         		while(j && (line[j] == ' ' || line[j] == '\t'))
-        		{
         			j--;
-        		}
         		if (j && line[j] != ' ' && line[j] != '\t')	//if we are in word
 	        	{
-	        		while(j /*&& (line[j] != ' ' && line[j] != '\t')*/)
+	        		while(j)
 	        		{
 	        			if (line[j] == ' ' || line[j] == '\t')
 	        			{
@@ -218,10 +208,8 @@ int n;
 	        			}
 	        			j--;
 	        		}
-	        		//ft_printf("\n--->line[%d] = [%c]\n", j, line[j]);
 	        	}
         	}
-        	//ft_printf("\n---->line[%d] = [%c]\n", j, line[j]);
         	if (i - j >= 0)
         	tputs(tgoto(tgetstr("LE", NULL), 0, i - j), 0, ft_iputchar);
         	i = j;
@@ -268,8 +256,19 @@ int n;
         else if (rb == K_DOWN)
         {
         	//	here will be history navigation
-        	get_next_line(3, &line);
-        	ft_printf(line);
+        	//clear string
+        	if (i)
+        		tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+            get_next_line(3, &line);
+            len = ft_strlen(line);
+            i = len;
+        	ft_printf("%s",line);
+            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+        	i = 0;
+        	
             //TERM_BELL         // bell
         }
         else if (rb == K_UP)
@@ -773,6 +772,7 @@ int		main(void)
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
+		ft_printf("[%s]", line);
 		if (line[0] != '\n' && pack_args(line, &first_job))
 		{
 			ft_putstr_fd(line, history);
@@ -801,9 +801,8 @@ int		main(void)
 }
 /*
 
-		*	edit few lines
+		*	edit few lines ctrl+UP, ctrl+DOWN 
 		*	history
-		*	ctrl + left/right
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)
@@ -813,4 +812,5 @@ int		main(void)
 		-	group for builtins? they're not separated process
 		-	ctrl+c
 		-	pipe heredoc
+		-	ctrl + left/right
 */
