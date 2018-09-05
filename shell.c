@@ -158,7 +158,7 @@ int n;
         	 if (i < len)
         	 {
         	 	//переместиться к началу следующего слова
-
+        	 	
         	 }
         }
         else if (rb == K_LEFT )
@@ -169,25 +169,47 @@ int n;
             }
         }
         else if (rb == K_CTRL_LEFT)
-        {/*
+        {
 		//ft_printf("\n CTRL LEFT\n");
-        	 if (i)
-        	 {
-				 n = i;
-	        	 	//переместиться к началу предыдущего слова
-				if (line[i] == ' ' || line[i] == 't' || line[i] == '\0')
-					i--;
-				 while (i > 0 && (line[i] == ' ' || line[i] == '\t'))
-					i--;
-				if (line[i] != ' ' || line[i] != '\t' || line[i] != '\0')
-	        	 	while (i > 0 && (line[i] != ' ' && line[i] != '\t'))
-					i--;
-				if (i)
-					i++;
-				if (n - i)
-				tputs(tgoto(tgetstr("LE", NULL), 0, n - i), 0, ft_iputchar);
-				//n = 0;
-        	 }*/
+        	j = i;
+			if (j && !line[j])	// if cursor stands at the end of line
+        		j--;
+        	//ft_printf("\n->line[%d] = [%c]\n", j, line[j]);
+        	if (j && line[j] != ' ' && line[j] != '\t' && line[j - 1] != ' ' && line[j - 1] != '\t' )	//if we are in word
+        	{
+        		while(j && (line[j] != ' ' && line[j] != '\t'))
+        			j--;
+        		if (line[j] == ' ' || line[j] == '\t')
+        				j++;
+        		//ft_printf("\n-->line[%d] = [%c]\n", j, line[j]);
+        	}
+        	else if (j && line[j] != ' ' && line[j] != '\t' && (line[j-1] == ' ' || line[j-1] == '\t'))
+        		j--;
+        	if (j && (line[j] == ' ' || line[j] == '\t'))
+        	{
+        		while(j && (line[j] == ' ' || line[j] == '\t'))
+        		{
+        			j--;
+        		}
+        		if (j && line[j] != ' ' && line[j] != '\t')	//if we are in word
+	        	{
+	        		while(j /*&& (line[j] != ' ' && line[j] != '\t')*/)
+	        		{
+	        			if (line[j] == ' ' || line[j] == '\t')
+	        			{
+	        				j++;
+	        				break;
+	        			}
+	        			j--;
+	        		}
+	        		//ft_printf("\n--->line[%d] = [%c]\n", j, line[j]);
+	        	}
+        		
+        	}
+        	//ft_printf("\n---->line[%d] = [%c]\n", j, line[j]);
+        	if (i - j >= 0)
+        	tputs(tgoto(tgetstr("LE", NULL), 0, i - j), 0, ft_iputchar);
+        	i = j;
         }
         else if (rb == K_ENTER)
         {
@@ -770,6 +792,7 @@ int		main(void)
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)
+		*	tab
 
 		-	pipes with builtins
 		-	group for builtins? they're not separated process
