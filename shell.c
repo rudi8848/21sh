@@ -126,20 +126,17 @@ void	backward(char *cmdline, off_t *where)
 	int i;
 	int rr;
 
-	char line[MAXLINE];
-	int flag = 1;
-	if ((*where = lseek(3, 1, SEEK_END)) == -1)
-	{
-		perror("lseek");
-		return;
-	}
+	char line[MAXLINE+1];
+	//int flag = 1;
+	
 	//ft_printf("->[%ld]\n", *where);
 	ft_bzero(line, MAXLINE);
+	line[MAXLINE] = '\0';
 	i = MAXLINE - 1;
 
 	while (*where > 0)
 	{
-	//	ft_printf("->[%ld]\n", *where);
+		//ft_printf("->[%ld]\n", *where);
 		if ((*where = lseek(3, -2, SEEK_CUR)) == -1)
 		{
 			perror("lseek error");
@@ -152,21 +149,21 @@ void	backward(char *cmdline, off_t *where)
 		}
 		if (c == '\n')
 		{
-			if (!flag)
-			{
-				line[i] = '\0';
+			//if (!flag)
 				break;
-			}
-			flag = 0;
-			
+			//flag = 0;
 		}
-	//	ft_printf("[%c]\n", c);
+		else
+		{
+		//ft_printf("[%d][%c]\n",i, c);
 		line[i] = c;
 		//ft_printf("%s\n", &line[i]);
 		i--;
 	}
-	ft_printf("%s\n", &line[i]);
-	ft_strcpy(&cmdline[0], &line[i]);
+	}
+	//ft_printf(">[%d][%c]\n",i, line[i]);
+	//ft_printf("%s\n", &line[i + 1]);
+	ft_strcpy(&cmdline[0], &line[i + 1]);
 	return;
 	//ft_printf("[%d]\n", i);
 	/*
@@ -224,6 +221,11 @@ off_t where = 0;
     int len = 0;
     int i = 0;
     
+    if ((where = lseek(3, 1, SEEK_END)) == -1)
+	{
+		perror("lseek");
+		return;
+	}
 
     if (!start)
 	    type_prompt();
@@ -344,19 +346,19 @@ off_t where = 0;
         {
         	//	here will be history navigation
         	//clear string
-        	 if (i)
-        	 // tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
-        	 // tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-        	 // tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+        	 //if (i)
+        	  tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+        	  tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+        	  tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
             	backward(line, &where);
             //----------------------------------
              len = ft_strlen(line);
              i = len;
         	 ft_printf("%s",line);
-          //    tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-        	 // tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
-        	 i = 0;
+              tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+        	  tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+        	 //i = 0;
         	
             //TERM_BELL         // bell
         }
