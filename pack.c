@@ -16,17 +16,14 @@ int	pack_args(char *line, t_job **first_job)
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	char word[MAXWORD];
-	//int flags = O_WRONLY | O_CREAT;
 	int argc;
 	t_job *j = *first_job;
 	t_process *p = j->first_process;
-
+	int makepipe = 0;
+	int i = 0;
 	argc = 0;
 
 	init_job(j);
-	int makepipe = 0;
-	int i = 0;
-
 	while (1)
 	{
 		ft_bzero(word, sizeof(word));

@@ -2,8 +2,6 @@
 #include <term.h>
 #include <errno.h>
 
-
-
 struct termios saved;
 extern char **environ;
 
@@ -33,10 +31,8 @@ void	free_job(t_job *j)
 			}
 			free(pprev);
 		}
-		
 		free(jprev);
 	}
-
 }
 
 void    ft_exit(void)
@@ -50,11 +46,11 @@ int ft_iputchar(int c)
 {
     return(write(1, &c, 1));
 }
-
+/*
 void    ft_prompt(void)
 {
     write(STDOUT_FILENO, "# ", 2);
-}
+}*/
 
 void	type_prompt()
 {
@@ -123,6 +119,90 @@ int     cbreak_settings()
     return 0;
 }
 
+void	backward(char *cmdline, off_t *where)
+{
+	//ft_printf("---> %s\n", __FUNCTION__);
+	char c;
+	int i;
+	int rr;
+
+	char line[MAXLINE];
+	int flag = 1;
+	if ((*where = lseek(3, 1, SEEK_END)) == -1)
+	{
+		perror("lseek");
+		return;
+	}
+	//ft_printf("->[%ld]\n", *where);
+	ft_bzero(line, MAXLINE);
+	i = MAXLINE - 1;
+
+	while (*where > 0)
+	{
+		ft_printf("->[%ld]\n", *where);
+		if ((*where = lseek(3, -2, SEEK_CUR)) == -1)
+		{
+			perror("lseek error");
+			return;
+		}
+		if ((rr = read(3, &c, 1)) <= 0)
+		{
+			perror("read");
+			return;
+		}
+		if (c == '\n')
+		{
+			if (!flag)
+			line[--i] = '\0';
+			flag = 0;
+			break;
+		}
+		ft_printf("[%c]\n", c);
+		line[--i] = c;
+
+	}
+	ft_printf("%s\n", &line[i]);
+	ft_strcpy(cmdline, &line[i]);
+	//ft_printf("[%d]\n", i);
+	/*
+	do {
+		if ((*where = lseek(3, -2, SEEK_CUR)) == -1)
+		{
+			perror("lseek error");
+			return;
+		}
+		//ft_printf("->[%ld]\n", *where);
+		switch (read(3, &c, 1))
+		{
+			//perror("read");
+			//ft_printf("[%c]\n", c);
+			case 1:
+				if (c == '\n')
+				{
+					ft_printf("%s", &line[i]);
+					i = MAXLINE - 1;
+					//ft_strcpy(cmdline, &line[i]);
+					//return;
+				}
+				if (i <= 0)
+				{
+					ft_printf("i = %d\n", i);
+					return;
+				}
+				line[--i] = c;
+				break;
+			case -1:
+				perror("read");
+				break;
+			default:
+				errno = 0;
+				ft_printf("error\n");
+		}
+	} while (*where > 0);
+	ft_printf("%s", &line[i]);
+	*/
+}
+
 void    read_line(char *line, int start)
 {
     
@@ -130,14 +210,16 @@ void    read_line(char *line, int start)
     uint64_t    rb;
     int j;
 
-    static char cp_buf[MAXLINE];
+    //static char cp_buf[MAXLINE];
     
 int n;
+off_t where = 0;
 
     rb = 0;
     int len = 0;
     int i = 0;
     
+
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
@@ -257,17 +339,19 @@ int n;
         {
         	//	here will be history navigation
         	//clear string
-        	if (i)
-        		tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
-        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
-            get_next_line(3, &line);
-            len = ft_strlen(line);
-            i = len;
-        	ft_printf("%s",line);
-            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
-        	i = 0;
+        	// if (i)
+        	// 	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+        	// tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+        	// tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+            //----------------------------------
+            	backward(line, &where);
+            //----------------------------------
+         //    len = ft_strlen(line);
+         //    i = len;
+        	 ft_printf("%s",line);
+         //    tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+        	// tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+        	// i = 0;
         	
             //TERM_BELL         // bell
         }
@@ -412,14 +496,11 @@ int	job_is_completed(t_job *j)
 
 void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
-	//ft_printf("---> %s\n",__FUNCTION__);
 	pid_t	pid;
-//ft_printf("--- line [%d]\n", __LINE__);
+
 	if (shell_is_interactive)
 	{
-		//ft_printf("--- line [%d]\n", __LINE__);
 		pid = getpid();
-		//ft_printf("--- line [%d]\n", __LINE__);
 		if (pgid == 0)
 			pgid = pid;
 		setpgid(pid, pgid);
@@ -442,7 +523,6 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		dup2(errfile, STDERR_FILENO);
 		close(errfile);
 	}
-	//ft_printf("--- line [%d]\n", __LINE__);
 	if (execve(p->argv[0], p->argv, g_envp) < 0)
 		perror("execve");
 	exit(1);
@@ -585,7 +665,6 @@ void	continue_job(t_job *j, int foreground)
 
 void	launch_job(t_job *j, int foreground)
 {
-	// in_fd, out_fd open here, not in pack!
 	//ft_printf("---> %s\n",__FUNCTION__);
 	t_process	*p;
 	pid_t		pid;
@@ -599,7 +678,7 @@ void	launch_job(t_job *j, int foreground)
 		perror("open");
 		return ;
 	}
-	infile = j->in_fd;	// <-- don't touch! if change - doesn't work > (outfile)
+	infile = j->in_fd;
 	p = j->first_process;
 	while(p)
 	{
@@ -751,10 +830,7 @@ int		main(void)
 	t_process *process;
 	g_envp = NULL;
 
-	
-
 	init_shell();
-
 	while (1)
 	{
 		first_job = (t_job*)ft_memalloc(sizeof(t_job));
@@ -785,7 +861,7 @@ int		main(void)
 				do_job_notification();	// <--- in jobs 
 				j = j->next;
 			}
-			free_job(first_job);
+			free_job(first_job);		// <- 
 			close(history);
 			fd_check();
 		}

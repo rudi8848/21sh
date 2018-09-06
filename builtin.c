@@ -175,6 +175,11 @@ int		ft_env(char **args, int infile, int outfile)
 	return (0);
 }
 
+int		ft_jobs(char **args, int infile, int outfile)
+{
+	return 0;
+}
+
 int		b_exit(char **args, int infile, int outfile)
 {
 	ft_exit();
