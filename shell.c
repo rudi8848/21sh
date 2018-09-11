@@ -126,7 +126,7 @@ void	backward(char *cmdline, off_t *where)
 	int i;
 	int rr;
 
-	char line[MAXLINE+1];
+	char line[MAXLINE + 1];
 	//int flag = 1;
 	
 	//ft_printf("->[%ld]\n", *where);
@@ -165,44 +165,6 @@ void	backward(char *cmdline, off_t *where)
 	//ft_printf("%s\n", &line[i + 1]);
 	ft_strcpy(&cmdline[0], &line[i + 1]);
 	return;
-	//ft_printf("[%d]\n", i);
-	/*
-	do {
-		if ((*where = lseek(3, -2, SEEK_CUR)) == -1)
-		{
-			perror("lseek error");
-			return;
-		}
-		//ft_printf("->[%ld]\n", *where);
-		switch (read(3, &c, 1))
-		{
-			//perror("read");
-			//ft_printf("[%c]\n", c);
-			case 1:
-				if (c == '\n')
-				{
-					ft_printf("%s", &line[i]);
-					i = MAXLINE - 1;
-					//ft_strcpy(cmdline, &line[i]);
-					//return;
-				}
-				if (i <= 0)
-				{
-					ft_printf("i = %d\n", i);
-					return;
-				}
-				line[--i] = c;
-				break;
-			case -1:
-				perror("read");
-				break;
-			default:
-				errno = 0;
-				ft_printf("error\n");
-		}
-	} while (*where > 0);
-	ft_printf("%s", &line[i]);
-	*/
 }
 
 void    read_line(char *line, int start)
@@ -211,22 +173,22 @@ void    read_line(char *line, int start)
     int         rr;
     uint64_t    rb;
     int j;
-
+	char *str;
     //static char cp_buf[MAXLINE];
     
-int n;
-off_t where = 0;
+	int n;
+	//off_t where;
 
     rb = 0;
     int len = 0;
     int i = 0;
     
-    if ((where = lseek(3, 1, SEEK_END)) == -1)
+   /* if ((where = lseek(3, 1, SEEK_END)) == -1)
 	{
 		perror("lseek");
 		return;
 	}
-
+*/
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
@@ -347,17 +309,24 @@ off_t where = 0;
         	//	here will be history navigation
         	//clear string
         	 //if (i)
-        	  tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
-        	  tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-        	  tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+
+        	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
-            	backward(line, &where);
+            	//backward(line, &where);
+        	
+        		if (get_next_line(3, &str) >= 0)
+        		{
+        			ft_strcpy(line, str);
+        			free(str);
+        		}
             //----------------------------------
-             len = ft_strlen(line);
-             i = len;
-        	 ft_printf("%s",line);
-              tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-        	  tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+            len = ft_strlen(line);
+            i = len;
+        	ft_printf("%s",line);
+            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
         	 //i = 0;
         	
             //TERM_BELL         // bell
@@ -885,7 +854,7 @@ int		main(void)
 /*
 
 		*	edit few lines ctrl+UP, ctrl+DOWN 
-		*	history
+		*	history		!!! Problems: forbidden lseek; extra symbols in line when commands in .history end, lseek spoils .history
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)
