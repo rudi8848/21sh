@@ -152,6 +152,9 @@ typedef enum {
 	B_ENV,
 	B_HRDOC,
 	B_EXIT,
+	B_JOBS,
+	B_BG,
+	B_FG,
 	B_END,
 	BUILT
 }	t_built;
@@ -199,6 +202,9 @@ void		free_arr(char **array);
 void			type_prompt();
 char	*ft_check_args(char **args);
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile);
+int		ft_jobs(char **args, int infile, int outfile);
+int		ft_bg(char **args, int infile, int outfile);
+int		ft_fg(char **args, int infile, int outfile);
 //------------------------------
 
 #endif

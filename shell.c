@@ -5,6 +5,13 @@
 struct termios saved;
 extern char **environ;
 
+//===========================================
+	pid_t	shell_pgid;
+	int		shell_terminal;
+	int		shell_is_interactive;
+	t_job	*first_job = NULL;
+//===========================================
+
 void    ft_restore()
 {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
@@ -15,7 +22,8 @@ void	free_job(t_job *j)
 	t_job *jprev;
 	t_process *pprev;
 	int i;
-	while (j)
+	//while (j)
+	if (j)
 	{
 		jprev = j;
 		j = j->next;
@@ -79,27 +87,6 @@ void	type_prompt()
 	if (tmp != pwd)
 		ft_strdel(&tmp);
 }
-/*
-
-static void     ft_int_handler(int signum)
-{
-    ft_exit();
-}
-
-
-
-void            ft_set_signals(void)
-{
-    //signal(SIGTSTP, ft_tstp_handler);
-    //signal(SIGCONT, ft_cont_handler);
-    signal(SIGINT, ft_int_handler);
-    signal(SIGTERM, ft_int_handler);
-    signal(SIGABRT, ft_int_handler);
-    signal(SIGQUIT, ft_int_handler);
-    //signal(SIGWINCH, ft_winch_handler);
-}
-*/
-
 
 int     cbreak_settings()
 {
@@ -119,54 +106,6 @@ int     cbreak_settings()
     return 0;
 }
 
-void	backward(char *cmdline, off_t *where)
-{
-	//ft_printf("---> %s\n", __FUNCTION__);
-	char c;
-	int i;
-	int rr;
-
-	char line[MAXLINE + 1];
-	//int flag = 1;
-	
-	//ft_printf("->[%ld]\n", *where);
-	ft_bzero(line, MAXLINE);
-	line[MAXLINE] = '\0';
-	i = MAXLINE - 1;
-
-	while (*where > 0)
-	{
-		//ft_printf("->[%ld]\n", *where);
-		if ((*where = lseek(3, -2, SEEK_CUR)) == -1)
-		{
-			perror("lseek error");
-			return;
-		}
-		if ((rr = read(3, &c, 1)) <= 0)
-		{
-			perror("read");
-			return;
-		}
-		if (c == '\n')
-		{
-			//if (!flag)
-				break;
-			//flag = 0;
-		}
-		else
-		{
-		//ft_printf("[%d][%c]\n",i, c);
-		line[i] = c;
-		//ft_printf("%s\n", &line[i]);
-		i--;
-	}
-	}
-	//ft_printf(">[%d][%c]\n",i, line[i]);
-	//ft_printf("%s\n", &line[i + 1]);
-	ft_strcpy(&cmdline[0], &line[i + 1]);
-	return;
-}
-
 void    read_line(char *line, int start)
 {
     
@@ -177,18 +116,11 @@ void    read_line(char *line, int start)
     //static char cp_buf[MAXLINE];
     
 	int n;
-	//off_t where;
 
     rb = 0;
     int len = 0;
     int i = 0;
     
-   /* if ((where = lseek(3, 1, SEEK_END)) == -1)
-	{
-		perror("lseek");
-		return;
-	}
-*/
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
@@ -307,10 +239,31 @@ void    read_line(char *line, int start)
         else if (rb == K_DOWN)
         {
         	//	here will be history navigation
-        	//clear string
-        	 //if (i)
-
+   
+        	ft_bzero(line, MAXLINE);
         	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+            //----------------------------------       	
+        		if (get_next_line(3, &str) >= 0)
+        		{
+        			ft_strcpy(line, str);
+        			free(str);
+        		}
+            //----------------------------------
+            len = ft_strlen(line);
+            i = len;
+        	ft_printf("%s",line);
+            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+        	
+            //TERM_BELL         // bell
+        }
+        else if (rb == K_UP)
+        {
+        	//	here will be history navigation
+        	ft_bzero(line, MAXLINE);
+           tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
         	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
@@ -327,14 +280,7 @@ void    read_line(char *line, int start)
         	ft_printf("%s",line);
             tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
         	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
-        	 //i = 0;
-        	
-            //TERM_BELL         // bell
-        }
-        else if (rb == K_UP)
-        {
-        	//	here will be history navigation
-           TERM_BELL          // bell
+           //TERM_BELL          // bell
         }
         else if (rb == K_HOME)
         {
@@ -419,14 +365,6 @@ void 	init_terminal()
     copy_env();
 }
 
-//===========================================
-	pid_t	shell_pgid;
-	int		shell_terminal;
-	int		shell_is_interactive;
-	t_job	*first_job = NULL;
-//===========================================
-
-
 void	set_stopsignals(sig_t func)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -445,7 +383,6 @@ t_job	*find_job(pid_t pgid)
 	{
 		if (j->pgid == pgid)
 			return j;
-	
 	}
 	return NULL;
 }
@@ -593,6 +530,7 @@ void	format_job_info(t_job *j, const char *status)
 
 void	do_job_notification(void)
 {
+	ft_printf("--> %s\n", __FUNCTION__);
 	t_job		*j;
 	t_job		*jlast;
 	t_job		*jnext;
@@ -602,16 +540,21 @@ void	do_job_notification(void)
 	jlast = NULL;
 	for (j = first_job; j; j = jnext)
 	{
+		ft_printf("--> j: %s ", j->first_process->argv[0]);
 		jnext = j->next;
 		if (job_is_completed(j))
 		{
+			ft_printf("completed\n");
 			format_job_info(j, "completed");
 			if (jlast)
 				jlast->next = jnext;
+			else
+				first_job = jnext;
 			free_job(j);
 		}
 		else if (job_is_stopped(j) && !j->notified)
 		{
+			ft_printf("stopped\n");
 			format_job_info(j, "stopped");
 			j->notified = 1;
 			jlast = j;
@@ -728,11 +671,12 @@ void	launch_job(t_job *j, int foreground)
 		put_job_in_background(j, 0);
 }
 
-void 	print_jobs(t_job *first_job)
+void 	print_jobs()
 {
 		int i;
 	t_job *j = first_job;
 	t_process *p;
+	ft_printf("\n+++ PRINT +++\n");
 	while (j)
 	{
 		p = j->first_process;
@@ -752,7 +696,7 @@ void 	print_jobs(t_job *first_job)
 		ft_printf("===========\n");
 		j = j->next;
 	}
-	ft_printf("OK\n");
+	ft_printf("+++ DONE +++\n");
 }
 
 void	init_shell(void)
@@ -805,20 +749,22 @@ int		main(void)
 	char line[MAXLINE];
 	t_process *process;
 	g_envp = NULL;
-
+	int history;
+	t_job *j;
+	
 	init_shell();
 	while (1)
 	{
-		first_job = (t_job*)ft_memalloc(sizeof(t_job));
+
+		first_job = (t_job*)ft_memalloc(sizeof(t_job));		//затирает текущие процессы в бг
 		process = (t_process*)ft_memalloc(sizeof(t_process));
 		if (!first_job || !process)
 		{
 			perror("ft_memalloc");
 			return 1;
 		}
+		//get_last()
 		first_job->first_process = process;
-
-		int history;
 
 		history = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 		cbreak_settings();
@@ -829,15 +775,18 @@ int		main(void)
 		{
 			ft_putstr_fd(line, history);
 			//print_jobs(first_job);
-			t_job *j;
+
 			j = first_job;
 			while (j)
 			{
-				launch_job(j, j->foreground);
-				do_job_notification();	// <--- in jobs 
+				if (j->foreground)
+					launch_job(j, j->foreground);
+				//do_job_notification();	// <--- in jobs 
 				j = j->next;
 			}
-			free_job(first_job);		// <- 
+			do_job_notification();	// <--- in jobs 
+			print_jobs();
+			//free_job(first_job);		// <- 
 			close(history);
 			fd_check();
 		}
@@ -854,7 +803,7 @@ int		main(void)
 /*
 
 		*	edit few lines ctrl+UP, ctrl+DOWN 
-		*	history		!!! Problems: forbidden lseek; extra symbols in line when commands in .history end, lseek spoils .history
+		*	history		!!! need to change GNL with directions up/down, + save fd .history
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)

@@ -13,6 +13,9 @@ int		check_built(char *cmd)
 	built[B_ENV] = "env";
 	built[B_HRDOC] = "heredoc";
 	built[B_EXIT] = "exit";
+	built[B_JOBS] = "jobs";
+	built[B_BG] = "bg";
+	built[B_FG] = "fg";
 	built[B_END] = NULL;
 	while (built[i])
 	{
@@ -32,6 +35,9 @@ void	ft_set_builtins(t_pfb *built_tab)
 	built_tab[B_ENV] = &ft_env;
 	built_tab[B_HRDOC] = &ft_heredoc;
 	built_tab[B_EXIT] = &b_exit;
+	built_tab[B_JOBS] = &ft_jobs;
+	built_tab[B_BG] = &ft_bg;
+	built_tab[B_FG] = &ft_fg;
 	built_tab[B_END] = NULL;
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
@@ -176,6 +182,17 @@ int		ft_env(char **args, int infile, int outfile)
 }
 
 int		ft_jobs(char **args, int infile, int outfile)
+{
+	return 0;
+}
+
+int		ft_bg(char **args, int infile, int outfile)
+{
+	return 0;
+}
+
+
+int		ft_fg(char **args, int infile, int outfile)
 {
 	return 0;
 }
