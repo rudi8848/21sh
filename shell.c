@@ -816,25 +816,33 @@ int		main(void)
 	init_shell();
 	g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 	init_history();
+	//first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	while (1)
 	{
-
-		first_job = (t_job*)ft_memalloc(sizeof(t_job));		//затирает текущие процессы в бг
+		j = (t_job*)ft_memalloc(sizeof(t_job));		//затирает текущие процессы в бг
 		process = (t_process*)ft_memalloc(sizeof(t_process));
-		if (!first_job || !process)
+		if (!j || !process)
 		{
 			perror("ft_memalloc");
 			return 1;
 		}
-		//get_last()
-		first_job->first_process = process;
+		j->first_process = process;
+		if (!first_job)
+			first_job = j;
+		else
+		{
+			t_job *ptr = first_job;
+			while (ptr->next)
+				ptr = ptr->next;
+			ptr->next = j;
+		}
 		if (g_hstr_fd == -1)
 			g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
 		//ft_printf("[%s]", line);
-		if (line[0] != '\n' && pack_args(line, &first_job))
+		if (line[0] != '\n' && pack_args(line, &j))
 		{
 			check_history_capacity();
 			ft_putstr_fd(line, g_hstr_fd);
@@ -845,18 +853,21 @@ int		main(void)
 			j = first_job;
 			while (j)
 			{
-				if (j->foreground)
-					launch_job(j, j->foreground);
-				//do_job_notification();	// <--- in jobs 
+				t_job *prev = j;
 				j = j->next;
+				launch_job(prev, prev->foreground);
+				if (prev->foreground)
+					free_job(prev);
+				//do_job_notification();	// <--- in jobs 
 			}
+		//	print_jobs();
 			do_job_notification();	// <--- in jobs 
 			print_jobs();
 			//free_job(first_job);		// <- 
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
 			fd_check();
-			print_history();
+			//print_history();
 		}
 	}
 //system("leaks test");
@@ -871,7 +882,7 @@ int		main(void)
 /*
 
 		*	edit few lines ctrl+UP, ctrl+DOWN 
-		*	history		!!! need to change GNL with directions up/down, + save fd .history
+		*	history		!!! need to fix termcap
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)

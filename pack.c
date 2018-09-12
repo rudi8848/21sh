@@ -11,13 +11,13 @@ void	init_job(t_job *j)
 	j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
 }
 
-int	pack_args(char *line, t_job **first_job)
+int	pack_args(char *line, t_job **job)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	char word[MAXWORD];
 	int argc;
-	t_job *j = *first_job;
+	t_job *j = *job;
 	t_process *p = j->first_process;
 	int makepipe = 0;
 	int i = 0;
