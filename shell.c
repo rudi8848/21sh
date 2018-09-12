@@ -23,6 +23,7 @@ void    ft_restore()
 
 void	free_job(t_job *j)
 {
+	/*
 	t_job *jprev;
 	t_process *pprev;
 	int i;
@@ -44,6 +45,23 @@ void	free_job(t_job *j)
 			free(pprev);
 		}
 		free(jprev);
+	}*/
+	int i = 0;
+	t_process *pprev;
+	if (j)
+	{
+		while (j->first_process)
+		{
+			pprev = j->first_process;
+			j->first_process = j->first_process->next;
+			i = 0;
+			while (pprev->argv[i])
+			{
+				free(pprev->argv[i]);
+				i++;
+			}
+			free(pprev);
+		}
 	}
 }
 
@@ -547,13 +565,14 @@ void	do_job_notification(void)
 
 	update_status();
 	jlast = NULL;
-	for (j = first_job; j; j = jnext)
+	//for (j = first_job; j; j = jnext)
+	j = first_job;
+	while(j)
 	{
 	//	ft_printf("--> j: %s ", j->first_process->argv[0]);
 		jnext = j->next;
 		if (job_is_completed(j))
 		{
-	//		ft_printf("completed\n");
 			format_job_info(j, "completed");
 			if (jlast)
 				jlast->next = jnext;
@@ -563,13 +582,13 @@ void	do_job_notification(void)
 		}
 		else if (job_is_stopped(j) && !j->notified)
 		{
-	//		ft_printf("stopped\n");
 			format_job_info(j, "stopped");
 			j->notified = 1;
 			jlast = j;
 		}
 		else
 			jlast = j;
+		j = jnext;
 	}
 }
 
@@ -685,7 +704,7 @@ void 	print_jobs()
 		int i;
 	t_job *j = first_job;
 	t_process *p;
-	ft_printf("\n+++ PRINT +++\n");
+	printf("\n+++ PRINT +++\n");
 	while (j)
 	{
 		p = j->first_process;
@@ -694,18 +713,18 @@ void 	print_jobs()
 			i = 0;
 			while (p->argv[i])
 			{
-				ft_printf("[%d] %s\n",i, p->argv[i]);
+				printf("[%d] %s\n",i, p->argv[i]);
 //				ft_printf("src: [%s][%d], dst: [%s][%d]\n", j->srcfile, j->in_fd, j->);
 				i++;
 			}
-			ft_printf("-----------\n");
+			printf("-----------\n");
 			p = p->next;
 		}
-		ft_printf("SRC[%s][%d],DST[%s][%d], pgid[%d]\n", j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
-		ft_printf("===========\n");
+		printf("SRC[%s][%d],DST[%s][%d], pgid[%d]\n", j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
+		printf("===========\n");
 		j = j->next;
 	}
-	ft_printf("+++ DONE +++\n");
+	printf("+++ DONE +++\n");
 }
 
 void	init_shell(void)
@@ -832,7 +851,7 @@ int		main(void)
 				j = j->next;
 			}
 			do_job_notification();	// <--- in jobs 
-			//print_jobs();
+			print_jobs();
 			//free_job(first_job);		// <- 
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
