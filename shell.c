@@ -2,6 +2,7 @@
 #include <term.h>
 #include <errno.h>
 
+#define MAXHSTR 4096
 struct termios saved;
 extern char **environ;
 
@@ -10,6 +11,9 @@ extern char **environ;
 	int		shell_terminal;
 	int		shell_is_interactive;
 	t_job	*first_job = NULL;
+	char	*g_history[MAXHSTR];
+	int	g_hstr_nb;
+	int	g_hstr_fd = -1;
 //===========================================
 
 void    ft_restore()
@@ -120,7 +124,8 @@ void    read_line(char *line, int start)
     rb = 0;
     int len = 0;
     int i = 0;
-    
+   int cmd = g_hstr_nb -1;
+   
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
@@ -244,12 +249,10 @@ void    read_line(char *line, int start)
         	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
         	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
-            //----------------------------------       	
-        		if (get_next_line(3, &str) >= 0)
-        		{
-        			ft_strcpy(line, str);
-        			free(str);
-        		}
+            //---------------------------------- 
+	    	if (cmd < g_hstr_nb - 1)
+			cmd++;
+		ft_strcpy(line, g_history[cmd]);	
             //----------------------------------
             len = ft_strlen(line);
             i = len;
@@ -267,13 +270,10 @@ void    read_line(char *line, int start)
         	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
-            	//backward(line, &where);
-        	
-        		if (get_next_line(3, &str) >= 0)
-        		{
-        			ft_strcpy(line, str);
-        			free(str);
-        		}
+        	if (cmd)
+			cmd--;
+		ft_strcpy(line, g_history[cmd]);	
+			
             //----------------------------------
             len = ft_strlen(line);
             i = len;
@@ -743,16 +743,33 @@ static void fd_check(void)
          _exit(EXIT_FAILURE);
  }
 
+void	init_history(void)
+{
+	int i = 0;
+	char *str;
+
+	while(get_next_line(g_hstr_fd, &str) > 0)
+	{
+		g_history[i] = ft_strdup(str);
+		free(str);
+		i++;
+	}
+	ft_printf("history: [%d]\n", i);
+	g_hstr_nb = i;
+}
+
 int		main(void)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
 	t_process *process;
 	g_envp = NULL;
-	int history;
+
 	t_job *j;
 	
 	init_shell();
+	g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+	init_history();
 	while (1)
 	{
 
@@ -765,15 +782,17 @@ int		main(void)
 		}
 		//get_last()
 		first_job->first_process = process;
-
-		history = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+		if (g_hstr_fd == -1)
+			g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 		cbreak_settings();
 		read_line(&line[0], 0);
 		ft_restore();
 		//ft_printf("[%s]", line);
 		if (line[0] != '\n' && pack_args(line, &first_job))
 		{
-			ft_putstr_fd(line, history);
+			ft_putstr_fd(line, g_hstr_fd);
+			g_history[g_hstr_nb] = ft_strdup(line);
+			g_hstr_nb++;
 			//print_jobs(first_job);
 
 			j = first_job;
@@ -785,9 +804,10 @@ int		main(void)
 				j = j->next;
 			}
 			do_job_notification();	// <--- in jobs 
-			print_jobs();
+			//print_jobs();
 			//free_job(first_job);		// <- 
-			close(history);
+			close(g_hstr_fd);
+			g_hstr_fd = -1;
 			fd_check();
 		}
 	}
