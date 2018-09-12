@@ -124,7 +124,10 @@ void    read_line(char *line, int start)
     rb = 0;
     int len = 0;
     int i = 0;
-   int cmd = g_hstr_nb -1;
+   int cmd;
+
+   if (g_hstr_nb)
+	   cmd = g_hstr_nb -1;
    
     if (!start)
 	    type_prompt();
@@ -251,11 +254,16 @@ void    read_line(char *line, int start)
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //---------------------------------- 
 	    	if (cmd < g_hstr_nb - 1)
+		{
 			cmd++;
-		ft_strcpy(line, g_history[cmd]);	
+			ft_strcpy(line, g_history[cmd]);
+		}
+		else
+			TERM_BELL;	
             //----------------------------------
             len = ft_strlen(line);
             i = len;
+	    if (len)
         	ft_printf("%s",line);
             tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
         	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
@@ -271,9 +279,10 @@ void    read_line(char *line, int start)
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
         	if (cmd)
+		{
 			cmd--;
-		ft_strcpy(line, g_history[cmd]);	
-			
+			ft_strcpy(line, g_history[cmd]);
+		}	
             //----------------------------------
             len = ft_strlen(line);
             i = len;
@@ -530,7 +539,7 @@ void	format_job_info(t_job *j, const char *status)
 
 void	do_job_notification(void)
 {
-	ft_printf("--> %s\n", __FUNCTION__);
+	//ft_printf("--> %s\n", __FUNCTION__);
 	t_job		*j;
 	t_job		*jlast;
 	t_job		*jnext;
@@ -540,11 +549,11 @@ void	do_job_notification(void)
 	jlast = NULL;
 	for (j = first_job; j; j = jnext)
 	{
-		ft_printf("--> j: %s ", j->first_process->argv[0]);
+	//	ft_printf("--> j: %s ", j->first_process->argv[0]);
 		jnext = j->next;
 		if (job_is_completed(j))
 		{
-			ft_printf("completed\n");
+	//		ft_printf("completed\n");
 			format_job_info(j, "completed");
 			if (jlast)
 				jlast->next = jnext;
@@ -554,7 +563,7 @@ void	do_job_notification(void)
 		}
 		else if (job_is_stopped(j) && !j->notified)
 		{
-			ft_printf("stopped\n");
+	//		ft_printf("stopped\n");
 			format_job_info(j, "stopped");
 			j->notified = 1;
 			jlast = j;
@@ -754,8 +763,26 @@ void	init_history(void)
 		free(str);
 		i++;
 	}
-	ft_printf("history: [%d]\n", i);
+//	ft_printf("history: [%d]\n", i);
 	g_hstr_nb = i;
+}
+
+void	print_history(void)
+{
+	int i = 0;
+	printf("nbr history: [%d]\n", g_hstr_nb);
+	while (i < g_hstr_nb)
+	{
+		printf("[%d]: %s\n", i, g_history[i]);
+		i++;
+	}
+}
+
+void	check_history_capacity(void)
+{
+	if (g_hstr_nb == MAXHSTR - 1)
+	{	ft_printf("MAXHISTORY!!!\n");
+	ft_exit();}
 }
 
 int		main(void)
@@ -790,6 +817,7 @@ int		main(void)
 		//ft_printf("[%s]", line);
 		if (line[0] != '\n' && pack_args(line, &first_job))
 		{
+			check_history_capacity();
 			ft_putstr_fd(line, g_hstr_fd);
 			g_history[g_hstr_nb] = ft_strdup(line);
 			g_hstr_nb++;
@@ -809,6 +837,7 @@ int		main(void)
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
 			fd_check();
+			print_history();
 		}
 	}
 //system("leaks test");
