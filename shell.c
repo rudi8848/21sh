@@ -279,7 +279,10 @@ void    read_line(char *line, int start)
 				ft_strcpy(line, g_history[cmd]);
 			}
 		else
-			TERM_BELL;	
+		{
+			cmd++;
+			TERM_BELL;
+			}	
             //----------------------------------
             len = ft_strlen(line);
             i = len;
