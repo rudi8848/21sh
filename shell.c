@@ -145,7 +145,7 @@ void    read_line(char *line, int start)
    int cmd;
 
    if (g_hstr_nb)
-	   cmd = g_hstr_nb -1;
+	   cmd = g_hstr_nb;
    
     if (!start)
 	    type_prompt();
@@ -270,12 +270,14 @@ void    read_line(char *line, int start)
         	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
         	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
-            //---------------------------------- 
-	    	if (cmd < g_hstr_nb - 1)
-		{
-			cmd++;
-			ft_strcpy(line, g_history[cmd]);
-		}
+            //----------------------------------
+            if (cmd == g_hstr_nb)
+            	cmd--; 
+	    	else if (cmd < g_hstr_nb - 1)
+			{
+				cmd++;
+				ft_strcpy(line, g_history[cmd]);
+			}
 		else
 			TERM_BELL;	
             //----------------------------------
@@ -283,8 +285,8 @@ void    read_line(char *line, int start)
             i = len;
 	    if (len)
         	ft_printf("%s",line);
-            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+        tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+        tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
         	
             //TERM_BELL         // bell
         }
@@ -298,8 +300,6 @@ void    read_line(char *line, int start)
             //----------------------------------
         	if (cmd)
 				cmd--;
-			if (cmd == g_hstr_nb - 2)
-				cmd++;
 			ft_strcpy(line, g_history[cmd]);
             //----------------------------------
             len = ft_strlen(line);
