@@ -243,14 +243,12 @@ void    read_line(char *line, int start)
             tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
             if (line[i])   //if it's at the middle of line
             {
-                    j = len + 1;
-                    while (j > i)
-                    {
-                        line[j] = line[j - 1];
-                        j--;
-                    }
-                    //and insert in termcap
-                
+                j = len + 1;
+                while (j > i)
+                {
+                    line[j] = line[j - 1];
+                    j--;
+                }            
                 tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
                 tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
                 write(STDOUT_FILENO, line + i + 1, len);
@@ -266,54 +264,46 @@ void    read_line(char *line, int start)
         else if (rb == K_DOWN)
         {
         	//	here will be history navigation
-   
-        	ft_bzero(line, MAXLINE);
-        	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
-        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
-            //----------------------------------
-            if (cmd == g_hstr_nb)
-            	cmd--; 
-	    	else if (cmd < g_hstr_nb - 1)
-			{
-				cmd++;
+   			if (g_hstr_nb)
+   			{
+	        	ft_bzero(line, MAXLINE);
+	        	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+	        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+	        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+				
 				ft_strcpy(line, g_history[cmd]);
-			}
-			else
-			{
-				cmd++;
-				TERM_BELL;
-			}	
-            //----------------------------------
-            len = ft_strlen(line);
-            i = len;
-	    if (len)
-        	ft_printf("%s",line);
-        tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-        tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
-        	
+				if (cmd < g_hstr_nb -1)
+					cmd++;
+	            len = ft_strlen(line);
+	            i = len;
+		        ft_printf("%s",line);
+		        tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+		        tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
+        	}
             //TERM_BELL         // bell
         }
         else if (rb == K_UP)
         {
-        	//	here will be history navigation
-        	ft_bzero(line, MAXLINE);
-           tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
-        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
-            //----------------------------------
-        	if (cmd)
+        	if (g_hstr_nb)
         	{
-				cmd--;
-				ft_strcpy(line, g_history[cmd]);
+	        	ft_bzero(line, MAXLINE);
+	           	tputs(tgoto(tgetstr("LE", NULL), 0, i - 0), 0, ft_iputchar);
+	        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+	        	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
+	            //----------------------------------
+	        	if (cmd)
+	        	{
+					cmd--;
+					ft_strcpy(line, g_history[cmd]);
+	        	}
+	        				
+	            //----------------------------------
+	            len = ft_strlen(line);
+	            i = len;
+	        	ft_printf("%s",line);
+	            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+	        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
         	}
-			
-            //----------------------------------
-            len = ft_strlen(line);
-            i = len;
-        	ft_printf("%s",line);
-            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-        	tputs(tgoto(tgetstr("RI", NULL), 0, i), 0, ft_iputchar);
            //TERM_BELL          // bell
         }
         else if (rb == K_HOME)
