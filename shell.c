@@ -144,8 +144,9 @@ void    read_line(char *line, int start)
     int i = 0;
    int cmd;
 
-   if (g_hstr_nb)
+   //if (g_hstr_nb)
 	   cmd = g_hstr_nb;
+
    
     if (!start)
 	    type_prompt();
@@ -278,10 +279,10 @@ void    read_line(char *line, int start)
 				cmd++;
 				ft_strcpy(line, g_history[cmd]);
 			}
-		else
-		{
-			cmd++;
-			TERM_BELL;
+			else
+			{
+				cmd++;
+				TERM_BELL;
 			}	
             //----------------------------------
             len = ft_strlen(line);
@@ -302,8 +303,11 @@ void    read_line(char *line, int start)
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
         	if (cmd)
+        	{
 				cmd--;
-			ft_strcpy(line, g_history[cmd]);
+				ft_strcpy(line, g_history[cmd]);
+        	}
+			
             //----------------------------------
             len = ft_strlen(line);
             i = len;
