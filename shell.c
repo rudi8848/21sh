@@ -297,10 +297,10 @@ void    read_line(char *line, int start)
         	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line
             //----------------------------------
         	if (cmd)
-		{
-			cmd--;
+				cmd--;
+			if (cmd == g_hstr_nb - 2)
+				cmd++;
 			ft_strcpy(line, g_history[cmd]);
-		}	
             //----------------------------------
             len = ft_strlen(line);
             i = len;
@@ -846,6 +846,7 @@ int		main(void)
 		{
 			check_history_capacity();
 			ft_putstr_fd(line, g_hstr_fd);
+			line[ft_strlen(line) - 1] = 0;
 			g_history[g_hstr_nb] = ft_strdup(line);
 			g_hstr_nb++;
 			//print_jobs(first_job);
@@ -867,7 +868,7 @@ int		main(void)
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
 			fd_check();
-			//print_history();
+			print_history();
 		}
 	}
 //system("leaks test");
@@ -882,7 +883,7 @@ int		main(void)
 /*
 
 		*	edit few lines ctrl+UP, ctrl+DOWN 
-		*	history		!!! need to fix termcap
+		*	history		!!! first UP prints not last command
 		*	copy/paste
 		*	2>&-
 		*	jobs builtins (%, %%, bg, fg, jobs)
