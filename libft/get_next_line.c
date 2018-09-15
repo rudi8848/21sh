@@ -79,7 +79,7 @@ int					get_next_line(int const fd, char **line)
 	char			*remainder;
 	int				ret;
 
-	if ((!line || !(*line = ft_strnew(1))) || fd < 0 || (read(fd, 0, 0)) < 0)
+	if ((!line || !(*line = ft_strnew(1))) || (fd < 0) || ((read(fd, 0, 0)) < 0))
 		return (-1);
 	tmp = fd_search(&file, fd);
 	if ((!tmp->content && !((tmp->content = ft_memalloc(sizeof(char))))))

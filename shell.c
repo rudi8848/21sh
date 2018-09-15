@@ -753,12 +753,15 @@ void	init_history(void)
 	int i = 0;
 	char *str;
 
+	str = NULL;
 	while(get_next_line(g_hstr_fd, &str) > 0)
 	{
 		g_history[i] = ft_strdup(str);
 		free(str);
 		i++;
 	}
+	if (str)
+		free(str);
 //	ft_printf("history: [%d]\n", i);
 	g_hstr_nb = i;
 }
