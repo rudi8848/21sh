@@ -11,7 +11,7 @@ void	init_job(t_job *j)
 	j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
 }
 
-int	pack_args(char *line, t_job **job)
+int	pack_args(char *line, t_job **job, t_job **first_job)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
@@ -24,6 +24,7 @@ int	pack_args(char *line, t_job **job)
 	argc = 0;
 
 	init_job(j);
+	*first_job = j;
 	while (1)
 	{
 		ft_bzero(word, sizeof(word));

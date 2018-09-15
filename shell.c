@@ -34,11 +34,14 @@ void	free_job(t_job *j)
 			i = 0;
 			while (pprev->argv[i])
 			{
+				//ft_printf("delete [%s]\n", pprev->argv[i]);
 				free(pprev->argv[i]);
 				i++;
 			}
 			free(pprev);
 		}
+		//free(j);
+		//j = NULL;
 	}
 }
 
@@ -816,7 +819,7 @@ int		main(void)
 		read_line(&line[0], 0);
 		ft_restore();
 		//ft_printf("[%s]", line);
-		if (line[0] != '\n' && pack_args(line, &j))
+		if (line[0] != '\n' && pack_args(line, &j, &first_job))
 		{
 			check_history_capacity();
 			ft_putstr_fd(line, g_hstr_fd);
@@ -832,7 +835,12 @@ int		main(void)
 				j = j->next;
 				launch_job(prev, prev->foreground);
 				if (prev->foreground)
+				{
 					free_job(prev);
+					free(prev);
+					prev = NULL;
+				}
+				
 				//do_job_notification();	// <--- in jobs 
 			}
 		//	print_jobs();

@@ -160,7 +160,7 @@ typedef enum {
 }	t_built;
 
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
-int	pack_args(char *line, t_job **j);
+int	pack_args(char *line, t_job **j, t_job **first_job);
 int     cbreak_settings();
 void    read_line(char *line, int start);
 void    ft_restore();

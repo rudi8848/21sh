@@ -110,7 +110,8 @@ void	copy_env(void)
 	char *args[4];
 	args[0] = "";
 	args[1] = "SHLVL";
-	args[2] = (nbr = ft_itoa(shlvl));
+	nbr = ft_itoa(shlvl);
+	args[2] = nbr;
 	args[3] = NULL;
 	ft_setenv(args, -1, -1);
 	free(nbr);
