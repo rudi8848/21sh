@@ -23,29 +23,6 @@ void    ft_restore()
 
 void	free_job(t_job *j)
 {
-	/*
-	t_job *jprev;
-	t_process *pprev;
-	int i;
-	//while (j)
-	if (j)
-	{
-		jprev = j;
-		j = j->next;
-		while (jprev->first_process)
-		{
-			pprev = jprev->first_process;
-			jprev->first_process = jprev->first_process->next;
-			i = 0;
-			while (pprev->argv[i])
-			{
-				free(pprev->argv[i]);
-				i++;
-			}
-			free(pprev);
-		}
-		free(jprev);
-	}*/
 	int i = 0;
 	t_process *pprev;
 	if (j)
