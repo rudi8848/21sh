@@ -846,14 +846,16 @@ int		main(void)
 				
 				//do_job_notification();	// <--- in jobs 
 			}
+			ft_printf("OK\n");
 		//	print_jobs();
 			do_job_notification();	// <--- in jobs 
-			print_jobs();
+			ft_printf("OK\n");
+			//print_jobs();
 			//free_job(first_job);		// <- 
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
 			fd_check();
-			print_history();
+			//print_history();
 		}
 	}
 //system("leaks test");

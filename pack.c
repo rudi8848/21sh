@@ -79,6 +79,7 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 			else
 			{
 				ft_printf("Wrong input for heredoc\n");
+				//	CLEAN ALL
 				return 0;
 			}
 			continue;
@@ -88,11 +89,13 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 			if (j->out_fd != STDOUT_FILENO)
 			{
 				ft_printf("\nExtra > or >>\n");
+				//	CLEAN ALL
 				return 0;
 			}
 			if (ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile)) != T_WORD)
 			{
 				ft_printf("\nIllegal > or >>\n");
+				//	CLEAN ALL
 				return 0;
 			}
 			j->out_fd = -1;
@@ -115,6 +118,7 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 				if (j->out_fd != STDOUT_FILENO)
 				{
 					ft_printf("\n> or >> conflicts with |\n");
+					//	CLEAN ALL
 					return 0;
 				}
 				//one simple command ends, need to create next process and pipe()
@@ -136,6 +140,7 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 					p = j->first_process;
 					argc = 0;
 					init_job(j);
+					makepipe = 0;
 					continue;
 				}
 				else
@@ -144,9 +149,11 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 			if (argc == 0 && (token != T_NLINE || j->in_fd /*> 1*/ != -1))
 			{
 				ft_printf("Missing command\n");
+				//	CLEAN ALL
 				return 0;
 			}
 			else if (argc == 0 && token == T_NLINE)
+				//	CLEAN ALL
 				return 0;
 			return 1;
 
