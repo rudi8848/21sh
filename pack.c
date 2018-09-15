@@ -15,6 +15,7 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
+	t_token	tkn;
 	char word[MAXWORD];
 	int argc;
 	t_job *j = *job;
@@ -92,8 +93,32 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 				//	CLEAN ALL
 				return 0;
 			}
-			if (ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile)) != T_WORD)
+			if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 			{
+				//	!!!		check file description arrregation here 
+				if (tkn == T_BG)
+				{
+					if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
+						ft_printf("ERROR\n");
+					if (ft_strequ("-", j->dstfile))
+						ft_printf("<<< need to close %s >>>\n", p->argv[argc - 1]);
+					else if (ft_isdigit(j->dstfile[0]))
+					{
+							//	compare atoi(p->argv[argc-1]) with j->in_fd, out, err, if fits - 
+							// change it to atoi(j->dstfile), remove p->argv[argc -1] and argc--
+							// if p->argv[argc -1] is not number need to redirect STDOUT_FILENO
+							// and don't touch argv[argc -1 ] and argc
+							//int nbr = ft_atoi(p->argv)
+							ft_printf("<<< %s is redirected to %s >>>\n", p->argv[argc - 1], j->dstfile);
+					}
+					else
+					{
+						ft_printf("ERROR\n");
+						return 0;
+					}
+					continue;
+				}
+				else
 				ft_printf("\nIllegal > or >>\n");
 				//	CLEAN ALL
 				return 0;

@@ -846,10 +846,10 @@ int		main(void)
 				
 				//do_job_notification();	// <--- in jobs 
 			}
-			ft_printf("OK\n");
+
 		//	print_jobs();
-			do_job_notification();	// <--- in jobs 
-			ft_printf("OK\n");
+			//do_job_notification();	// <--- in jobs 
+
 			//print_jobs();
 			//free_job(first_job);		// <- 
 			close(g_hstr_fd);
