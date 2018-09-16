@@ -10,7 +10,7 @@ extern char **environ;
 	pid_t	shell_pgid;
 	int		shell_terminal;
 	int		shell_is_interactive;
-	t_job	*first_job = NULL;
+	
 	char	*g_history[MAXHSTR];
 	int	g_hstr_nb;
 	int	g_hstr_fd = -1;
@@ -442,6 +442,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 	}
 	if (execve(p->argv[0], p->argv, g_envp) < 0)
 		perror("execve");
+
 	exit(1);
 }
 
@@ -538,7 +539,7 @@ void	do_job_notification(void)
 	t_job		*j;
 	t_job		*jlast;
 	t_job		*jnext;
-	t_process	*p;
+	//t_process	*p;
 
 	update_status();
 	jlast = NULL;
@@ -648,6 +649,8 @@ void	launch_job(t_job *j, int foreground)
 					setpgid(pid, j->pgid);
 					//ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 				}
+				if (foreground)
+				p->state |= COMPLETED;				//	<<<---- test for delete foreground jobs
 			}
 		}		//END not built
 
@@ -688,12 +691,14 @@ void 	print_jobs()
 		while (p)
 		{
 			i = 0;
+
 			while (p->argv[i])
 			{
 				printf("[%d] %s\n",i, p->argv[i]);
 //				ft_printf("src: [%s][%d], dst: [%s][%d]\n", j->srcfile, j->in_fd, j->);
 				i++;
 			}
+			printf("state: %s\n", p->state & COMPLETED ? "completed" : "not completed");
 			printf("-----------\n");
 			p = p->next;
 		}
@@ -780,41 +785,31 @@ void	print_history(void)
 void	check_history_capacity(void)
 {
 	if (g_hstr_nb == MAXHSTR - 1)
-	{	ft_printf("MAXHISTORY!!!\n");
-	ft_exit();}
+	{
+		ft_printf("MAXHISTORY!!!\n");
+		ft_exit();
+	}
 }
 
 int		main(void)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
-	t_process *process;
-	g_envp = NULL;
-
 	t_job *j;
+	t_job *ptr;
 	
+	g_envp = NULL;
 	init_shell();
-	g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+	first_job = NULL;
+	g_hstr_fd = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 	init_history();
-	//first_job = (t_job*)ft_memalloc(sizeof(t_job));
 	while (1)
 	{
-		j = (t_job*)ft_memalloc(sizeof(t_job));		//затирает текущие процессы в бг
-		process = (t_process*)ft_memalloc(sizeof(t_process));
-		if (!j || !process)
+		j = (t_job*)ft_memalloc(sizeof(t_job));
+		if (!j)
 		{
 			perror("ft_memalloc");
 			return 1;
-		}
-		j->first_process = process;
-		if (!first_job)
-			first_job = j;
-		else
-		{
-			t_job *ptr = first_job;
-			while (ptr->next)
-				ptr = ptr->next;
-			ptr->next = j;
 		}
 		if (g_hstr_fd == -1)
 			g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
@@ -822,33 +817,23 @@ int		main(void)
 		read_line(&line[0], 0);
 		ft_restore();
 		//ft_printf("[%s]", line);
-		if (line[0] != '\n' && pack_args(line, &j, &first_job))
+		if (line[0] != '\n' && pack_args(line, j))
 		{
 			check_history_capacity();
 			ft_putstr_fd(line, g_hstr_fd);
 			line[ft_strlen(line) - 1] = 0;
 			g_history[g_hstr_nb] = ft_strdup(line);
 			g_hstr_nb++;
-			//print_jobs(first_job);
-
-			j = first_job;
-			while (j)
-			{
-				t_job *prev = j;
-				j = j->next;
-				launch_job(prev, prev->foreground);
-				if (prev->foreground)
-				{
-					free_job(prev);
-					free(prev);
-					prev = NULL;
-				}
-				
-				//do_job_notification();	// <--- in jobs 
+			//print_jobs();
+			ptr = first_job;
+			while (ptr)
+			{				
+				launch_job(ptr, ptr->foreground);
+				ptr = ptr->next;
 			}
 
 		//	print_jobs();
-			//do_job_notification();	// <--- in jobs 
+			do_job_notification();	// <--- in jobs 
 
 			//print_jobs();
 			//free_job(first_job);		// <- 
@@ -859,12 +844,7 @@ int		main(void)
 		}
 	}
 //system("leaks test");
-//	
-//		launch_job(first_job, 1);
 
-//	do_job_notification();
-//	continue_job(first_job, 0);
-//
 	return 0;
 }
 /*

@@ -2,6 +2,7 @@
 
 void	init_job(t_job *j)
 {
+	//ft_printf("---> %s\n", __FUNCTION__);
 	j->in_fd = STDIN_FILENO;
 	j->out_fd = STDOUT_FILENO;
 	j->err_fd = STDERR_FILENO;
@@ -9,23 +10,46 @@ void	init_job(t_job *j)
 	ft_bzero(j->srcfile, sizeof(j->srcfile));
 	ft_bzero(j->dstfile, sizeof(j->dstfile));
 	j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
+	if (!(j->first_process = (t_process*)ft_memalloc(sizeof(t_process))))
+	{
+		ft_printf("Memory error\n");
+		exit(EXIT_FAILURE);
+	}
 }
 
-int	pack_args(char *line, t_job **job, t_job **first_job)
+void	push_back(t_job *elem)
+{
+	//ft_printf("---> %s\n", __FUNCTION__);
+	t_job *ptr;
+
+	if (!first_job)
+	{
+		first_job = elem;
+		return;
+	}
+	ptr = first_job;
+	while (ptr->next)
+		ptr = ptr->next;
+	ptr->next = elem;
+}
+
+int	pack_args(char *line, t_job *job)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	t_token	tkn;
 	char word[MAXWORD];
 	int argc;
-	t_job *j = *job;
-	t_process *p = j->first_process;
+	t_job *j = job;
+	t_process *p;
 	int makepipe = 0;
 	int i = 0;
 	argc = 0;
 
 	init_job(j);
-	*first_job = j;
+	//*first_job = j;	// если есть бг процессы - то в начало или конец
+	push_back(j);
+	p = j->first_process;
 	while (1)
 	{
 		ft_bzero(word, sizeof(word));
@@ -186,10 +210,8 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 					//	CLEAN ALL
 					return 0;
 				}
-				//one simple command ends, need to create next process and pipe()
 				p->next  = (t_process*)ft_memalloc(sizeof(t_process));
 				p = p->next;
-				//ft_printf("PIPE\n");
 				makepipe = 1;
 				argc = 0;
 				continue;
@@ -201,10 +223,9 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 					j->next = (t_job*)ft_memalloc(sizeof(t_job));
 					p->next = NULL;
 					j = j->next;
-					j->first_process = (t_process*)ft_memalloc(sizeof(t_process));
-					p = j->first_process;
 					argc = 0;
 					init_job(j);
+					p = j->first_process;
 					makepipe = 0;
 					continue;
 				}
