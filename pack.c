@@ -99,17 +99,57 @@ int	pack_args(char *line, t_job **job, t_job **first_job)
 				if (tkn == T_BG)
 				{
 					if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
+					{
 						ft_printf("ERROR\n");
+						return 0;
+					}
 					if (ft_strequ("-", j->dstfile))
-						ft_printf("<<< need to close %s >>>\n", p->argv[argc - 1]);
+					{
+						int nbr = ft_atoi(p->argv[argc - 1]);
+						if (nbr == j->in_fd)
+							close(j->in_fd);
+						else if (nbr == j->out_fd)
+							close(j->out_fd);
+						else if (nbr == j->err_fd)
+							close(j->err_fd);
+						else
+						{
+							ft_printf("Bad file descriptor: %d\n", nbr);
+							return 0;
+						}
+						//ft_printf("<<< need to close %s >>>\n", p->argv[argc - 1]);
+					}
 					else if (ft_isdigit(j->dstfile[0]))
 					{
+						//j->out_fd = ft_atoi(j->dstfile);
+						if (ft_isdigit(p->argv[argc - 1][0]))
+						{
+							int nbr = ft_atoi(p->argv[argc - 1]);
+							if (nbr == j->in_fd)
+								j->in_fd = ft_atoi(j->dstfile);
+							else if (nbr == j->out_fd)
+								j->out_fd = ft_atoi(j->dstfile);
+							else if (nbr == j->err_fd)
+								j->err_fd = ft_atoi(j->dstfile);
+							else
+							{
+								ft_printf("Bad file descriptor: %d\n", nbr);
+								return 0;
+							}
+							argc--;
+							free(p->argv[argc]);
+							p->argv[argc] = NULL;
+						}
+						else	//	p->argv[argc]	not digit
+						{
+							j->out_fd = ft_atoi(j->dstfile);
+						}
 							//	compare atoi(p->argv[argc-1]) with j->in_fd, out, err, if fits - 
 							// change it to atoi(j->dstfile), remove p->argv[argc -1] and argc--
 							// if p->argv[argc -1] is not number need to redirect STDOUT_FILENO
 							// and don't touch argv[argc -1 ] and argc
 							//int nbr = ft_atoi(p->argv)
-							ft_printf("<<< %s is redirected to %s >>>\n", p->argv[argc - 1], j->dstfile);
+							//ft_printf("<<< %s is redirected to %s >>>\n", p->argv[argc - 1], j->dstfile);
 					}
 					else
 					{
