@@ -569,7 +569,7 @@ void	do_job_notification(void)
 		j = jnext;
 	}
 }
-
+//-----------------------------------------------
 void	mark_job_as_running(t_job *j)
 {
 	t_process	*p;
@@ -587,7 +587,7 @@ void	continue_job(t_job *j, int foreground)
 	else
 		put_job_in_background(j, 1);
 }
-
+//-----------------------------------------------
 void	launch_job(t_job *j, int foreground)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -687,6 +687,7 @@ void 	print_jobs()
 	printf("\n+++ PRINT +++\n");
 	while (j)
 	{
+		ft_printf("%s\n", j->notified ? "notified" : "not notified");
 		p = j->first_process;
 		while (p)
 		{
@@ -824,19 +825,20 @@ int		main(void)
 			line[ft_strlen(line) - 1] = 0;
 			g_history[g_hstr_nb] = ft_strdup(line);
 			g_hstr_nb++;
-			//print_jobs();
+			
 			ptr = first_job;
 			while (ptr)
-			{				
-				launch_job(ptr, ptr->foreground);
+			{
+				//	check running bg processes
+				if (!ptr->pgid)
+					launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
 
-		//	print_jobs();
+			//print_jobs();
 			do_job_notification();	// <--- in jobs 
 
 			//print_jobs();
-			//free_job(first_job);		// <- 
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
 			fd_check();
@@ -850,9 +852,10 @@ int		main(void)
 /*
 
 		*	edit few lines ctrl+UP, ctrl+DOWN 
-		*	history		!!! first UP prints not last command
+		*	rewrite cursor according to winsize + SIGWINCH
+		*	history		!!! need to remove last command when max DOWN
 		*	copy/paste
-		*	2>&-
+		*	2>&-, 2>file
 		*	jobs builtins (%, %%, bg, fg, jobs)
 		*	tab
 
