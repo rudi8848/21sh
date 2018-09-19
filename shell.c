@@ -498,8 +498,8 @@ int	mark_process_status(pid_t pid, int status)
 			fprintf(stderr, "No child process %d.\n", pid);
 			return -1;
 		}
-		else if (pid == 0 || errno == ECHILD)
-			return -1;
+	else if (pid == 0 || errno == ECHILD)
+		return -1;
 	else
 	{
 		perror("waitpid");
@@ -512,6 +512,7 @@ void	update_status(void)
 	int	status;
 	pid_t	pid;
 
+	status = 0;
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
 	while (!mark_process_status(pid, status));
@@ -522,6 +523,7 @@ void	wait_for_job(t_job *j)
 	int	status;
 	pid_t	pid;
 
+	status = 0;
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED);
 	while (!mark_process_status(pid, status) && !job_is_stopped(j)
