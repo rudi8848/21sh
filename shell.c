@@ -377,7 +377,7 @@ void	set_stopsignals(sig_t func)
 	signal(SIGTSTP, func);
 	signal(SIGTTIN, func);
 	signal(SIGTTOU, func);
-	signal(SIGCHLD, func);
+	//signal(SIGCHLD, func);
 }
 
 t_job	*find_job(pid_t pgid)
@@ -475,6 +475,7 @@ void	put_job_in_background(t_job *j, int cont)
 
 int	mark_process_status(pid_t pid, int status)
 {
+	//ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 	t_job		*j;
 	t_process	*p;
 
@@ -513,9 +514,16 @@ void	update_status(void)
 	pid_t	pid;
 
 	status = 0;
+
+	pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
+	//ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
+	while (!mark_process_status(pid, status))
+		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
+	/*
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
 	while (!mark_process_status(pid, status));
+	*/
 }
 
 void	wait_for_job(t_job *j)
@@ -524,10 +532,23 @@ void	wait_for_job(t_job *j)
 	pid_t	pid;
 
 	status = 0;
+
+	//pid = waitpid(WAIT_ANY, &status, WUNTRACED);
+	pid = waitpid(j->first_process->pid, &status, WUNTRACED);
+	//perror("waitpid");
+	//ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
+	//if (!j->foreground)
+	//{
+		while (mark_process_status(pid, status) == 0 && !job_is_stopped(j)
+			&& !job_is_completed(j))
+			pid = waitpid(WAIT_ANY, &status, WUNTRACED);
+	//}
+	/*
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED);
-	while (!mark_process_status(pid, status) && !job_is_stopped(j)
+	while (mark_process_status(pid, status) == 0 && !job_is_stopped(j)
 			&& !job_is_completed(j));
+			*/
 }
 
 void	format_job_info(t_job *j, const char *status)
@@ -659,8 +680,8 @@ void	launch_job(t_job *j, int foreground)
 				
 			}
 		}		//END not built
-		if (foreground)
-			p->state |= COMPLETED;
+		//if (foreground)
+			//p->state |= COMPLETED;
 		if (infile != j->in_fd)
 			close(infile);
 		
@@ -744,6 +765,7 @@ void	init_shell(void)
 		init_terminal();
 	}
 	else
+		//read commands from file, recognise comments
 			fprintf(stderr, "shell is not interactive\n");
 }
 
@@ -835,10 +857,8 @@ int		main(void)
 			
 			ptr = first_job;
 			while (ptr)
-			{
-				//	check running bg processes
-				if (!ptr->pgid)
-					launch_job(ptr, ptr->foreground);
+			{	
+				launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
 

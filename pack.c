@@ -38,21 +38,19 @@ void	push_back(t_job *elem)
 	ptr->next = elem;
 }
 
-int	pack_args(char *line, t_job *job)
+int	pack_args(char *line, t_job *j)
 {
 	//ft_printf("---> %s\n", __FUNCTION__);
 	t_token	token;
 	t_token	tkn;
 	char word[MAXWORD];
 	int argc;
-	t_job *j = job;
 	t_process *p;
 	int makepipe = 0;
 	int i = 0;
 	argc = 0;
 
 	init_job(j);
-	//*first_job = j;	// если есть бг процессы - то в начало или конец
 	push_back(j);
 	p = j->first_process;
 	while (1)
