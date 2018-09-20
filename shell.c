@@ -446,8 +446,6 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 	exit(1);
 }
 
-void	wait_for_job(t_job *j);
-
 void	put_job_in_foreground(t_job *j, int cont)
 {
 	tcsetpgrp(shell_terminal, j->pgid);
@@ -455,7 +453,7 @@ void	put_job_in_foreground(t_job *j, int cont)
 	if (cont)
 	{
 		tcsetattr(shell_terminal, TCSAFLUSH, &j->tmodes);
-		if (kill(- j->pgid, SIGCONT) < 0)
+		if (kill( -j->pgid, SIGCONT) < 0)
 			perror("kill(SIGCONT)");
 	}
 
@@ -469,8 +467,10 @@ void	put_job_in_foreground(t_job *j, int cont)
 void	put_job_in_background(t_job *j, int cont)
 {
 	if (cont)
-		if (kill( - j->pgid, SIGCONT) < 0)
+	{
+		if (kill( -j->pgid, SIGCONT) < 0)
 			perror("kill(SIGCONT)");
+	}
 }
 
 int	mark_process_status(pid_t pid, int status)
@@ -549,7 +549,7 @@ void	do_job_notification(void)
 	j = first_job;
 	while(j)
 	{
-	//	ft_printf("--> j: %s ", j->first_process->argv[0]);
+		
 		jnext = j->next;
 		if (job_is_completed(j))
 		{
@@ -558,7 +558,9 @@ void	do_job_notification(void)
 				jlast->next = jnext;
 			else
 				first_job = jnext;
+			//ft_printf("--> free j: %s ", j->first_process->argv[0]);
 			free_job(j);
+			j = NULL;
 		}
 		else if (job_is_stopped(j) && !j->notified)
 		{
@@ -651,11 +653,14 @@ void	launch_job(t_job *j, int foreground)
 					setpgid(pid, j->pgid);
 					//ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 				}
-				if (foreground)
-				p->state |= COMPLETED;				//	<<<---- test for delete foreground jobs
+				
+					//if (foreground)
+					//	p->state |= COMPLETED;		//	<<<---- test for delete foreground jobs
+				
 			}
 		}		//END not built
-
+		if (foreground)
+			p->state |= COMPLETED;
 		if (infile != j->in_fd)
 			close(infile);
 		
