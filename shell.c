@@ -673,15 +673,9 @@ void	launch_job(t_job *j, int foreground)
 						j->pgid = pid;
 					setpgid(pid, j->pgid);
 					//ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
-				}
-				
-					//if (foreground)
-					//	p->state |= COMPLETED;		//	<<<---- test for delete foreground jobs
-				
+				}	
 			}
 		}		//END not built
-		//if (foreground)
-			//p->state |= COMPLETED;
 		if (infile != j->in_fd)
 			close(infile);
 		
