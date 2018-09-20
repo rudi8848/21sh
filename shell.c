@@ -424,6 +424,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		if (foreground)
 			tcsetpgrp(shell_terminal, pgid);
 		set_stopsignals(SIG_DFL);
+		signal(SIGCHLD, SIG_DFL);
 	}
 	if (infile != STDIN_FILENO)
 	{
@@ -475,12 +476,41 @@ void	put_job_in_background(t_job *j, int cont)
 
 int	mark_process_status(pid_t pid, int status)
 {
-	//ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
+	ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 	t_job		*j;
 	t_process	*p;
 
 	if (pid > 0)
 	{
+		j = first_job;
+		while (j)
+		{
+			p = j->first_process;
+			while (p)
+			{
+				ft_printf("p->pid: [%d], p->argv: [%s]\n", p->pid, p->argv[0]);
+				if (p->pid == pid)
+				{
+					p->status = status;
+					if (WIFSTOPPED(status))
+						p->state |= STOPPED;
+					else
+					{
+						p->state |= COMPLETED;
+						if (WIFSIGNALED(status))
+							fprintf(stderr, "%d: Terminated by signal %d.\n", (int)pid, WTERMSIG(p->status));
+					}
+					return 0;
+					
+				}
+				
+				p = p->next;
+			}
+			j = j->next;
+		}
+		fprintf(stderr, "No child process %d.\n", pid);
+				return -1;
+		/*
 		for (j = first_job; j; j = j->next)
 			for (p = j->first_process; p; p = p->next)
 				if (p->pid == pid)
@@ -498,7 +528,8 @@ int	mark_process_status(pid_t pid, int status)
 				}
 			fprintf(stderr, "No child process %d.\n", pid);
 			return -1;
-		}
+			*/
+	}
 	else if (pid == 0 || errno == ECHILD)
 		return -1;
 	else
@@ -516,7 +547,7 @@ void	update_status(void)
 	status = 0;
 
 	pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
-	//ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
+	ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 	while (!mark_process_status(pid, status))
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
 	/*
@@ -536,13 +567,10 @@ void	wait_for_job(t_job *j)
 	//pid = waitpid(WAIT_ANY, &status, WUNTRACED);
 	pid = waitpid(j->first_process->pid, &status, WUNTRACED);
 	//perror("waitpid");
-	//ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
-	//if (!j->foreground)
-	//{
+	ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 		while (mark_process_status(pid, status) == 0 && !job_is_stopped(j)
 			&& !job_is_completed(j))
 			pid = waitpid(WAIT_ANY, &status, WUNTRACED);
-	//}
 	/*
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED);
@@ -859,7 +887,7 @@ int		main(void)
 			//print_jobs();
 			do_job_notification();	// <--- in jobs 
 
-			//print_jobs();
+			print_jobs();
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
 			fd_check();
