@@ -686,8 +686,11 @@ void	launch_job(t_job *j, int foreground)
 			outfile = j->out_fd;
 
 		if ((ret = check_built(p->argv[0])) >= 0)
-		   	ft_built_exe(p->argv, ret, infile, outfile);
-		else
+		{
+			ft_built_exe(p->argv, ret, infile, outfile);
+			p->state |= COMPLETED;
+		}
+			else
 		{	
 			if (!ft_find(p))	//	<--- here need to close all fd
 				return;
