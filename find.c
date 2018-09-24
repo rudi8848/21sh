@@ -1,6 +1,6 @@
 #include "21sh.h"
 
-int			ft_path_fitting(t_process *cmd, char **p_arr, int f)
+int			ft_path_fitting(t_process *cmd, char **p_arr)
 {
 	char	*tmp;
 	char	*tmp1;
@@ -12,9 +12,15 @@ int			ft_path_fitting(t_process *cmd, char **p_arr, int f)
 		tmp1 = ft_strjoin(p_arr[i], "/");
 		tmp = ft_strjoin(tmp1, cmd->argv[0]);
 		free(tmp1);
-		f = access(tmp, X_OK);
-		if (f == OK)
-		{
+		if (access(tmp, F_OK) == OK)
+		{	
+			if (access(tmp, X_OK) != OK)
+			{
+				ft_printf("%s: permission denied\n", tmp);
+				free_arr(p_arr);
+				free(tmp);
+				return (0);
+			}
 			free(cmd->argv[0]);
 			cmd->argv[0] = ft_strdup(tmp);
 			free_arr(p_arr);
@@ -25,6 +31,7 @@ int			ft_path_fitting(t_process *cmd, char **p_arr, int f)
 			free(tmp);
 		i++;
 	}
+	ft_printf("Command %s: not found\n", cmd->argv[0]);
 	free_arr(p_arr);
 	return (0);
 }
@@ -32,24 +39,23 @@ int			ft_path_fitting(t_process *cmd, char **p_arr, int f)
 int			ft_find(t_process *commands)
 {
 	char	**path_arr;
-	int		find;
 	char	*env_path;
 
 	if (!commands->argv[0])
 		return (0);
-	if ((find = access(commands->argv[0], X_OK)) != OK)
+	if (access(commands->argv[0], F_OK) != OK)
 	{
-		env_path = get_copy_env("PATH", OK);
-		if (!env_path)
+		if (!(env_path = get_copy_env("PATH", OK)))
 			return (0);
 		path_arr = ft_strsplit(env_path, ':');
 		if (!path_arr)
 			return (0);
-		if (!ft_path_fitting(commands, path_arr, find))
-		{
-			ft_printf("Command %s: not found\n", commands->argv[0]);
-			return (0);
-		}
+		return (ft_path_fitting(commands, path_arr));
+	}
+	else if (access(commands->argv[0], X_OK) != OK)
+	{
+		ft_printf("%s: permission denied\n", commands->argv[0]);
+		return (0);
 	}
 	return (1);
 }

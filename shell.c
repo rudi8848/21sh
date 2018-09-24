@@ -504,9 +504,7 @@ int	mark_process_status(pid_t pid, int status)
 							fprintf(stderr, "%d: Terminated by signal %d.\n", (int)pid, WTERMSIG(p->status));
 					}
 					return 0;
-					
 				}
-				
 				p = p->next;
 			}
 			j = j->next;
@@ -693,7 +691,10 @@ void	launch_job(t_job *j, int foreground)
 			else
 		{	
 			if (!ft_find(p))	//	<--- here need to close all fd
+			{
+				p->state |= COMPLETED;
 				return;
+			}
 
 			pid = fork();
 			if (pid == CHILD)
@@ -774,10 +775,9 @@ void	chld_handler(int signum)
 {
 //	ft_printf("---> %s\n",__FUNCTION__);
 	if (signum == SIGCHLD)
-	{
 		do_job_notification();
-	}
 }
+
 void	init_shell(void)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
