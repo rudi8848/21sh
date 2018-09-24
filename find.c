@@ -16,7 +16,8 @@ int			ft_path_fitting(t_process *cmd, char **p_arr)
 		{	
 			if (access(tmp, X_OK) != OK)
 			{
-				ft_printf("%s: permission denied\n", tmp);
+				ft_putstr_fd(tmp, STDERR_FILENO);
+				ft_putstr_fd(": permission denied\n", STDERR_FILENO);
 				free_arr(p_arr);
 				free(tmp);
 				return (0);
@@ -31,7 +32,8 @@ int			ft_path_fitting(t_process *cmd, char **p_arr)
 			free(tmp);
 		i++;
 	}
-	ft_printf("Command %s: not found\n", cmd->argv[0]);
+	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
+	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	free_arr(p_arr);
 	return (0);
 }
@@ -54,7 +56,8 @@ int			ft_find(t_process *commands)
 	}
 	else if (access(commands->argv[0], X_OK) != OK)
 	{
-		ft_printf("%s: permission denied\n", commands->argv[0]);
+		ft_putstr_fd(commands->argv[0], STDERR_FILENO);
+		ft_putstr_fd(": permission denied\n", STDERR_FILENO);
 		return (0);
 	}
 	return (1);

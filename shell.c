@@ -375,6 +375,7 @@ void	set_stopsignals(sig_t func)
 	signal(SIGINT, func);
 	signal(SIGQUIT, func);
 	signal(SIGTSTP, func);
+	signal(SIGTERM, func);
 	signal(SIGTTIN, func);
 	signal(SIGTTOU, func);
 	signal(SIGCHLD, func);
@@ -861,7 +862,7 @@ void	check_history_capacity(void)
 	}
 }
 
-int	main(void)
+int	main(int argc, char **argv)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
 	char line[MAXLINE];
@@ -901,10 +902,8 @@ int	main(void)
 				launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-
 			//print_jobs();
 			do_job_notification();	// <--- in jobs 
-
 //			print_jobs();
 			close(g_hstr_fd);
 			g_hstr_fd = -1;
@@ -923,6 +922,7 @@ int	main(void)
 		*	history		!!! need to remove last command when max DOWN
 		*	copy/paste
 		*	2>&-, 2>file
+		*	non-interactive mode has to read line (GNL) from main(argv[1])
 		*	jobs builtins (%, %%, bg, fg, jobs)
 		*	tab
 

@@ -19,6 +19,7 @@
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
+# include <sys/ioctl.h>
 # include <termios.h>
 # include <curses.h>
 # include <term.h>
