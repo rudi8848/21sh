@@ -900,14 +900,18 @@ int	main(int argc, char **argv)
 		}
 		else
 		{
-			
+			ft_bzero(line, MAXLINE);
 			char *str = NULL;
 			if (get_next_line(infile, &str) > 0)
+			{
 				ft_strcpy(line, str);
+				line[ft_strlen(str)] = '\n';
+				free(str);
+			}
 			else
 			{
 				close(infile);
-				ft_exit();
+				exit(0);
 			}
 		}
 		//ft_printf("[%s]", line);
