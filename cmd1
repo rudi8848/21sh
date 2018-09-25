@@ -1,1 +1,3 @@
 ls -l > FILE
+make clean
+ls >> FILE

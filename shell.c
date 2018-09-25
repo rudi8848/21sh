@@ -364,7 +364,7 @@ void 	init_terminal()
         ft_putstr_fd("Error at tgetent\n", STDERR_FILENO);
         exit(EXIT_FAILURE);
     }
-    copy_env();
+    //copy_env();
 }
 
 void	set_stopsignals(sig_t func)
@@ -661,11 +661,16 @@ void	launch_job(t_job *j, int foreground)
 		perror("open");
 		return ;
 	}
+	if (j->err_fd == -1 && (j->err_fd = open(j->errfile, j->flags, FILE_PERM)) == -1)
+	{
+		perror("open");
+		return ;
+	}
 	infile = j->in_fd;
 	p = j->first_process;
 	while(p)
 	{
-		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH )) == -1)
+		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, FILE_PERM )) == -1)
 		{
 			perror("open");
 			return ;
@@ -730,6 +735,8 @@ void	launch_job(t_job *j, int foreground)
 			close(j->in_fd);
 	if (j->out_fd != STDOUT_FILENO)
 			close(j->out_fd);
+	if (j->err_fd > 2)
+		close(j->err_fd);
 	format_job_info(j, "launched");
 
 	if (!shell_is_interactive)
@@ -803,6 +810,7 @@ void	init_shell(void)
 		tcsetpgrp(shell_terminal, shell_pgid);
 		init_terminal();
 	}
+	copy_env();
 	//else
 		//read commands from file, recognise comments
 	//		fprintf(stderr, "shell is not interactive\n");
@@ -871,10 +879,16 @@ int	main(int argc, char **argv)
 	g_envp = NULL;
 	if (argc == 1)
 		init_shell();
-	else
+	else if (argc == 2)
 	{
 		shell_is_interactive = 0;
 		infile = open(argv[1], O_RDONLY);
+		copy_env();
+	}
+	else
+	{
+		ft_putstr_fd("Unexpected argument\n", STDERR_FILENO);
+		exit(EXIT_FAILURE);
 	}
 	first_job = NULL;
 	if (shell_is_interactive)
@@ -928,11 +942,11 @@ int	main(int argc, char **argv)
 			ptr = first_job;
 			while (ptr)
 			{	
+				//print_jobs();
 				launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-			//print_jobs();
-			if (shell_is_interactive)
+			
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)

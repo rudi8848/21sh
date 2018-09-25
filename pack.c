@@ -60,7 +60,7 @@ int	pack_args(char *line, t_job *j)
 	{
 		ft_bzero(word, sizeof(word));
 		token = ft_gettoken(line, &i, word, sizeof(word));
-
+//--- T_WORD
 		if (token == T_WORD)
 		{
 			if (argc >= MAXARG-1)
@@ -77,6 +77,8 @@ int	pack_args(char *line, t_job *j)
 			argc++;
 			continue;
 		}
+//----------------------------------
+//--- T_LESS
 		else if (token == T_LESS)
 		{
 			if (makepipe)
@@ -92,6 +94,8 @@ int	pack_args(char *line, t_job *j)
 			j->in_fd = -1;
 			continue;
 		}
+//----------------------------------
+//--- T_HRDOC
 		else if (token == T_HRDOC)
 		{
 			if (ft_gettoken(line, &i, word, sizeof(word)) != T_WORD)
@@ -115,77 +119,100 @@ int	pack_args(char *line, t_job *j)
 			}
 			continue;
 		}
+//----------------------------------
+//--- T_GREAT || T_GGREAT
 		else if (token == T_GREAT || token == T_GGREAT)
 		{
+			// --- check errors
 			if (j->out_fd != STDOUT_FILENO)
 			{
 				ft_printf("\nExtra > or >>\n");
 				//	CLEAN ALL
 				return 0;
 			}
+			// --- if next is not name of file
 			if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 			{
-				//	!!!		check file description arrregation here 
+				//	--- redirection fd to fd or close
 				if (tkn == T_BG)
 				{
-					if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
-					{
-						ft_printf("ERROR\n");
-						return 0;
-					}
-					if (ft_strequ("-", j->dstfile))
-					{
-						int nbr = ft_atoi(p->argv[argc - 1]);
-						if (nbr == j->in_fd)
-							close(j->in_fd);
-						else if (nbr == j->out_fd)
-							close(j->out_fd);
-						else if (nbr == j->err_fd)
-							close(j->err_fd);
-						else
+						if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 						{
-							ft_printf("Bad file descriptor: %d\n", nbr);
+							ft_printf("ERROR\n");
 							return 0;
 						}
-						//ft_printf("<<< need to close %s >>>\n", p->argv[argc - 1]);
-					}
-					else if (ft_isdigit(j->dstfile[0]))
-					{
-						//j->out_fd = ft_atoi(j->dstfile);
-						if (ft_isdigit(p->argv[argc - 1][0]))
+						if (ft_strequ("-", j->dstfile))
 						{
-							int nbr = ft_atoi(p->argv[argc - 1]);
+							int nbr;
+							if (ft_isdigit(p->argv[argc - 1][0]))
+								nbr = ft_atoi(p->argv[argc - 1]);
+							else
+								nbr = 1;
 							if (nbr == j->in_fd)
-								j->in_fd = ft_atoi(j->dstfile);
+							{
+								;//j->in_fd = -1;
+								//ft_strcpy(j->srcfile, "/dev/null");
+							}
 							else if (nbr == j->out_fd)
-								j->out_fd = ft_atoi(j->dstfile);
+							{
+								j->out_fd = -1;
+								ft_strcpy(j->dstfile, "/dev/null");
+							}
 							else if (nbr == j->err_fd)
-								j->err_fd = ft_atoi(j->dstfile);
+							{
+								j->err_fd = -1;
+								ft_strcpy(j->errfile, "/dev/null");
+							}
 							else
 							{
 								ft_printf("Bad file descriptor: %d\n", nbr);
 								return 0;
 							}
-							argc--;
-							free(p->argv[argc]);
-							p->argv[argc] = NULL;
+							if (ft_isdigit(p->argv[argc - 1][0]))
+							{
+								argc--;
+								free(p->argv[argc]);
+								p->argv[argc] = NULL;
+							}
+
 						}
-						else	//	p->argv[argc]	not digit
+						else if (ft_isdigit(j->dstfile[0]))
 						{
-							j->out_fd = ft_atoi(j->dstfile);
+							//j->out_fd = ft_atoi(j->dstfile);
+							if (ft_isdigit(p->argv[argc - 1][0]))
+							{
+								int nbr = ft_atoi(p->argv[argc - 1]);
+								if (nbr == j->in_fd)
+									;//j->in_fd = ft_atoi(j->dstfile);
+								else if (nbr == j->out_fd)
+									j->out_fd = ft_atoi(j->dstfile);
+								else if (nbr == j->err_fd)
+									j->err_fd = ft_atoi(j->dstfile);
+								else
+								{
+									ft_printf("Bad file descriptor: %d\n", nbr);
+									return 0;
+								}
+								argc--;
+								free(p->argv[argc]);
+								p->argv[argc] = NULL;
+							}
+							else	//	p->argv[argc]	not digit
+							{
+								j->out_fd = ft_atoi(j->dstfile);
+							}
+								//	compare atoi(p->argv[argc-1]) with j->in_fd, out, err, if fits - 
+								// change it to atoi(j->dstfile), remove p->argv[argc -1] and argc--
+								// if p->argv[argc -1] is not number need to redirect STDOUT_FILENO
+								// and don't touch argv[argc -1 ] and argc
+								//int nbr = ft_atoi(p->argv)
+								//ft_printf("<<< %s is redirected to %s >>>\n", p->argv[argc - 1], j->dstfile);
 						}
-							//	compare atoi(p->argv[argc-1]) with j->in_fd, out, err, if fits - 
-							// change it to atoi(j->dstfile), remove p->argv[argc -1] and argc--
-							// if p->argv[argc -1] is not number need to redirect STDOUT_FILENO
-							// and don't touch argv[argc -1 ] and argc
-							//int nbr = ft_atoi(p->argv)
-							//ft_printf("<<< %s is redirected to %s >>>\n", p->argv[argc - 1], j->dstfile);
-					}
-					else
-					{
-						ft_printf("ERROR\n");
-						return 0;
-					}
+						else
+						{
+							ft_printf("ERROR\n");
+							return 0;
+						}
 					continue;
 				}
 				else
@@ -193,6 +220,26 @@ int	pack_args(char *line, t_job *j)
 				//	CLEAN ALL
 				return 0;
 			}
+			//-----------
+			if (ft_isdigit(p->argv[argc - 1][0]))
+			{
+				int nbr = ft_atoi(p->argv[argc - 1]);
+				if (nbr == j->in_fd)
+					j->in_fd = open(j->dstfile, j->flags, FILE_PERM);
+				else if (nbr == j->out_fd)
+					j->out_fd = -1;
+				else if (nbr == j->err_fd)
+					j->err_fd = open(j->dstfile, j->flags, FILE_PERM);
+				else
+				{
+					ft_printf("Bad file descriptor: %d\n", nbr);
+					return 0;
+				}
+				argc--;
+				free(p->argv[argc]);
+				p->argv[argc] = NULL;
+			}
+			//-----------
 			j->out_fd = -1;
 			if ( token == T_GGREAT)
 				j->flags |= O_APPEND;
@@ -200,6 +247,8 @@ int	pack_args(char *line, t_job *j)
 				j->flags |= O_TRUNC;
 			continue;
 		}
+//----------------------------------
+//--- T_PIPE || T_BG || T_SEMI || T_NLINE
 		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
 		{
 			p->argv[argc] = NULL;
@@ -250,14 +299,9 @@ int	pack_args(char *line, t_job *j)
 			return 1;
 
 		}
-		else if (token == T_EOF)
-		{
+//----------------------------------
+		else if (token == T_EOF || token == T_ERROR)
 			return 0;
-		}
-		else if (token == T_ERROR)
-		{
-			return 0;	
-		}
-
+//----------------------------------
 	}
 }

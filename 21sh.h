@@ -116,7 +116,7 @@ typedef enum {
 # define TERM_HOME tputs(tgoto(tgetstr("LE", NULL), 0, i), 0, ft_iputchar);
 # define TERM_CRS_RIGHT tputs(tgetstr("nd", NULL), 0, ft_iputchar);
 # define TERM_CRS_LEFT	tputs(tgetstr("le", NULL), 0, ft_iputchar);
-
+# define FILE_PERM S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH
 typedef struct s_process
 {
 	struct s_process *next;
@@ -140,6 +140,7 @@ typedef struct s_job
 	int err_fd;
 	char srcfile[MAXFILENAME];
 	char dstfile[MAXFILENAME];
+	char errfile[MAXFILENAME];
 	struct termios tmodes;
 	int flags;
 	int foreground;
