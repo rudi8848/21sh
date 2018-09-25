@@ -7,8 +7,6 @@ struct termios saved;
 extern char **environ;
 
 //===========================================
-
-	
 	char	*g_history[MAXHSTR];
 	int	g_hstr_nb;
 	int	g_hstr_fd = -1;
