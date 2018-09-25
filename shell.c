@@ -805,9 +805,9 @@ void	init_shell(void)
 		tcsetpgrp(shell_terminal, shell_pgid);
 		init_terminal();
 	}
-	else
+	//else
 		//read commands from file, recognise comments
-			fprintf(stderr, "shell is not interactive\n");
+	//		fprintf(stderr, "shell is not interactive\n");
 }
 
 static void fd_check(void)
@@ -870,10 +870,16 @@ int	main(int argc, char **argv)
 	t_job *ptr;
 	
 	g_envp = NULL;
-	init_shell();
+	if (argc == 1)
+		init_shell();
+	else
+		shell_is_interactive = 0;
 	first_job = NULL;
-	g_hstr_fd = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
-	init_history();
+	if (shell_is_interactive)
+	{
+		g_hstr_fd = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+		init_history();
+	}
 	while (1)
 	{
 		j = (t_job*)ft_memalloc(sizeof(t_job));
@@ -882,20 +888,34 @@ int	main(int argc, char **argv)
 			perror("ft_memalloc");
 			return 1;
 		}
-		if (g_hstr_fd == -1)
-			g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
-		cbreak_settings();
-		read_line(&line[0], 0);
-		ft_restore();
+		if (shell_is_interactive)
+		{
+			if (g_hstr_fd == -1)
+				g_hstr_fd= open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+			cbreak_settings();
+			read_line(&line[0], 0);
+			ft_restore();
+		}
+		else
+		{
+			int infile = open(argv[1], O_RDONLY);
+			char *str = NULL;
+			if (get_next_line(infile, &str) > 0)
+				ft_strcpy(line, str);
+			else
+				ft_exit();
+		}
 		//ft_printf("[%s]", line);
 		if (line[0] != '\n' && pack_args(line, j))
 		{
-			check_history_capacity();
-			ft_putstr_fd(line, g_hstr_fd);
-			line[ft_strlen(line) - 1] = 0;
-			g_history[g_hstr_nb] = ft_strdup(line);
-			g_hstr_nb++;
-			
+			if (shell_is_interactive)
+			{
+				check_history_capacity();
+				ft_putstr_fd(line, g_hstr_fd);
+				line[ft_strlen(line) - 1] = 0;
+				g_history[g_hstr_nb] = ft_strdup(line);
+				g_hstr_nb++;
+			}
 			ptr = first_job;
 			while (ptr)
 			{	
@@ -905,9 +925,12 @@ int	main(int argc, char **argv)
 			//print_jobs();
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
-			close(g_hstr_fd);
-			g_hstr_fd = -1;
-			fd_check();
+			if (shell_is_interactive)
+			{
+				close(g_hstr_fd);
+				g_hstr_fd = -1;
+				fd_check();
+			}
 			//print_history();
 		}
 	}
