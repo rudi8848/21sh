@@ -7,9 +7,7 @@ struct termios saved;
 extern char **environ;
 
 //===========================================
-	pid_t	shell_pgid;
-	int		shell_terminal;
-	int		shell_is_interactive;
+
 	
 	char	*g_history[MAXHSTR];
 	int	g_hstr_nb;
@@ -869,11 +867,15 @@ int	main(int argc, char **argv)
 	t_job *j;
 	t_job *ptr;
 	
+	int infile;
 	g_envp = NULL;
 	if (argc == 1)
 		init_shell();
 	else
+	{
 		shell_is_interactive = 0;
+		infile = open(argv[1], O_RDONLY);
+	}
 	first_job = NULL;
 	if (shell_is_interactive)
 	{
@@ -898,12 +900,15 @@ int	main(int argc, char **argv)
 		}
 		else
 		{
-			int infile = open(argv[1], O_RDONLY);
+			
 			char *str = NULL;
 			if (get_next_line(infile, &str) > 0)
 				ft_strcpy(line, str);
 			else
+			{
+				close(infile);
 				ft_exit();
+			}
 		}
 		//ft_printf("[%s]", line);
 		if (line[0] != '\n' && pack_args(line, j))
@@ -923,6 +928,7 @@ int	main(int argc, char **argv)
 				ptr = ptr->next;
 			}
 			//print_jobs();
+			if (shell_is_interactive)
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)

@@ -7,11 +7,14 @@ void	init_job(t_job *j)
 	j->out_fd = STDOUT_FILENO;
 	j->err_fd = STDERR_FILENO;
 	j->foreground = 1;
-	if ((tcgetattr(STDOUT_FILENO, &j->tmodes)) == -1)
-    {
-        ft_putstr_fd("Cannot get terminal settings\n", STDERR_FILENO);
-        exit(EXIT_FAILURE);
-    }
+	if (shell_is_interactive)
+	{
+		if ((tcgetattr(STDOUT_FILENO, &j->tmodes)) == -1)
+	    {
+	        ft_putstr_fd("Cannot get terminal settings\n", STDERR_FILENO);
+	        exit(EXIT_FAILURE);
+	    }
+	}
 	ft_bzero(j->srcfile, sizeof(j->srcfile));
 	ft_bzero(j->dstfile, sizeof(j->dstfile));
 	j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;

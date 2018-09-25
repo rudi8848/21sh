@@ -46,7 +46,9 @@
 # define BLUE	"\033[0;34m"
 
 char		**g_envp;
-
+	pid_t	shell_pgid;
+	int		shell_terminal;
+	int		shell_is_interactive;
 
 typedef int t_bool;
 
