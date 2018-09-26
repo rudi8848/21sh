@@ -46,7 +46,7 @@ struct job {
 	int jobId;
 	int numProgs;
 	int runningProgs;
-	char *test;
+	char *text;
 	char *cmdBuf;
 	pid_t pgrp;
 	struct childProgram *progs;
@@ -76,12 +76,12 @@ int 	getCommand(FILE *source, char *command) {
 	}
 
 	if (!fgets(command, MAX_COMMAND_LEN, source)){
-		if (sourse == stdin) printf("\n");
+		if (source == stdin) printf("\n");
 		return 1;
 	}
 
 	//
-	command[stdlen(command) -1] = '\0';
+	command[strlen(command) -1] = '\0';
 
 	return 0;
 }
@@ -189,7 +189,7 @@ int parseCommand(char **commandPtr, struct job *job, int *isBg) {
 	while (*src && !done) {
 		if (quote == *src) {
 			quote = '\0';
-		} else if (qoute) {
+		} else if (quote) {
 			if (*src == '\\') {
 				src++;
 				if (!*src) {
@@ -200,7 +200,7 @@ int parseCommand(char **commandPtr, struct job *job, int *isBg) {
 
 
 	
-		if (*src != qoute) *buf++ = '\\';	
+		if (*src != quote) *buf++ = '\\';	
 		} else if (*src == '*' || *src == '?' || *src == '[' ||
 			*src == ']')
 		*buf++ = '\\';
@@ -222,7 +222,7 @@ int parseCommand(char **commandPtr, struct job *job, int *isBg) {
 	} else switch (*src) {
 		case '"':
 		case '\'':
-			qoute = *src;
+			quote = *src;
 			break;
 
 		case '#':
@@ -643,7 +643,7 @@ void	checkJobs(struct jobSet *jobList) {
 
 			if (!job->runningProgs) {
 				printf(JOB_STATUS_FORMAT, job->jobId,
-					msg, job->test);
+					msg, job->text);
 				removeJob(jobList, job);
 			}
 		} else {
