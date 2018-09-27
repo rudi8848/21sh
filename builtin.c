@@ -180,12 +180,12 @@ int		ft_env(char **args, int infile, int outfile)
 		ft_print_env(args, infile, outfile);
 	return (0);
 }
-
+/*
 int		ft_jobs(char **args, int infile, int outfile)
 {
 	return 0;
 }
-
+*/
 int		ft_bg(char **args, int infile, int outfile)
 {
 	return 0;

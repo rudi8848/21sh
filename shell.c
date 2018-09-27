@@ -671,8 +671,8 @@ void	launch_job(t_job *j, int foreground)
 	t_job *ptr = first_job;
 	while (ptr)
 	{
-		if (j->nbr >= ptr->nbr)
-			ptr->nbr++;
+		if (j != ptr && j->nbr >= ptr->nbr)
+			j->nbr++;
 		ptr = ptr->next;
 	}
 
@@ -697,8 +697,9 @@ void	launch_job(t_job *j, int foreground)
 
 		if ((ret = check_built(p->argv[0])) >= 0)
 		{
-			ft_built_exe(p->argv, ret, infile, outfile);
 			p->state |= COMPLETED;
+			ft_built_exe(p->argv, ret, infile, outfile);
+			
 		}
 			else
 		{	
@@ -779,7 +780,8 @@ void 	print_jobs()
 			printf("-----------\n");
 			p = p->next;
 		}
-		printf("[%d] SRC[%s][%d],DST[%s][%d], pgid[%d]\n",j->nbr, j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
+		printf("[[%d]] SRC[%s][%d],DST[%s][%d], pgid[%d]\n",j->nbr, j->srcfile,
+		 j->in_fd, j->dstfile, j->out_fd, j->pgid);
 		printf("===========\n");
 		j = j->next;
 	}
@@ -957,7 +959,7 @@ int	main(int argc, char **argv)
 					launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-				print_jobs();
+			//	print_jobs();
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)
