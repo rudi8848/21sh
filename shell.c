@@ -666,6 +666,16 @@ void	launch_job(t_job *j, int foreground)
 	}
 	infile = j->in_fd;
 	p = j->first_process;
+
+	j->nbr = 1;
+	t_job *ptr = first_job;
+	while (ptr)
+	{
+		if (j->nbr >= ptr->nbr)
+			ptr->nbr++;
+		ptr = ptr->next;
+	}
+
 	while(p)
 	{
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, FILE_PERM )) == -1)
@@ -743,6 +753,8 @@ void	launch_job(t_job *j, int foreground)
 		put_job_in_foreground(j, 0);
 	else
 		put_job_in_background(j, 0);
+	if (!foreground)
+		tcsetpgrp(shell_terminal, shell_pgid);
 }
 
 void 	print_jobs()
@@ -769,7 +781,7 @@ void 	print_jobs()
 			printf("-----------\n");
 			p = p->next;
 		}
-		printf("SRC[%s][%d],DST[%s][%d], pgid[%d]\n", j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
+		printf("[%d] SRC[%s][%d],DST[%s][%d], pgid[%d]\n",j->nbr, j->srcfile, j->in_fd, j->dstfile, j->out_fd, j->pgid);
 		printf("===========\n");
 		j = j->next;
 	}
@@ -940,11 +952,14 @@ int	main(int argc, char **argv)
 			ptr = first_job;
 			while (ptr)
 			{	
-				//print_jobs();
-				launch_job(ptr, ptr->foreground);
+			
+				if ( !ptr->foreground && ptr->nbr)
+					do_job_notification();
+				else
+					launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-			
+				print_jobs();
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)

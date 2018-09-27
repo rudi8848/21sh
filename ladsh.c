@@ -424,7 +424,7 @@ int runCommand(struct job newJob, struct jobSet *jobList,
 	int controlfds[2];
 
 
-
+	//---------- 	BUILTINS ---------------------
 	if (!strcmp(newJob.progs[0].argv[0], "exit")) {
 	
 		exit(0);
@@ -439,7 +439,7 @@ int runCommand(struct job newJob, struct jobSet *jobList,
 		free(buf);
 		return 0;
 	} else if (!strcmp(newJob.progs[0].argv[0], "cd")) {
-		if (!newJob.progs[0].argv[1] == 1)
+		if (!newJob.progs[0].argv[1])
 			newdir = getenv("HOME");
 		else
 			newdir = newJob.progs[0].argv[1];
@@ -501,7 +501,7 @@ int runCommand(struct job newJob, struct jobSet *jobList,
 
 		return 0;
 	}
-
+	//-----------------------------------------------------
 	nextin = 0, nextout = 1;
 	for (i = 0; i<newJob.numProgs; i++) {
 		if ((i + 1) < newJob.numProgs) {
@@ -569,7 +569,7 @@ int runCommand(struct job newJob, struct jobSet *jobList,
 		if (!jobList->head) {
 			job = jobList->head = malloc(sizeof(*job));
 		} else {
-			for (job = jobList->head; job->next; job = job->next);
+			for (job = jobList->head; job->next; job = job->next)
 				job->next = malloc(sizeof(*job));
 			job = job->next;
 		}

@@ -130,6 +130,7 @@ typedef struct s_process
 
 typedef struct s_job
 {
+	int nbr;
 	struct s_job *next;
 	char *command;
 	t_process *first_process;
