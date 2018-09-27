@@ -564,8 +564,8 @@ void	wait_for_job(t_job *j)
 
 	status = 0;
 
-	pid = waitpid(WAIT_ANY, &status, WUNTRACED);
-	//pid = waitpid(-j->pgid, &status, WUNTRACED);
+	//pid = waitpid(WAIT_ANY, &status, WUNTRACED);
+	pid = waitpid(-j->pgid, &status, WUNTRACED);
 //	ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 		while (mark_process_status(pid, status) == 0 && !job_is_stopped(j)
 			&& !job_is_completed(j))
@@ -753,8 +753,6 @@ void	launch_job(t_job *j, int foreground)
 		put_job_in_foreground(j, 0);
 	else
 		put_job_in_background(j, 0);
-	if (!foreground)
-		tcsetpgrp(shell_terminal, shell_pgid);
 }
 
 void 	print_jobs()
