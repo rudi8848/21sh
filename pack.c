@@ -8,6 +8,7 @@ void	init_job(t_job *j)
 	j->err_fd = STDERR_FILENO;
 	j->foreground = 1;
 	j->nbr = 0;
+	j->next = NULL;
 	if (shell_is_interactive)
 	{
 		if ((tcgetattr(STDOUT_FILENO, &j->tmodes)) == -1)

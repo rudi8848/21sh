@@ -36,8 +36,8 @@ void	free_job(t_job *j)
 			}
 			free(pprev);
 		}
-		//free(j);
-		//j = NULL;
+		free(j);
+		j = NULL;
 	}
 }
 
@@ -589,7 +589,9 @@ void	format_job_info(t_job *j, const char *status)
 
 void	do_job_notification(void)
 {
-//	ft_printf("--> %s\n", __FUNCTION__);
+	
+	if (first_job)
+		ft_printf("--> %s, first job: %p, next: %s\n", __FUNCTION__, first_job, first_job->next ? "some" : "NULL");
 	t_job		*j;
 	t_job		*jlast;
 	t_job		*jnext;
@@ -597,6 +599,7 @@ void	do_job_notification(void)
 
 	update_status();
 	jlast = NULL;
+
 	//for (j = first_job; j; j = jnext)
 	j = first_job;
 	while(j)
@@ -666,7 +669,7 @@ void	launch_job(t_job *j, int foreground)
 	}
 	infile = j->in_fd;
 	p = j->first_process;
-
+	//------- Job number ---
 	j->nbr = 1;
 	t_job *ptr = first_job;
 	while (ptr)
@@ -675,7 +678,7 @@ void	launch_job(t_job *j, int foreground)
 			j->nbr++;
 		ptr = ptr->next;
 	}
-
+	//----------------------
 	while(p)
 	{
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, FILE_PERM )) == -1)
