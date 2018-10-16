@@ -30,7 +30,6 @@ void	free_job(t_job *j)
 			i = 0;
 			while (pprev->argv[i])
 			{
-				//ft_printf("delete [%s]\n", pprev->argv[i]);
 				free(pprev->argv[i]);
 				i++;
 			}
@@ -467,6 +466,7 @@ void	put_job_in_foreground(t_job *j, int cont)
 
 void	put_job_in_background(t_job *j, int cont)
 {
+	ft_printf("[%d] %d\n", j->nbr, j->pgid);
 	if (cont)
 	{
 		if (kill( -j->pgid, SIGCONT) < 0)
@@ -589,9 +589,8 @@ void	format_job_info(t_job *j, const char *status)
 
 void	do_job_notification(void)
 {
-	
-	if (first_job)
-		ft_printf("--> %s, first job: %p, next: %s\n", __FUNCTION__, first_job, first_job->next ? "some" : "NULL");
+	//if (first_job)
+		//ft_printf("--> %s, first job: %p, next: %s\n", __FUNCTION__, first_job, first_job->next ? "some" : "NULL");
 	t_job		*j;
 	t_job		*jlast;
 	t_job		*jnext;
@@ -608,7 +607,7 @@ void	do_job_notification(void)
 		jnext = j->next;
 		if (job_is_completed(j))
 		{
-			format_job_info(j, "completed");
+			//format_job_info(j, "completed");
 			if (jlast)
 				jlast->next = jnext;
 			else
@@ -619,7 +618,7 @@ void	do_job_notification(void)
 		}
 		else if (job_is_stopped(j) && !j->notified)
 		{
-			format_job_info(j, "stopped");
+			//format_job_info(j, "stopped");
 			j->notified = 1;
 			jlast = j;
 		}
@@ -749,7 +748,7 @@ void	launch_job(t_job *j, int foreground)
 			close(j->out_fd);
 	if (j->err_fd > 2)
 		close(j->err_fd);
-	format_job_info(j, "launched");
+	//format_job_info(j, "launched");
 
 	if (!shell_is_interactive)
 		wait_for_job(j);
