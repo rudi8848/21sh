@@ -180,6 +180,7 @@ int		ft_heredoc(char **argv, int infile, int outfile);
 void	wait_for_job(t_job *j);
 int	job_is_stopped(t_job *j);
 int	job_is_completed(t_job *j);
+void	print_processes(t_job *j);
 //------------------------------
 
 int		ft_find(t_process *cmd);
