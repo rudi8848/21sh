@@ -383,9 +383,14 @@ void	sig_tstp_handler(int signum)
 		tcgetattr(STDOUT_FILENO, &current_job->tmodes);
 		current_job->foreground = 0;
 		ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
-		//signal(SIGTSTP, SIG_DFL);
+		current_job->first_process->state |= STOPPED;
+
+		signal(SIGTSTP, SIG_DFL);
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
+		ioctl(STDERR_FILENO, TIOCSTI, '\032');
+		//ft_printf("%s", saved.c_cc[VSUSP]);
+		//kill(cur, SIGTSTP);
 	}
 }
 
@@ -394,7 +399,8 @@ void	set_stopsignals(sig_t func)
 	ft_printf("---> %s\n",__FUNCTION__);
 	signal(SIGINT, func);
 	signal(SIGQUIT, func);
-	signal(SIGTSTP, sig_tstp_handler);
+	//signal(SIGTSTP, sig_tstp_handler);
+	signal(SIGTSTP, func);
 	signal(SIGTERM, func);
 	signal(SIGTTIN, func);
 	signal(SIGTTOU, func);
