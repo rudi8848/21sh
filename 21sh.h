@@ -175,7 +175,7 @@ void	ft_exit(void);
 void	init_job(t_job *j);
 void	read_more(char *line, int i, char *prompt);
 int		ft_heredoc(char **argv, int infile, int outfile);
-
+void	set_stopsignals(sig_t func);
 
 void	wait_for_job(t_job *j);
 int	job_is_stopped(t_job *j);
