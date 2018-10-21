@@ -723,7 +723,8 @@ void	launch_job(t_job *j, int foreground)
 		{
 			p->state |= COMPLETED;
 			ft_built_exe(p->argv, ret, infile, outfile);
-			
+			p = p->next;
+			continue;
 		}
 			else
 		{	
@@ -967,6 +968,7 @@ int	main(int argc, char **argv)
 		{
 			if (shell_is_interactive)
 			{
+				set_stopsignals(SIG_IGN);
 				check_history_capacity();
 				ft_putstr_fd(line, g_hstr_fd);
 				line[ft_strlen(line) - 1] = 0;
