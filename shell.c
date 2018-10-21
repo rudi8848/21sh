@@ -434,7 +434,7 @@ int	job_is_stopped(t_job *j)
 	t_process	*p;
 
 	for (p = j->first_process; p; p = p->next)
-		if (!(p->state & (STOPPED | COMPLETED)))
+		if (!(p->state & (STOPPED /*| COMPLETED*/)))
 			return 0;
 	return 1;
 }
@@ -968,7 +968,7 @@ int	main(int argc, char **argv)
 		{
 			if (shell_is_interactive)
 			{
-				set_stopsignals(SIG_IGN);
+				//set_stopsignals(SIG_IGN);
 				check_history_capacity();
 				ft_putstr_fd(line, g_hstr_fd);
 				line[ft_strlen(line) - 1] = 0;
