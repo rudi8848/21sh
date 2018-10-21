@@ -366,7 +366,7 @@ void 	init_terminal()
 
 void	sig_tstp_handler(int signum)
 {
-	ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
+	//ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
 		
@@ -383,17 +383,18 @@ void	sig_tstp_handler(int signum)
 		}
 		tcgetattr(STDOUT_FILENO, &current_job->tmodes);
 		current_job->foreground = 0;
-		ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
+		//ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
 		current_job->first_process->state |= STOPPED;
 
 		
 		signal(SIGTSTP, SIG_DFL);
-		ioctl(STDERR_FILENO, TIOCSTI, '\032');
+		//ioctl(STDERR_FILENO, TIOCSTI, '\032');
+		ft_printf("%s", saved.c_cc[VSUSP]);
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
 		
 		
-		//ft_printf("%s", saved.c_cc[VSUSP]);
+		
 		//kill(cur, SIGTSTP);
 	}
 }
@@ -805,7 +806,7 @@ void 	print_jobs()
 	printf("\n+++ PRINT +++\n");
 	while (j)
 	{
-		ft_printf("%s\n", j->notified ? "notified" : "not notified");
+		ft_printf("%s, %s\n", j->foreground ? "fg" : "bg",j->notified ? "notified" : "not notified");
 		p = j->first_process;
 		while (p)
 		{
@@ -817,7 +818,7 @@ void 	print_jobs()
 //				ft_printf("src: [%s][%d], dst: [%s][%d]\n", j->srcfile, j->in_fd, j->);
 				i++;
 			}
-			printf("state: %s\n", p->state & COMPLETED ? "completed" : "not completed");
+			printf("state: %s\n",  p->state & COMPLETED ? "completed" : "not completed");
 			printf("-----------\n");
 			p = p->next;
 		}
@@ -999,7 +1000,7 @@ int	main(int argc, char **argv)
 					launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-				//print_jobs();
+				print_jobs();
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)
