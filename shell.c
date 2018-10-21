@@ -363,13 +363,13 @@ void 	init_terminal()
     }
     //copy_env();
 }
-
+/*
 void	sig_tstp_handler(int signum)
 {
 	//ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
-		/*	
+			
 		t_job *current_job;
 		pid_t cur;
 
@@ -381,24 +381,26 @@ void	sig_tstp_handler(int signum)
 			if (current_job->pgid == cur)
 				break;
 			current_job = current_job->next;
-		}
+		}*//*
 		tcgetattr(STDOUT_FILENO, &current_job->tmodes);
 		current_job->foreground = 0;
 		//ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
 		current_job->first_process->state |= STOPPED;
 
 		*/
+/*
 		signal(SIGTSTP, SIG_DFL);
 		//ioctl(STDERR_FILENO, TIOCSTI, '\032');
 		ft_printf("%s", saved.c_cc[VSUSP]);
+		//kill(cur, SIGTSTP);
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
 		
 		
 		
-		//kill(cur, SIGTSTP);
+		
 	}
-}
+}*/
 
 void	set_stopsignals(sig_t func)
 {
@@ -463,7 +465,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		if (foreground)
 			tcsetpgrp(shell_terminal, pgid);
 		set_stopsignals(SIG_DFL);
-		signal(SIGTSTP,sig_tstp_handler);
+		//signal(SIGTSTP,sig_tstp_handler);
 	}
 	if (infile != STDIN_FILENO)
 	{
@@ -549,25 +551,6 @@ int	mark_process_status(pid_t pid, int status)
 		}
 		fprintf(stderr, "No child process %d.\n", pid);
 				return -1;
-		/*
-		for (j = first_job; j; j = j->next)
-			for (p = j->first_process; p; p = p->next)
-				if (p->pid == pid)
-				{
-					p->status = status;
-					if (WIFSTOPPED(status))
-						p->state |= STOPPED;
-					else
-					{
-						p->state |= COMPLETED;
-						if (WIFSIGNALED(status))
-							fprintf(stderr, "%d: Terminated by signal %d.\n", (int)pid, WTERMSIG(p->status));
-					}
-					return 0;
-				}
-			fprintf(stderr, "No child process %d.\n", pid);
-			return -1;
-			*/
 	}
 	else if (pid == 0 || errno == ECHILD)
 		return -1;
