@@ -369,7 +369,7 @@ void	sig_tstp_handler(int signum)
 	//ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
-			
+		
 		t_job *current_job;
 		pid_t cur;
 
@@ -381,18 +381,17 @@ void	sig_tstp_handler(int signum)
 			if (current_job->pgid == cur)
 				break;
 			current_job = current_job->next;
-		}*//*
+		}
 		tcgetattr(STDOUT_FILENO, &current_job->tmodes);
 		current_job->foreground = 0;
 		//ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
 		current_job->first_process->state |= STOPPED;
 
-		*/
-/*
+		
 		signal(SIGTSTP, SIG_DFL);
 		//ioctl(STDERR_FILENO, TIOCSTI, '\032');
 		ft_printf("%s", saved.c_cc[VSUSP]);
-		//kill(cur, SIGTSTP);
+		kill(cur, SIGTSTP);
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
 		
@@ -400,8 +399,8 @@ void	sig_tstp_handler(int signum)
 		
 		
 	}
-}*/
-
+}
+*/
 void	set_stopsignals(sig_t func)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -492,7 +491,6 @@ void	put_job_in_foreground(t_job *j, int cont)
 {
 //	ft_printf("--> %s\n", __FUNCTION__);
 	tcsetpgrp(shell_terminal, j->pgid);
-
 	if (cont)
 	{
 		tcsetattr(shell_terminal, TCSAFLUSH, &j->tmodes);

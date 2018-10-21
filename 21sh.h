@@ -181,6 +181,8 @@ void	wait_for_job(t_job *j);
 int	job_is_stopped(t_job *j);
 int	job_is_completed(t_job *j);
 void	print_processes(t_job *j);
+void	put_job_in_foreground(t_job *j, int cont);
+void	put_job_in_background(t_job *j, int cont);
 //------------------------------
 
 int		ft_find(t_process *cmd);
