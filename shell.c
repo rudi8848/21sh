@@ -369,7 +369,7 @@ void	sig_tstp_handler(int signum)
 	//ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
-		/*	all this changes child process and parent doesn't know about this
+		/*	
 		t_job *current_job;
 		pid_t cur;
 
@@ -631,7 +631,7 @@ void	format_job_info(t_job *j, const char *status)
 void	do_job_notification(void)
 {
 	//if (first_job)
-		//ft_printf("--> %s, first job: %p, next: %s\n", __FUNCTION__, first_job, first_job->next ? "some" : "NULL");
+	//	ft_printf("--> %s, first job: %d, next: %s\n", __FUNCTION__, first_job->pgid, first_job->next ? "some" : "NULL");
 	t_job		*j;
 	t_job		*jlast;
 	t_job		*jnext;
@@ -1001,7 +1001,7 @@ int	main(int argc, char **argv)
 					launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-				print_jobs();
+				//print_jobs();
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)
