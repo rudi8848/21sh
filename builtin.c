@@ -200,6 +200,7 @@ int		ft_fg(char **args, int infile, int outfile)
 	/*
 		set process to foreground, stopped = 0;
 	*/
+	
 	t_job *j;
 	if (args[1] && args[1][0] == '%')
 	{
