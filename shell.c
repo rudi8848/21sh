@@ -369,6 +369,7 @@ void	sig_tstp_handler(int signum)
 	ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
+		
 		t_job *current_job;
 		pid_t cur;
 
@@ -385,13 +386,14 @@ void	sig_tstp_handler(int signum)
 		ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
 		current_job->first_process->state |= STOPPED;
 
-		/*
+		
 		signal(SIGTSTP, SIG_DFL);
+		ioctl(STDERR_FILENO, TIOCSTI, '\032');
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
-		ioctl(STDERR_FILENO, TIOCSTI, '\032');
-		*/
-		ft_printf("%s", saved.c_cc[VSUSP]);
+		
+		
+		//ft_printf("%s", saved.c_cc[VSUSP]);
 		//kill(cur, SIGTSTP);
 	}
 }
@@ -459,7 +461,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		if (foreground)
 			tcsetpgrp(shell_terminal, pgid);
 		set_stopsignals(SIG_DFL);
-		//signal(SIGTSTP,sig_tstp_handler);
+		signal(SIGTSTP,sig_tstp_handler);
 	}
 	if (infile != STDIN_FILENO)
 	{
