@@ -369,11 +369,12 @@ void	sig_tstp_handler(int signum)
 	//ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
-		
+		/*	all this changes child process and parent doesn't know about this
 		t_job *current_job;
 		pid_t cur;
 
 		cur = tcgetpgrp(shell_terminal);
+			
 		current_job = first_job;
 		while (current_job)
 		{
@@ -386,7 +387,7 @@ void	sig_tstp_handler(int signum)
 		//ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
 		current_job->first_process->state |= STOPPED;
 
-		
+		*/
 		signal(SIGTSTP, SIG_DFL);
 		//ioctl(STDERR_FILENO, TIOCSTI, '\032');
 		ft_printf("%s", saved.c_cc[VSUSP]);
