@@ -385,22 +385,27 @@ void	sig_tstp_handler(int signum)
 		ft_printf("[%d] %d\n", current_job->nbr, current_job->pgid);
 		current_job->first_process->state |= STOPPED;
 
+		/*
 		signal(SIGTSTP, SIG_DFL);
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
 		ioctl(STDERR_FILENO, TIOCSTI, '\032');
-		//ft_printf("%s", saved.c_cc[VSUSP]);
+		*/
+		ft_printf("%s", saved.c_cc[VSUSP]);
 		//kill(cur, SIGTSTP);
 	}
 }
 
 void	set_stopsignals(sig_t func)
 {
-	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	signal(SIGINT, func);
 	signal(SIGQUIT, func);
-	//signal(SIGTSTP, sig_tstp_handler);
-	signal(SIGTSTP, func);
+	/*if (func == SIG_DFL)
+		signal(SIGTSTP, &sig_tstp_handler);
+	else
+	*/
+		signal(SIGTSTP, func);
 	signal(SIGTERM, func);
 	signal(SIGTTIN, func);
 	signal(SIGTTOU, func);
@@ -454,7 +459,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		if (foreground)
 			tcsetpgrp(shell_terminal, pgid);
 		set_stopsignals(SIG_DFL);
-		signal(SIGTSTP,sig_tstp_handler);
+		//signal(SIGTSTP,sig_tstp_handler);
 	}
 	if (infile != STDIN_FILENO)
 	{
@@ -985,15 +990,14 @@ int	main(int argc, char **argv)
 			}
 			ptr = first_job;
 			while (ptr)
-			{	
-			
-				if ( !ptr->foreground && ptr->nbr)
+			{
+				if (!ptr->foreground && ptr->nbr)
 					do_job_notification();
-				else
+				else if (!ptr->nbr)
 					launch_job(ptr, ptr->foreground);
 				ptr = ptr->next;
 			}
-			//	print_jobs();
+				//print_jobs();
 			do_job_notification();	// <--- in jobs 
 //			print_jobs();
 			if (shell_is_interactive)
