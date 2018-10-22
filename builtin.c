@@ -188,18 +188,31 @@ int		ft_jobs(char **args, int infile, int outfile)
 */
 int		ft_bg(char **args, int infile, int outfile)
 {
-	/*
-		foreground = 0, stopped = 0;
-	*/
+
+	t_job *j;
+	if (args[1] && args[1][0] == '%')
+	{
+		int nbr = ft_atoi(&args[1][1]);
+		j = first_job;
+		while (j)
+		{
+			if (nbr == j->nbr)
+				break;
+			j = j->next;
+		}
+		if (j)
+		{
+			//j->foreground = 1;
+			continue_job(j, 0);
+			set_stopsignals(SIG_DFL);
+		}
+	}
 	return 0;
 }
 
 
 int		ft_fg(char **args, int infile, int outfile)
 {
-	/*
-		set process to foreground, stopped = 0;
-	*/
 	
 	t_job *j;
 	if (args[1] && args[1][0] == '%')
