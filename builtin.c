@@ -215,7 +215,7 @@ int		ft_fg(char **args, int infile, int outfile)
 		if (j)
 		{
 			//j->foreground = 1;
-			put_job_in_foreground(j, 1);
+			continue_job(j, 1);
 			set_stopsignals(SIG_DFL);
 		}
 	}

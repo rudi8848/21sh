@@ -363,19 +363,19 @@ void 	init_terminal()
     }
     //copy_env();
 }
-/*
+
 void	sig_tstp_handler(int signum)
 {
 	//ft_printf("---> %s [%d]\n", __FUNCTION__, signum);
 	if (signum == SIGTSTP)
 	{
 		
-		t_job *current_job;
+		//t_job *current_job;
 		pid_t cur;
 
 		cur = tcgetpgrp(shell_terminal);
 			
-		current_job = first_job;
+	/*	current_job = first_job;
 		while (current_job)
 		{
 			if (current_job->pgid == cur)
@@ -391,26 +391,28 @@ void	sig_tstp_handler(int signum)
 		signal(SIGTSTP, SIG_DFL);
 		//ioctl(STDERR_FILENO, TIOCSTI, '\032');
 		ft_printf("%s", saved.c_cc[VSUSP]);
+		*/
+		if (cur != shell_pgid)
+		{
+
 		kill(cur, SIGTSTP);
 		tcsetpgrp(shell_terminal, shell_pgid);
 		tcsetattr(STDOUT_FILENO, TCSAFLUSH, &saved);
-		
-		
-		
-		
+		}
 	}
+	signal(SIGTSTP, sig_tstp_handler);
 }
-*/
+
 void	set_stopsignals(sig_t func)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
 	signal(SIGINT, func);
 	signal(SIGQUIT, func);
-	/*if (func == SIG_DFL)
-		signal(SIGTSTP, &sig_tstp_handler);
-	else
-	*/
-		signal(SIGTSTP, func);
+	/*if (func == SIG_DFL)*/
+		signal(SIGTSTP, sig_tstp_handler);
+	/*else
+	
+		signal(SIGTSTP, func);*/
 	signal(SIGTERM, func);
 	signal(SIGTTIN, func);
 	signal(SIGTTOU, func);
@@ -430,7 +432,7 @@ t_job	*find_job(pid_t pgid)
 
 int	job_is_stopped(t_job *j)
 {
-//	ft_printf("--> %s\n", __FUNCTION__);
+	//ft_printf("--> %s\n", __FUNCTION__);
 	t_process	*p;
 
 	for (p = j->first_process; p; p = p->next)
@@ -441,7 +443,7 @@ int	job_is_stopped(t_job *j)
 
 int	job_is_completed(t_job *j)
 {
-//	ft_printf("--> %s\n", __FUNCTION__);
+	//ft_printf("--> %s\n", __FUNCTION__);
 	t_process	*p;
 	for (p = j->first_process; p; p = p->next)
 		if (!(p->state & COMPLETED))
@@ -452,7 +454,7 @@ int	job_is_completed(t_job *j)
 
 void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
-//	ft_printf("--> %s\n", __FUNCTION__);
+	//ft_printf("--> %s\n", __FUNCTION__);
 	pid_t	pid;
 
 	if (shell_is_interactive)
@@ -464,7 +466,7 @@ void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfi
 		if (foreground)
 			tcsetpgrp(shell_terminal, pgid);
 		set_stopsignals(SIG_DFL);
-		//signal(SIGTSTP,sig_tstp_handler);
+		signal(SIGTSTP,sig_tstp_handler);
 	}
 	if (infile != STDIN_FILENO)
 	{
@@ -517,7 +519,7 @@ void	put_job_in_background(t_job *j, int cont)
 
 int	mark_process_status(pid_t pid, int status)
 {
-//	printf("---> %s, pid = %d\n", __FUNCTION__, pid);
+	//printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 	t_job		*j;
 	t_process	*p;
 
@@ -534,7 +536,10 @@ int	mark_process_status(pid_t pid, int status)
 				{
 					p->status = status;
 					if (WIFSTOPPED(status))
+					{
+						//ft_printf("-->[%d] stopped\n", p->pid);
 						p->state |= STOPPED;
+					}
 					else
 					{
 						p->state |= COMPLETED;
@@ -561,43 +566,64 @@ int	mark_process_status(pid_t pid, int status)
 
 void	update_status(void)
 {
-//	ft_printf("--> %s\n", __FUNCTION__);
+	//ft_printf("--> %s\n", __FUNCTION__);
 	int	status;
 	pid_t	pid;
 
 	status = 0;
-
+	//----------------------------
+	int res = 0;
+	while (res == 0)
+	{
+		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
+		res = mark_process_status(pid, status);
+	}
+	//-----------------------------
+	/*
 	pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
 //	ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 	while (!mark_process_status(pid, status))
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
+	*/
 	/*
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
 	while (!mark_process_status(pid, status));
 	*/
+	//ft_printf("---> end %s\n", __FUNCTION__);
 }
 
 void	wait_for_job(t_job *j)
 {
-//	ft_printf("--> %s\n", __FUNCTION__);
+	//ft_printf("--> %s\n", __FUNCTION__);
 	int	status;
 	pid_t	pid;
 
 	status = 0;
 
+	int res = 0;
+	while (!job_is_stopped(j) && res == 0 && !job_is_completed(j))
+	{
+		//ft_printf("--> %s start loop\n", __FUNCTION__);
+		pid = waitpid(-j->pgid, &status, WUNTRACED);
+		res = mark_process_status(pid, status);
+		//ft_printf("--> %s end loop\n", __FUNCTION__);
+	}
+/*
 	//pid = waitpid(WAIT_ANY, &status, WUNTRACED);
 	pid = waitpid(-j->pgid, &status, WUNTRACED);
 //	ft_printf("---> %s, pid = %d\n", __FUNCTION__, pid);
 		while (mark_process_status(pid, status) == 0 && !job_is_stopped(j)
 			&& !job_is_completed(j))
 			pid = waitpid(WAIT_ANY, &status, WUNTRACED);
+*/
 	/*
 	do
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED);
 	while (mark_process_status(pid, status) == 0 && !job_is_stopped(j)
 			&& !job_is_completed(j));
 			*/
+		//ft_printf("---> end %s\n", __FUNCTION__);
 }
 
 void	format_job_info(t_job *j, const char *status)
@@ -611,6 +637,7 @@ void	format_job_info(t_job *j, const char *status)
 
 void	do_job_notification(void)
 {
+	//ft_printf("---> %s\n",__FUNCTION__);
 	//if (first_job)
 	//	ft_printf("--> %s, first job: %d, next: %s\n", __FUNCTION__, first_job->pgid, first_job->next ? "some" : "NULL");
 	t_job		*j;
@@ -814,9 +841,10 @@ void 	print_jobs()
 }
 void	chld_handler(int signum)
 {
-//	ft_printf("---> %s\n",__FUNCTION__);
+	//ft_printf("---> %s\n",__FUNCTION__);
 	if (signum == SIGCHLD)
-		do_job_notification();
+		update_status();
+	signal(SIGCHLD, chld_handler);
 }
 
 void	init_shell(void)
@@ -968,7 +996,8 @@ int	main(int argc, char **argv)
 		{
 			if (shell_is_interactive)
 			{
-				//set_stopsignals(SIG_IGN);
+				set_stopsignals(SIG_IGN);
+				signal(SIGCHLD, chld_handler);
 				check_history_capacity();
 				ft_putstr_fd(line, g_hstr_fd);
 				line[ft_strlen(line) - 1] = 0;
@@ -978,10 +1007,12 @@ int	main(int argc, char **argv)
 			ptr = first_job;
 			while (ptr)
 			{
+				//ft_printf("---> %s start loop\n",__FUNCTION__);
 				if (!ptr->foreground && ptr->nbr)
 					do_job_notification();
 				else if (!ptr->nbr)
 					launch_job(ptr, ptr->foreground);
+				//ft_printf("---> %s end loop\n",__FUNCTION__);
 				ptr = ptr->next;
 			}
 				//print_jobs();
