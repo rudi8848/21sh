@@ -103,6 +103,21 @@ int     cbreak_settings()
     return 0;
 }
 
+struct winsize	ft_get_winsize(void)
+{
+	struct winsize	argp;
+	int				ret;
+
+	ret = ioctl(shell_terminal, TIOCGWINSZ, &argp);
+	if (ret != 0)
+	{
+		ft_putstr_fd("Cannot get window size\n", STDERR_FILENO);
+	}
+	//g_attr.width = argp.ws_col;
+	//g_attr.height = argp.ws_row;
+	return argp;
+}
+
 void    read_line(char *line, int start)
 {
     
@@ -126,6 +141,10 @@ void    read_line(char *line, int start)
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
+	/* здесь узнаем к-во колонок и текущий х */
+	struct winsize win = ft_get_winsize();
+	int maxw = win.ws_col;
+
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         //ft_printf("\n-> %lld\n", rb);
@@ -332,7 +351,16 @@ void    read_line(char *line, int start)
                 TERM_BACK
             }
         }
-        
+        /*
+        else if (rb == K_CTRL_UP)
+        {
+
+        }
+        else if (rb == K_CTRL_DOWN)
+        {
+        	
+        }
+        */
         else if (rb == K_ESC)
             ft_exit();
         rb = 0;
