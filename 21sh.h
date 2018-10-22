@@ -160,6 +160,7 @@ typedef enum {
 	B_JOBS,
 	B_BG,
 	B_FG,
+	B_KILLJ,
 	B_END,
 	BUILT
 }	t_built;
@@ -194,6 +195,7 @@ int		b_exit(char **args, int infile, int outfile);
 int		ft_setenv(char **args, int infile, int outfile);
 int		ft_unsetenv(char **args, int infile, int outfile);
 int		ft_env(char **args, int infile, int outfile);
+int		ft_killj(char **args, int infile, int outfile);
 int		b_exit(char **args, int infile, int outfile);
 int		env_size(char **envp);
 char			*get_current_wd(void);

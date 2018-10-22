@@ -16,6 +16,7 @@ int		check_built(char *cmd)
 	built[B_JOBS] = "jobs";
 	built[B_BG] = "bg";
 	built[B_FG] = "fg";
+	built[B_KILLJ] = "killj";
 	built[B_END] = NULL;
 	while (built[i])
 	{
@@ -38,6 +39,7 @@ void	ft_set_builtins(t_pfb *built_tab)
 	built_tab[B_JOBS] = &ft_jobs;
 	built_tab[B_BG] = &ft_bg;
 	built_tab[B_FG] = &ft_fg;
+	built_tab[B_KILLJ] = &ft_killj;
 	built_tab[B_END] = NULL;
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
@@ -202,7 +204,6 @@ int		ft_bg(char **args, int infile, int outfile)
 		}
 		if (j)
 		{
-			//j->foreground = 1;
 			continue_job(j, 0);
 			set_stopsignals(SIG_DFL);
 		}
@@ -227,9 +228,31 @@ int		ft_fg(char **args, int infile, int outfile)
 		}
 		if (j)
 		{
-			//j->foreground = 1;
 			continue_job(j, 1);
 			set_stopsignals(SIG_DFL);
+		}
+	}
+	
+	return 0;
+}
+
+int		ft_killj(char **args, int infile, int outfile)
+{
+	
+	t_job *j;
+	if (args[1] && args[1][0] == '%')
+	{
+		int nbr = ft_atoi(&args[1][1]);
+		j = first_job;
+		while (j)
+		{
+			if (nbr == j->nbr)
+				break;
+			j = j->next;
+		}
+		if (j)
+		{
+			kill(-j->pgid, SIGKILL);
 		}
 	}
 	
