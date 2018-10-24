@@ -9,6 +9,23 @@
 
 #define MAXWORD 256
 
+int	main(void)
+{
+
+	char buf[21];
+	int ret = 0;
+	memset(buf, 0, 21);
+	write(0, "\033[6n", 4);
+	ret = read(0, buf, 20);
+
+	int nbr = atoi(&buf[2]);
+	printf("> %d\n", nbr);
+
+	return 0;
+}
+
+
+/*
 int		main(void)
 {
 	struct winsize ws;
@@ -20,7 +37,7 @@ int		main(void)
 		perror("get winsize");
 		return 1;
 	}
-	printf("col: [%d], row: [%d]\n", ws.ws_col, ws.ws_row);
+	printf("col: [%d], row: [%d]\n", ws.ws_col, ws.ws_row);*/
 	/*
 	char buf[12];
 	memset(buf, 0, 12);
@@ -28,6 +45,7 @@ int		main(void)
 	printf("%s\n", buf);
 	*/
 //---------- GET TERMINAL
+/*
 	char buf[MAXWORD];
 	 if ((tcgetattr(STDOUT_FILENO, &saved)) == -1)
     {
@@ -45,7 +63,7 @@ int		main(void)
         printf("Error at tgetent\n");
         exit(EXIT_FAILURE);
     }
-    printf("%s\n", name);
+    printf("%s\n", name);*/
 /*
     char *ptr;
     ptr = tgetstr("cm", &ptr);
@@ -56,7 +74,7 @@ int		main(void)
     write(1, "DONE\n", 5);
 
 */
-    tputs(tgoto(tgetstr("RI", NULL), 0, ws.ws_col - 10), 0, putchar);
+    //tputs(tgoto(tgetstr("RI", NULL), 0, ws.ws_col - 10), 0, putchar);
 /*
     tputs(tgoto(tgetstr("cm", NULL), 10, 15), 0, putchar);
 
@@ -69,5 +87,5 @@ int		main(void)
 	sleep(1);
 printf("%s\n", arr);
 */
-	return 0;
-}
+//	return 0;
+//}
