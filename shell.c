@@ -1025,7 +1025,8 @@ int	main(int argc, char **argv)
 			if (shell_is_interactive)
 			{
 				set_stopsignals(SIG_IGN);
-				signal(SIGCHLD, chld_handler);
+				//signal(SIGCHLD, chld_handler);
+				signal(SIGCHLD, SIG_DFL);
 				check_history_capacity();
 				ft_putstr_fd(line, g_hstr_fd);
 				line[ft_strlen(line) - 1] = 0;
