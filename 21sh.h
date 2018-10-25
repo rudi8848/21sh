@@ -49,6 +49,7 @@ char		**g_envp;
 	pid_t	shell_pgid;
 	int		shell_terminal;
 	int		shell_is_interactive;
+	int	g_hstr_nb;
 
 typedef int t_bool;
 
@@ -150,11 +151,55 @@ typedef struct s_job
 
 typedef struct s_cpos
 {
+	int start;
+	int startline;
 	int curx;		// current cursor position
+	int cury;		// current cursor position
 	int width;		// window width
 	int curln;		// current line number
 	int height;		// total lines
+	int len;		// len of line
+	int i;			// current position in line
 } t_cpos;
+
+/*
+	move( direction )
+	{
+		if direction == RIGHT:
+		{
+			if (pos < width)
+				MOVE_RIGHT
+			else
+			{
+				curln++
+				height++; (if WRITE, not just move)
+				MOVE_START_NEXT_LINE
+			}
+		}
+		
+		if direction == LEFT:
+		{
+			if (pos > 0)
+				MOVE_LEFT
+			else
+			{
+				if curln > 0 : curln--
+				MOVE_END_PREV_LINE
+			}
+
+		}
+
+		if direction == UP:
+		{
+			if (curln > 0)
+			{
+				
+			}
+		}
+	}
+
+*/
+
 
 typedef	int	(*t_pfb) (char**, int , int);
 
@@ -173,6 +218,7 @@ typedef enum {
 	B_END,
 	BUILT
 }	t_built;
+
 t_job	*first_job;
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
 int	pack_args(char *line, t_job *j);

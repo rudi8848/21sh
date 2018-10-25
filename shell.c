@@ -8,7 +8,7 @@ extern char **environ;
 
 //===========================================
 	char	*g_history[MAXHSTR];
-	int	g_hstr_nb;
+	
 	int	g_hstr_fd = -1;
 //===========================================
 
@@ -69,11 +69,13 @@ void	type_prompt()
 	pwd = get_current_wd();
 	home = get_copy_env("HOME",  MUTE);
 	if (home)
-		len = ft_strlen(home);
-	if (ft_strnequ(home, pwd, len))
 	{
-		home = "~";
-		tmp = ft_strsub(pwd, len, ft_strlen(pwd) - len);
+		len = ft_strlen(home);
+		if (ft_strnequ(home, pwd, len))
+		{
+			home = "~";
+			tmp = ft_strsub(pwd, len, ft_strlen(pwd) - len);
+		}
 	}
 	else
 	{
@@ -102,7 +104,7 @@ int     cbreak_settings()
 
     return 0;
 }
-
+/*
 int	ft_get_width(void)
 {
 	struct winsize	argp;
@@ -127,18 +129,24 @@ int	get_curx(void)
 	write(0, "\033[6n", 4);
 	ret = read(0, buf, 20);
 
-	int nbr = atoi(&buf[2]);
+	//ft_printf("> %s", &buf[1]);
+	int nbr = atoi(strrchr(buf, ';') + 1);
 	return nbr;
 }
 
 void init_position(t_cpos *pos)
 {
-	pos->curx = get_curx();			// current cursor position
+	pos->start = get_curx();		// current cursor position
+	pos->curx = pos->start;			// current cursor position
 	pos->width = ft_get_width();	// window width
 	pos->curln = 0;					// current line number
 	pos->height = 1;
+	pos->len = 0;
+	pos->i = 0;
 }
+*/
 
+/*
 void    read_line(char *line, int start)
 {
     
@@ -164,8 +172,10 @@ void    read_line(char *line, int start)
     if (!start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
-	/* здесь узнаем к-во колонок и текущий х */
+
+
 	init_position(&pos);
+
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         //ft_printf("\n-> %lld\n", rb);
@@ -371,7 +381,7 @@ void    read_line(char *line, int start)
                 }
                 TERM_BACK
             }
-        }
+        }*/
         /*
         else if (rb == K_CTRL_UP)
         {
@@ -381,14 +391,14 @@ void    read_line(char *line, int start)
         {
         	
         }
-        */
+        *//*
         else if (rb == K_ESC)
             ft_exit();
         rb = 0;
     }
     line[i] = '\n';
     return;
-}
+}*/
 
 void 	init_terminal()
 {
