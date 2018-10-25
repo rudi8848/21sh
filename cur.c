@@ -9,6 +9,19 @@
 
 #define MAXWORD 256
 
+
+int	get_curx(void)
+{
+	char buf[21];
+	int ret = 0;
+	memset(buf, 0, 21);
+	write(0, "\033[6n", 4);
+	ret = read(0, buf, 20);
+
+	int nbr = atoi(&buf[2]);
+	return nbr;
+}
+
 int	main(void)
 {
 

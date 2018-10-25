@@ -117,6 +117,7 @@ typedef enum {
 # define TERM_CRS_RIGHT tputs(tgetstr("nd", NULL), 0, ft_iputchar);
 # define TERM_CRS_LEFT	tputs(tgetstr("le", NULL), 0, ft_iputchar);
 # define FILE_PERM S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH
+
 typedef struct s_process
 {
 	struct s_process *next;
@@ -146,6 +147,14 @@ typedef struct s_job
 	int flags;
 	int foreground;
 } t_job;
+
+typedef struct s_cpos
+{
+	int curx;		// current cursor position
+	int width;		// window width
+	int curln;		// current line number
+	int height;		// total lines
+} t_cpos;
 
 typedef	int	(*t_pfb) (char**, int , int);
 
@@ -185,6 +194,7 @@ void	print_processes(t_job *j);
 void	put_job_in_foreground(t_job *j, int cont);
 void	put_job_in_background(t_job *j, int cont);
 void	continue_job(t_job *j, int foreground);
+void	update_status(void);
 //------------------------------
 
 int		ft_find(t_process *cmd);

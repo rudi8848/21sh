@@ -103,7 +103,7 @@ int     cbreak_settings()
     return 0;
 }
 
-struct winsize	ft_get_winsize(void)
+int	ft_get_width(void)
 {
 	struct winsize	argp;
 	int				ret;
@@ -112,10 +112,31 @@ struct winsize	ft_get_winsize(void)
 	if (ret != 0)
 	{
 		ft_putstr_fd("Cannot get window size\n", STDERR_FILENO);
+		return -1;
 	}
 	//g_attr.width = argp.ws_col;
 	//g_attr.height = argp.ws_row;
-	return argp;
+	return argp.ws_col;
+}
+
+int	get_curx(void)
+{
+	char buf[21];
+	int ret = 0;
+	memset(buf, 0, 21);
+	write(0, "\033[6n", 4);
+	ret = read(0, buf, 20);
+
+	int nbr = atoi(&buf[2]);
+	return nbr;
+}
+
+void init_position(t_cpos *pos)
+{
+	pos->curx = get_curx();			// current cursor position
+	pos->width = ft_get_width();	// window width
+	pos->curln = 0;					// current line number
+	pos->height = 1;
 }
 
 void    read_line(char *line, int start)
@@ -132,7 +153,9 @@ void    read_line(char *line, int start)
     rb = 0;
     int len = 0;
     int i = 0;
-   int cmd;
+	int cmd;
+
+	t_cpos pos;
 
    //if (g_hstr_nb)
 	   cmd = g_hstr_nb;
@@ -142,9 +165,7 @@ void    read_line(char *line, int start)
 	    type_prompt();
 	ft_bzero(line, MAXLINE - start);
 	/* здесь узнаем к-во колонок и текущий х */
-	struct winsize win = ft_get_winsize();
-	int maxw = win.ws_col;
-
+	init_position(&pos);
     while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
     {
         //ft_printf("\n-> %lld\n", rb);
@@ -572,7 +593,13 @@ int	mark_process_status(pid_t pid, int status)
 					{
 						p->state |= COMPLETED;
 						if (WIFSIGNALED(status))
-							fprintf(stderr, "%d: Terminated by signal %d.\n", (int)pid, WTERMSIG(p->status));
+							{
+								ft_putnbr_fd((int)pid, STDERR_FILENO);
+								ft_putstr_fd(": Terminated by signal ", STDERR_FILENO);
+								ft_putnbr_fd(WTERMSIG(p->status), STDERR_FILENO);
+								ft_putchar_fd('\n', STDERR_FILENO);
+							//fprintf(stderr, "%d: Terminated by signal %d.\n", (int)pid, WTERMSIG(p->status));
+							}
 					}
 					return 0;
 				}
@@ -867,6 +894,7 @@ void 	print_jobs()
 	}
 	printf("+++ DONE +++\n");
 }
+/*
 void	chld_handler(int signum)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -874,7 +902,7 @@ void	chld_handler(int signum)
 		update_status();
 	signal(SIGCHLD, chld_handler);
 }
-
+*/
 void	init_shell(void)
 {
 	//ft_printf("---> %s\n",__FUNCTION__);
@@ -890,7 +918,7 @@ void	init_shell(void)
 		}
 
 		set_stopsignals(SIG_IGN);
-		signal(SIGCHLD, chld_handler);
+		//signal(SIGCHLD, chld_handler);
 		shell_pgid = getpid();
 		if (setpgid(shell_pgid, shell_pgid) < 0)
 		{
@@ -1043,6 +1071,7 @@ int	main(int argc, char **argv)
 					launch_job(ptr, ptr->foreground);
 				//ft_printf("---> %s end loop\n",__FUNCTION__);
 				ptr = ptr->next;
+
 			}
 				//print_jobs();
 			do_job_notification();	// <--- in jobs 
