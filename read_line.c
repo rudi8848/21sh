@@ -24,8 +24,7 @@ void	get_curpos(t_cpos *pos)
 
 	pos->curx = atoi(strrchr(buf, ';') + 1);
 	pos->start = pos->curx;
-	pos->cury = atoi(&buf[2]) -1;
-	//ft_printf("> %d, %d", pos->curx, pos->cury);
+	pos->cury = atoi(&buf[2]) - 1;
 }
 
 void	init_position(t_cpos *pos, int start)
@@ -91,8 +90,71 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
 		pos->i = 0;
 		pos->curx = pos->start;
 		pos->cury -= pos->curln;
+		pos->curln = 0;
 		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
 	}
+	if (rb == K_END)
+	{
+		if (pos->i < pos->len)
+        	{
+        		pos->i = pos->len;
+        		
+        		int first = 0;
+        		if (pos->height == 1)
+        		{
+        			pos->curx += pos->len - 1;
+        			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx, (*pos).cury), 0, ft_iputchar);
+        		}
+        		else
+        		{
+        			pos->cury += pos->height - 1;
+        			pos->curln += pos->height - 1;
+        			first = pos->width - pos->start + 1;
+        			pos->curx = (pos->len - first) / (pos->height -1) + (pos->len - first) % (pos->height -1) + 1;
+        			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx, (*pos).cury), 0, ft_iputchar);
+        		}
+        	}
+	}
+}
+
+void	delete_char(uint64_t rb, char *line, t_cpos *pos)
+{
+	int j;
+	if (rb == K_DELETE || rb == K_CTRL_D)
+	{
+		if (pos->len > 0 && pos->i >= 0 && pos->i < pos->len)
+        {            
+            pos->len--;
+            j = pos->i;
+            while (line[j])
+            {
+               line[j] = line[j + 1];
+               j++;
+            }
+            tputs(tgoto(tgetstr("cm", NULL), (*pos).curx - 1, (*pos).cury), 0, ft_iputchar);
+            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+            write(STDOUT_FILENO, line + pos->i , pos->len);//write the rest
+            tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+        }
+	}
+	/*
+	 else if (rb == K_BSPACE)
+        {
+            if (pos->i > 0)
+            {
+                pos->i--;
+                pos->len--;
+                j = pos->i;
+                while (line[j])
+                {
+                    line[j] = line[j + 1];
+                    j++;
+                }
+                TERM_BACK
+            }
+        }
+	*/
 }
 
 void	check_key(char *line, t_cpos *pos, uint64_t rb, int cmd)
@@ -102,16 +164,9 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int cmd)
 	else if (rb == K_CTRL_RIGHT || rb == K_CTRL_LEFT)
 		jump(rb, line, pos);
 	else if (rb == K_DOWN || rb == K_UP)
-		move_history(rb, line, pos, cmd);
-	
+		move_history(rb, line, pos, cmd);*/
 	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
 		delete_char(rb, line, pos);
-	else if (rb == K_CTRL_C || rb == K_ENTER)
-	{
-       	ft_printf("\n");
-       	rb == K_CTRL_C ? ft_bzero(line, MAXLINE) : line[len] = '\n';
-       	return;
-    }*/
 	else if (rb == K_HOME || rb == K_END)
 		move_to_border(rb, line, pos);
     else if (rb == K_ESC)
@@ -127,9 +182,8 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
         ft_printf("\nLine is too long\n");
         return;
     }
-    write(STDOUT_FILENO, &rb, rr);
-    
     tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
+    write(STDOUT_FILENO, &rb, rr);
     if (line[pos->i])   //if it's at the middle of line
     {
             j = pos->len + 1;
@@ -137,29 +191,29 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
             {
                 line[j] = line[j - 1];
                 j--;
-            }            
+            }
+
             tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-            int q = pos->curln;
-           	tputs(tgetstr("ce", NULL), 0, ft_iputchar);      // delete end of line            
-            write(STDOUT_FILENO, line + pos->i + 1, pos->len);
+           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+            write(STDOUT_FILENO, line + pos->i + 1, pos->len);//write the rest
             tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
     }
     if (pos->curx < pos->width)
 		++(*pos).curx;
-	else if (pos->curx == pos->width)
+	if (pos->curx == pos->width)
 	{
 		++(*pos).cury;
 		++(*pos).curln;
 		++(*pos).height;
-		pos->curx = 1;
+		pos->curx = 0;
+		/*  smth wrong with last line  */
+		tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
 	}
     line[pos->i] = (char)rb;
     ++(*pos).len;
     if (pos->i < pos->len)
         ++(*pos).i;
-    //print_pos(pos);
-	//tputs(tgetstr("ei", NULL), 0, ft_iputchar);          //end of insertion mode
-
+	tputs(tgetstr("ei", NULL), 0, ft_iputchar);          //end of insertion mode
 }
 
 void    read_line(char *line, int start)
@@ -178,9 +232,14 @@ void    read_line(char *line, int start)
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
 		if (ft_isprint(rb))
-		{
 			print(line, &pos, rb, rr);
-		}
+		else if (rb == K_CTRL_C || rb == K_ENTER)
+		{
+			move_to_border(K_END, line, &pos);
+       		ft_printf("\n");
+       		(rb == K_CTRL_C) ? ft_bzero(line, MAXLINE) : (line[pos.len] = '\n');
+       		return;
+   		}
 		else
 			check_key(line, &pos, rb, cmd);
 		rb = 0;
