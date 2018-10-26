@@ -45,11 +45,20 @@
 # define RED "\033[1;31m"
 # define BLUE	"\033[0;34m"
 
+#define MAXARG 			50
+#define MAXFILENAME 	500
+#define MAXWORD 		500
+#define MAXHSTR 		4096
+
+#define MAXLINE 		500
+
 char		**g_envp;
 	pid_t	shell_pgid;
 	int		shell_terminal;
 	int		shell_is_interactive;
 	int	g_hstr_nb;
+	char	*g_history[MAXHSTR];
+	
 
 typedef int t_bool;
 
@@ -75,11 +84,6 @@ typedef enum {
 	INDQUOTE
 } t_state;
 
-#define MAXARG 			50
-#define MAXFILENAME 	500
-#define MAXWORD 		500
-
-#define MAXLINE 		500
 
 # define K_LEFT  		4479771
 # define K_RIGHT		4414235
@@ -271,7 +275,7 @@ int				ft_check_dir(char *name);
 char			*ft_set_new_path(char **args);
 char			**ft_cp_array(char **src);
 void		free_arr(char **array);
-void			type_prompt();
+int			type_prompt();
 char	*ft_check_args(char **args);
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile);
 int		ft_jobs(char **args, int infile, int outfile);

@@ -23,7 +23,7 @@ void	get_curpos(t_cpos *pos)
 	ret = read(0, buf, 20);
 
 	pos->curx = atoi(strrchr(buf, ';') + 1);
-	pos->start = pos->curx;
+	//pos->start = pos->curx;
 	pos->cury = atoi(&buf[2]) - 1;
 }
 
@@ -36,6 +36,25 @@ void	init_position(t_cpos *pos, int start)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
+}
+
+int cmd_height(t_cpos *pos, char *line)
+{
+	int len;
+	int width;
+	int height;
+
+	len = ft_strlen(line);
+	width = ft_get_width();
+	if (len - pos->start <= width)
+		return 1;
+	len -= pos->start;
+	height = 1;
+	height += len / width;
+	if (len % width)
+		height++;
+	ft_printf("> %d", height);
+	return height;
 }
 
 //-----------------------------------------------------------------------------
@@ -157,20 +176,88 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 	*/
 }
 
-void	check_key(char *line, t_cpos *pos, uint64_t rb, int cmd)
+void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
+{
+	if (rb == K_DOWN)
+        {
+        	//	here will be history navigation
+   			if (g_hstr_nb)
+   			{
+	        	ft_bzero(line, MAXLINE);
+	        	init_position(pos, 1);
+	        	
+	        	tputs(tgoto(tgetstr("LE", NULL), 0, pos->i), 0, ft_iputchar);
+	        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+	        	
+	        	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of line
+				
+				ft_strcpy(line, g_history[*cmd]);
+				if (*cmd < g_hstr_nb -1)
+					++(*cmd);
+	            pos->len = ft_strlen(line);
+	            pos->i = pos->len;
+	            pos->height = cmd_height(pos, line);
+		        ft_printf("%s",line);
+		        move_to_border(K_END, line, pos);
+		        //tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
+		        //tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+		        //tputs(tgoto(tgetstr("RI", NULL), 0, pos->i), 0, ft_iputchar);
+        	}
+            //TERM_BELL         // bell
+        }
+        else if (rb == K_UP)
+        {
+        	if (g_hstr_nb)
+        	{
+	        	ft_bzero(line, MAXLINE);
+	        	init_position(pos, 1);
+
+	           	tputs(tgoto(tgetstr("LE", NULL), 0, pos->start), 0, ft_iputchar);
+	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of line
+	        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+
+	            //----------------------------------
+	        	if (*cmd)
+	        	{
+					--(*cmd);
+					ft_strcpy(line, g_history[*cmd]);
+	        	}
+	        				
+	            //----------------------------------
+	            /*
+	            pos->len = ft_strlen(line);
+	            pos->i = pos->len;
+	        	ft_printf("%s",line);
+	            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
+	        	tputs(tgoto(tgetstr("RI", NULL), 0, pos->i), 0, ft_iputchar);
+        		*/pos->len = ft_strlen(line);
+	            pos->i = pos->len;
+	            pos->height = cmd_height(pos, line);
+		        ft_printf("%s",line);
+		        move_to_border(K_END, line, pos);
+        	}
+           //TERM_BELL          // bell
+        }
+}
+
+void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 {
 	if (rb == K_RIGHT || rb == K_LEFT)
-		ft_move(rb, line, pos);/*
-	else if (rb == K_CTRL_RIGHT || rb == K_CTRL_LEFT)
-		jump(rb, line, pos);
+		ft_move(rb, line, pos);
 	else if (rb == K_DOWN || rb == K_UP)
-		move_history(rb, line, pos, cmd);*/
+		move_history(rb, line, pos, cmd);
 	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
 		delete_char(rb, line, pos);
 	else if (rb == K_HOME || rb == K_END)
 		move_to_border(rb, line, pos);
     else if (rb == K_ESC)
-        ft_exit();
+        ft_exit();/*
+    else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)
+    {
+		
+    }
+	else if (rb == K_CTRL_RIGHT || rb == K_CTRL_LEFT)
+		jump(rb, line, pos);*/
 }
 
 void print(char *line, t_cpos *pos, uint64_t rb, int rr)
@@ -225,7 +312,9 @@ void    read_line(char *line, int start)
 
     cmd = g_hstr_nb;
     if (start == 0)
-	    type_prompt();
+	    pos.start = type_prompt();
+	else
+		pos.start = 0;
 	ft_bzero(line, MAXLINE - start);
 	init_position(&pos, start);
 	rb = 0;
@@ -241,9 +330,15 @@ void    read_line(char *line, int start)
        		return;
    		}
 		else
-			check_key(line, &pos, rb, cmd);
+			check_key(line, &pos, rb, &cmd);
 		rb = 0;
 	}
 	//line[pos.i] = '\n';
     return;
 }
+
+
+/*
+		- history (cursor at the last symbol)
+		- calculate end of line and positions as strlen and width
+*/

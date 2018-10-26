@@ -2,12 +2,11 @@
 #include <term.h>
 #include <errno.h>
 
-#define MAXHSTR 4096
+
 struct termios saved;
 extern char **environ;
 
 //===========================================
-	char	*g_history[MAXHSTR];
 	int	g_hstr_fd = -1;
 //===========================================
 
@@ -56,13 +55,14 @@ void    ft_prompt(void)
     write(STDOUT_FILENO, "# ", 2);
 }*/
 
-void	type_prompt()
+int	type_prompt()
 {
 	char	*user;
 	char	*pwd;
 	char	*home;
 	int		len;
 	char	*tmp;
+	int totallen = 0;
 
 	user = get_copy_env("LOGNAME", MUTE);
 	pwd = get_current_wd();
@@ -81,9 +81,12 @@ void	type_prompt()
 		home = "";
 		tmp = pwd;
 	}
+	totallen = ft_strlen(user) + ft_strlen(home) + ft_strlen(tmp) + 5;
 	ft_printf("%s%s: %s%s%s>%s ", RED, user, BLUE, home, tmp, RESET);
 	if (tmp != pwd)
 		ft_strdel(&tmp);
+	//ft_printf("> %d",totallen);
+	return totallen;
 }
 
 int     cbreak_settings()
