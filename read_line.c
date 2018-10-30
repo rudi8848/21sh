@@ -1,5 +1,7 @@
 #include "21sh.h"
 
+void print_pos(t_cpos *pos);
+
 int	ft_get_width(void)
 {
 	struct winsize	argp;
@@ -11,6 +13,7 @@ int	ft_get_width(void)
 		ft_putstr_fd("Cannot get window size\n", STDERR_FILENO);
 		return -1;
 	}
+	printf("width: %d\n", argp.ws_col);
 	return argp.ws_col;
 }
 
@@ -35,6 +38,7 @@ void	init_position(t_cpos *pos, int start)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
+	print_pos(pos);
 }
 
 int cmd_height(t_cpos *pos, char *line)
@@ -58,8 +62,8 @@ int cmd_height(t_cpos *pos, char *line)
 //-----------------------------------------------------------------------------
 void print_pos(t_cpos *pos)
 {
-	ft_printf("x: %d, y: %d, start: %d\n", pos->curx, pos->cury, pos->start);
-	ft_printf("pos->curln: %d, pos->width: %d\n", pos->curln, pos->width);
+	ft_printf("x: %d, y: %d, start: %d\n", (*pos).curx, (*pos).cury, (*pos).start);
+	ft_printf("pos->curln: %d, pos->width: %d, pos->height: %d\n", (*pos).curln, (*pos).width,(*pos).height);
 	ft_printf("pos->i: %d, pos->len: %d\n", pos->i, pos->len);
 }
 //-----------------------------------------------------------------------------
@@ -105,11 +109,14 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
 	pos->height = cmd_height(pos, line);
 	if (rb == K_HOME)
 	{
+		if (pos->i)
+		{
 		pos->i = 0;
 		pos->curx = pos->start;
 		pos->cury -= pos->curln;
 		pos->curln = 0;
 		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
+		}
 	}
 	if (rb == K_END)
 	{
@@ -123,9 +130,12 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
         	}
         	else
         	{
-        		pos->cury += pos->height - 1;
-        		pos->curln += pos->height - 1;
-        		int first = pos->width - pos->start + 1;
+			if (pos->curln < pos->height -1)
+			{
+				pos->cury += pos->height - 1;
+        			pos->curln = pos->height - 1;
+			}
+			int first = pos->width - pos->start + 1;
         		pos->curx = (pos->len - first)  % (pos->width);
         		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx, (*pos).cury), 0, ft_iputchar);
         	}
@@ -136,6 +146,7 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
 void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
 	int j;
+	pos->height = cmd_height(pos, line);
 	if (rb == K_DELETE || rb == K_CTRL_D)
 	{
 		if (pos->len > 0 && pos->i >= 0 && pos->i < pos->len)
@@ -151,6 +162,7 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
             tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
            	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
             write(STDOUT_FILENO, line + pos->i , pos->len);//write the rest
+	pos->height = cmd_height(pos, line);
             tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
         }
 	}
@@ -242,12 +254,15 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		ft_move(rb, line, pos);
 	else if (rb == K_DOWN || rb == K_UP)
 		move_history(rb, line, pos, cmd);
-	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
+	else if (/*rb == K_BSPACE ||*/ rb == K_DELETE || rb == K_CTRL_D)
 		delete_char(rb, line, pos);
 	else if (rb == K_HOME || rb == K_END)
 		move_to_border(rb, line, pos);
     else if (rb == K_ESC)
-        ft_exit();/*
+        ft_exit();
+	else if (rb == K_BSPACE)
+		print_pos(pos);
+    /*
     else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)
     {
 		
@@ -280,6 +295,7 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
            	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
             write(STDOUT_FILENO, line + pos->i + 1, pos->len);//write the rest
             tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+   		pos->height = cmd_height(pos, line);
     }
     
 	if (pos->curx == pos->width)
@@ -312,6 +328,7 @@ void    read_line(char *line, int start)
 	    pos.start = type_prompt();
 	else
 		pos.start = 0;
+	printf("start: %d\n", pos.start);
 	ft_bzero(line, MAXLINE - start);
 	init_position(&pos, start);
 	rb = 0;

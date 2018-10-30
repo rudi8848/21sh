@@ -155,15 +155,15 @@ typedef struct s_job
 
 typedef struct s_cpos
 {
-	int start;
-	int startline;
+	int start;		// strlen(prompt)
+	char startline;		// is prompt
 	int curx;		// current cursor position
 	int cury;		// current cursor position
 	int width;		// window width
 	int curln;		// current line number
 	int height;		// total lines
-	int len;		// len of line
-	int i;			// current position in line
+	int len;		// total len of command
+	int i;			// current position in command
 } t_cpos;
 
 /*
