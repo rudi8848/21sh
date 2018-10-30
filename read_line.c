@@ -13,7 +13,7 @@ int	ft_get_width(void)
 		ft_putstr_fd("Cannot get window size\n", STDERR_FILENO);
 		return -1;
 	}
-	printf("width: %d\n", argp.ws_col);
+//	printf("width: %d\n", argp.ws_col);
 	return argp.ws_col;
 }
 
@@ -38,7 +38,9 @@ void	init_position(t_cpos *pos, int start)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
-	print_pos(pos);
+	if (start)
+		pos->start = pos->curx;
+//	print_pos(pos);
 }
 
 int cmd_height(t_cpos *pos, char *line)
@@ -125,19 +127,21 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
         	pos->i = pos->len;
         	if (pos->height == 1)
         	{
-        		pos->curx += pos->len - 1;
-        		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx, (*pos).cury), 0, ft_iputchar);
+        		pos->curx = pos->start + pos->len;
+        		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
         	}
         	else
         	{
-			if (pos->curln < pos->height -1)
+			if (pos->curln < pos->height )
 			{
-				pos->cury += pos->height - 1;
+				pos->cury += pos->height - pos->curln - 1;
         			pos->curln = pos->height - 1;
 			}
 			int first = pos->width - pos->start + 1;
-        		pos->curx = (pos->len - first)  % (pos->width);
-        		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx, (*pos).cury), 0, ft_iputchar);
+        		pos->curx = (pos->len - first)  % (pos->width)+1;
+			if (pos->curx == 0)
+				pos->curx = 1;
+        		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
         	}
         }
 	}
@@ -280,10 +284,30 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
         ft_printf("\nLine is too long\n");
         return;
     }
+        tputs(tgoto(tgetstr("cm", NULL), (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
     tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
     write(STDOUT_FILENO, &rb, rr);
+    if (!pos->curln && pos->len > pos->width - pos->start)
+    {
+            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+    
+        tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury+1), 0, ft_iputchar);
+           tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+            write(STDOUT_FILENO, line + pos->width - pos->start, pos->len);//write the rest
+           tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+    }
+    else if (pos->curln && pos->len > pos->width - pos->start + pos->width*pos->curln)
+    {
+            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+        tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury+1), 0, ft_iputchar);
+           tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+            write(STDOUT_FILENO, line + pos->width - pos->start + pos->width*pos->curln, pos->len);//write the rest
+           tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+    
+    }
     if (line[pos->i])   //if it's at the middle of line
     {
+	    //ft_printf("AAAAAAAAAAAAAA");
             j = pos->len + 1;
             while (j > pos->i)
             {
@@ -291,10 +315,10 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
                 j--;
             }
 
-            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
-            write(STDOUT_FILENO, line + pos->i + 1, pos->len);//write the rest
-            tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+         //   tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+           //tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+            //write(STDOUT_FILENO, line + pos->i + 1, pos->len);//write the rest
+           //tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
    		pos->height = cmd_height(pos, line);
     }
     
@@ -305,7 +329,9 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		++(*pos).height;
 		pos->curx = 0;
 		/*  smth wrong with last line  */
-		tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
+		//tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
+		//write(STDOUT_FILENO, line + pos->i+1, pos->len );
+	//	tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
 	}
 	if (pos->curx < pos->width)
 		++(*pos).curx;
@@ -328,7 +354,7 @@ void    read_line(char *line, int start)
 	    pos.start = type_prompt();
 	else
 		pos.start = 0;
-	printf("start: %d\n", pos.start);
+//	printf("start: %d\n", pos.start);
 	ft_bzero(line, MAXLINE - start);
 	init_position(&pos, start);
 	rb = 0;
