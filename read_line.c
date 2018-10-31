@@ -416,7 +416,6 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
         tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
         write(STDOUT_FILENO, line + pos->width - pos->start + pos->width*pos->curln, pos->len);//write the rest
         tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
-    
     }
     if (line[pos->i])   //if it's at the middle of line
     {
@@ -434,6 +433,10 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		++(*pos).curln;
 		++(*pos).height;
 		pos->curx = 0;
+		//tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+		//tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury + 1), 0, ft_iputchar);
+		tputs(tgetstr("AL", NULL), 0, ft_iputchar);
+		//tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 	}
 	if (pos->curx < pos->width)
 		++(*pos).curx;
