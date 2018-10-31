@@ -40,7 +40,7 @@ void	init_position(t_cpos *pos, int start)
 	pos->i = 0;
 	if (start)
 		pos->start = pos->curx;
-//	print_pos(pos);
+	//print_pos(pos);
 }
 
 int cmd_height(t_cpos *pos, char *line)
@@ -61,7 +61,7 @@ int cmd_height(t_cpos *pos, char *line)
 	return height;
 }
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------DELETE
 void print_pos(t_cpos *pos)
 {
 	ft_printf("x: %d, y: %d, start: %d\n", (*pos).curx, (*pos).cury, (*pos).start);
@@ -113,11 +113,11 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
 	{
 		if (pos->i)
 		{
-		pos->i = 0;
-		pos->curx = pos->start;
-		pos->cury -= pos->curln;
-		pos->curln = 0;
-		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
+			pos->i = 0;
+			pos->curx = pos->start;
+			pos->cury -= pos->curln;
+			pos->curln = 0;
+			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
 		}
 	}
 	if (rb == K_END)
@@ -132,24 +132,35 @@ void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
         	}
         	else
         	{
-			if (pos->curln < pos->height )
-			{
-				pos->cury += pos->height - pos->curln - 1;
-        			pos->curln = pos->height - 1;
-			}
+				if (pos->curln < pos->height )
+				{
+					pos->cury += pos->height - pos->curln - 1;
+	        		pos->curln = pos->height - 1;
+				}
 			int first = pos->width - pos->start + 1;
-        		pos->curx = (pos->len - first)  % (pos->width)+1;
+        	pos->curx = (pos->len - first)  % (pos->width) + 1;
 			if (pos->curx == 0)
 				pos->curx = 1;
-        		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
+        	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
         	}
         }
 	}
 }
 
+void	delete_from_screen(char *line, t_cpos *pos, char offset)
+{
+			tputs(tgoto(tgetstr("cm", NULL), (*pos).curx - offset, (*pos).cury), 0, ft_iputchar);
+            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+            write(STDOUT_FILENO, line + pos->i , pos->len);		//write the rest
+			pos->height = cmd_height(pos, line);
+            tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+}
+
 void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
 	int j;
+
 	pos->height = cmd_height(pos, line);
 	if (rb == K_DELETE || rb == K_CTRL_D)
 	{
@@ -162,93 +173,88 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
                line[j] = line[j + 1];
                j++;
             }
-            tputs(tgoto(tgetstr("cm", NULL), (*pos).curx - 1, (*pos).cury), 0, ft_iputchar);
-            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
-            write(STDOUT_FILENO, line + pos->i , pos->len);//write the rest
-	pos->height = cmd_height(pos, line);
-            tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+            delete_from_screen(line, pos, 1);
         }
 	}
-	/*
-	 else if (rb == K_BSPACE)
+	else if (rb == K_BSPACE)
+    {
+        if (pos->i > 0)
         {
-            if (pos->i > 0)
+            pos->i--;
+            pos->len--;
+            j = pos->i;
+            while (line[j])
             {
-                pos->i--;
-                pos->len--;
-                j = pos->i;
-                while (line[j])
-                {
-                    line[j] = line[j + 1];
-                    j++;
-                }
-                TERM_BACK
+                line[j] = line[j + 1];
+                j++;
+            }
+            if (pos->curx > 1)
+            {
+            	delete_from_screen(line, pos, 2);
+            	--(*pos).curx;
+            }
+            else if (pos->curx <= 1 && pos->curln)
+            {
+            	pos->curx = pos->width;
+            	--(*pos).cury;
+            	--(*pos).curln;
+            	delete_from_screen(line, pos, 1);
             }
         }
-	*/
+    }
 }
 
 void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
 {
 	if (rb == K_DOWN)
-        {
-        	//	here will be history navigation
-   			if (g_hstr_nb)
+    {
+   			if (g_hstr_nb && *cmd < g_hstr_nb -1)
    			{
-	        	ft_bzero(line, MAXLINE);
+   				move_to_border(K_HOME, line, pos);
+	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen
+				ft_bzero(line, MAXLINE);
 	        	init_position(pos, 1);
-	        	
-	        	tputs(tgoto(tgetstr("LE", NULL), 0, pos->i), 0, ft_iputchar);
-	        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-	        	
-	        	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of line
-				
-				ft_strcpy(line, g_history[*cmd]);
-				if (*cmd < g_hstr_nb -1)
-					++(*cmd);
+				++(*cmd);
+				ft_strcpy(line, g_history[*cmd]);         
 	            pos->len = ft_strlen(line);
-	            pos->i = pos->len;
+	            pos->i = pos->len - 1;
+	        	write(STDOUT_FILENO,line, pos->len);
 	            pos->height = cmd_height(pos, line);
-		        ft_printf("%s",line);
-		        move_to_border(K_END, line, pos);
-		        //tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
-		        //tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-		        //tputs(tgoto(tgetstr("RI", NULL), 0, pos->i), 0, ft_iputchar);
+	            move_to_border(K_END, line, pos);
         	}
-            //TERM_BELL         // bell
+        	else if (g_hstr_nb && *cmd == g_hstr_nb - 1)
+        	{
+        		move_to_border(K_HOME, line, pos);
+	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen
+				ft_bzero(line, MAXLINE);
+	        	init_position(pos, 1);
+	        	++(*cmd);
+	        	TERM_BELL
+        	}
+        	else
+            	TERM_BELL         // bell
         }
         else if (rb == K_UP)
         {
-        	if (g_hstr_nb)
+        	if (g_hstr_nb && *cmd)
         	{
-	        	ft_bzero(line, MAXLINE);
+	           	move_to_border(K_HOME, line, pos);
+	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen
+				ft_bzero(line, MAXLINE);
 	        	init_position(pos, 1);
-
-	           	tputs(tgoto(tgetstr("LE", NULL), pos->start, pos->cury), 0, ft_iputchar);
-	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of line
-	        	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-	            //----------------------------------
 	        	if (*cmd)
 	        	{
-					--(*cmd);
+						--(*cmd);
 					ft_strcpy(line, g_history[*cmd]);
-	        	}
-	        				
-	            //----------------------------------
-	            /*
+	        	}	            
 	            pos->len = ft_strlen(line);
-	            pos->i = pos->len;
-	        	ft_printf("%s",line);
-	            tputs(tgetstr("rc", NULL), 0, ft_iputchar); 
-	        	tputs(tgoto(tgetstr("RI", NULL), 0, pos->i), 0, ft_iputchar);
-        		*/pos->len = ft_strlen(line);
-	            pos->i = pos->len;
+	            pos->i = pos->len - 1;
+	        	write(STDOUT_FILENO,line, pos->len);
 	            pos->height = cmd_height(pos, line);
-		        ft_printf("%s",line);
-		        move_to_border(K_END, line, pos);
+	            move_to_border(K_END, line, pos);
         	}
-           //TERM_BELL          // bell
+        	else
+	           TERM_BELL          // bell
         }
 }
 
@@ -258,14 +264,12 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		ft_move(rb, line, pos);
 	else if (rb == K_DOWN || rb == K_UP)
 		move_history(rb, line, pos, cmd);
-	else if (/*rb == K_BSPACE ||*/ rb == K_DELETE || rb == K_CTRL_D)
+	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
 		delete_char(rb, line, pos);
 	else if (rb == K_HOME || rb == K_END)
 		move_to_border(rb, line, pos);
     else if (rb == K_ESC)
         ft_exit();
-	else if (rb == K_BSPACE)
-		print_pos(pos);
     /*
     else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)
     {
@@ -284,54 +288,42 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
         ft_printf("\nLine is too long\n");
         return;
     }
-        tputs(tgoto(tgetstr("cm", NULL), (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
+    tputs(tgoto(tgetstr("cm", NULL), (*pos).curx-1, (*pos).cury), 0, ft_iputchar);
     tputs(tgetstr("im", NULL), 0, ft_iputchar);          //insert mode
     write(STDOUT_FILENO, &rb, rr);
     if (!pos->curln && pos->len > pos->width - pos->start)
     {
-            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-    
+    	tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
         tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury+1), 0, ft_iputchar);
-           tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
-            write(STDOUT_FILENO, line + pos->width - pos->start, pos->len);//write the rest
-           tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+        tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+        write(STDOUT_FILENO, line + pos->width - pos->start, pos->len);//write the rest
+        tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
     }
     else if (pos->curln && pos->len > pos->width - pos->start + pos->width*pos->curln)
     {
-            tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+    	tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
         tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury+1), 0, ft_iputchar);
-           tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
-            write(STDOUT_FILENO, line + pos->width - pos->start + pos->width*pos->curln, pos->len);//write the rest
-           tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
+        tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
+        write(STDOUT_FILENO, line + pos->width - pos->start + pos->width*pos->curln, pos->len);//write the rest
+        tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
     
     }
     if (line[pos->i])   //if it's at the middle of line
     {
-	    //ft_printf("AAAAAAAAAAAAAA");
             j = pos->len + 1;
             while (j > pos->i)
             {
                 line[j] = line[j - 1];
                 j--;
             }
-
-         //   tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-           //tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
-            //write(STDOUT_FILENO, line + pos->i + 1, pos->len);//write the rest
-           //tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
    		pos->height = cmd_height(pos, line);
     }
-    
 	if (pos->curx == pos->width)
 	{
 		++(*pos).cury;
 		++(*pos).curln;
 		++(*pos).height;
 		pos->curx = 0;
-		/*  smth wrong with last line  */
-		//tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
-		//write(STDOUT_FILENO, line + pos->i+1, pos->len );
-	//	tputs(tgoto(tgetstr("cm", NULL), (*pos).curx, (*pos).cury), 0, ft_iputchar);
 	}
 	if (pos->curx < pos->width)
 		++(*pos).curx;
@@ -379,13 +371,16 @@ void    read_line(char *line, int start)
 
 
 /*
-		- history (cursor at the last symbol)
+		- history (cursor at the last symbol) + segfault
+		- ctrl + left, ctrl + right
+		- ctrl + up, ctrl + down
 
-		- print - last symbol in first line is empty
-		- deleting 1st symbol removes 2 from screen
-		- left after END jumps through 2 symbols
-		- calculate end of line and positions as strlen and width
+	
 
 		* HOME, END 					OK
 		* cmd_height, strlen(prompt)	OK
+		* print - last symbol in first line is empty
+		* deleting 1st symbol removes 2 from screen
+		* left after END jumps through 2 symbols
+		* calculate end of line and positions as strlen and width
 */
