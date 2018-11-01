@@ -433,10 +433,8 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		++(*pos).curln;
 		++(*pos).height;
 		pos->curx = 0;
-		//tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-		//tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury + 1), 0, ft_iputchar);
-		tputs(tgetstr("AL", NULL), 0, ft_iputchar);
-		//tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+		tputs(tgetstr("do", NULL), 0, ft_iputchar);
+		tputs(tgetstr("cr", NULL), 0, ft_iputchar);
 	}
 	if (pos->curx < pos->width)
 		++(*pos).curx;
@@ -484,12 +482,13 @@ void    read_line(char *line, int start)
 
 
 /*
-		- history (cursor at the last symbol) + segfault
-		- ctrl + left, ctrl + right
-		- ctrl + up, ctrl + down
+ 		- shift->, shift<-
+		- copy/paste/cut
 
-	
-
+   			
+		* history (cursor at the last symbol) + segfault
+		* ctrl + left, ctrl + right
+		* ctrl + up, ctrl + down
 		* HOME, END 					OK
 		* cmd_height, strlen(prompt)	OK
 		* print - last symbol in first line is empty
