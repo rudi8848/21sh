@@ -514,7 +514,7 @@ void    read_line(char *line, int start)
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
-		printf("> %ld\n", rb);
+//		printf("> %ld\n", rb);
 		if (ft_isprint(rb))
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)
