@@ -104,8 +104,11 @@ typedef enum {
 # define K_BSPACE   	127
 # define K_HOME			4741915
 # define K_END			4610843
+# define K_SHFT_L		74982532143899
+# define K_SHFT_R		73883020516123
 # define K_ALT_C		42947		//for copy
 # define K_ALT_V		10127586	//for paste
+# define K_ALT_X		30747
 
 # define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
 # define TERM_BACK	tputs(tgetstr("le", NULL), 0, ft_iputchar);\
@@ -156,7 +159,7 @@ typedef struct s_job
 typedef struct s_cpos
 {
 	int start;		// strlen(prompt)
-	char startline;		// is prompt
+	int startline;		// is prompt
 	int curx;		// current cursor position
 	int cury;		// current cursor position
 	int width;		// window width
@@ -164,6 +167,9 @@ typedef struct s_cpos
 	int height;		// total lines
 	int len;		// total len of command
 	int i;			// current position in command
+	int highlight;		
+	int first;		//first highlighted symb;
+	int last;		//last highlighted symb;
 } t_cpos;
 
 /*

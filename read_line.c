@@ -38,6 +38,9 @@ void	init_position(t_cpos *pos, int start)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
+	pos->highlight = 0;
+	pos->first = -1;
+	pos->last = -1;
 	if (start)
 		pos->start = pos->curx;
 	//print_pos(pos);
@@ -371,6 +374,50 @@ void	ft_jump_vertical(uint64_t rb, char *line,t_cpos *pos)
 	}
 }
 
+void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
+{
+	static char* buf = NULL;
+	int len;
+
+	if (rb == K_ALT_C)
+	{
+		len = pos->last - pos->first;
+		if (buf)
+			free(buf);
+		buf = ft_strsub(line, pos->first, len);
+	}
+	else if (rb == K_ALT_V)
+	{
+		if (!buf)
+			return;
+		// paste where is pos->i, rewrite line
+		
+
+		free(buf);
+		buf = NULL;
+	}
+	else if (rb == K_ALT_X)
+	{
+		len = pos->last - pos->first;
+		if (buf)
+			free(buf);
+		buf = ft_strsub(line, pos->first, len);
+		// delete from first to last, rewrite line
+	}
+}
+
+void	ft_highlight(uint64_t rb,char *line,t_cpos *pos)
+{
+	if (rb == K_SHFT_L)
+	{
+	
+	}
+	else if (rb == K_SHFT_R)
+	{
+	
+	}
+}
+
 void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 {
 	if (rb == K_RIGHT || rb == K_LEFT)
@@ -381,12 +428,17 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		delete_char(rb, line, pos);
 	else if (rb == K_HOME || rb == K_END)
 		move_to_border(rb, line, pos);
-    else if (rb == K_ESC)
-        ft_exit();
-    else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)
-    	ft_jump_vertical(rb, line, pos);
+	else if (rb == K_ESC)
+		ft_exit();
+	else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)
+		ft_jump_vertical(rb, line, pos);
 	else if (rb == K_CTRL_RIGHT || rb == K_CTRL_LEFT)
 		ft_jump(rb, line, pos);
+	else if (rb == K_SHFT_L || rb == K_SHFT_R)
+		ft_highlight(rb, line, pos);
+	else if (rb == K_ALT_C || rb == K_ALT_V || rb == K_ALT_X)
+		ft_copy_pase(rb, line, pos);
+
 }
 
 void print(char *line, t_cpos *pos, uint64_t rb, int rr)
@@ -457,12 +509,12 @@ void    read_line(char *line, int start)
 	    pos.start = type_prompt();
 	else
 		pos.start = 0;
-//	printf("start: %d\n", pos.start);
 	ft_bzero(line, MAXLINE - start);
 	init_position(&pos, start);
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
+		printf("> %ld\n", rb);
 		if (ft_isprint(rb))
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)
