@@ -37,13 +37,13 @@ void	reset_selection(t_cpos *pos, char *line)
 	tputs(tgetstr("me", NULL), 0, ft_iputchar);
 	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
 	move_to_border(K_HOME, line, &tmp);
+	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 	write(STDOUT_FILENO, line, pos->len);
 
 	pos->selection = 0;
 	pos->first = -1;
 	pos->last = -1;
 	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
-
 }
 
 void	init_position(t_cpos *pos, int start, char *line)
@@ -282,6 +282,39 @@ void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
         }
 }
 
+void	cursor_to_i(char *line, t_cpos *pos/*, int distance*/)
+{
+
+	int first_line;
+	int tail;
+	int lns;
+	int distance;
+	first_line = 0;
+	tail = 0;
+	lns = 0;
+	//ft_printf("> curx: %d, cury: %d\n",  pos->curx, pos->cury);
+	distance = pos->i;
+	pos->curx = pos->start;
+	//pos->height = cmd_height(line, pos);
+	//ft_printf("> curx: %d, cury: %d\n",  pos->curx, pos->cury);
+	if (!pos->curln && pos->start + distance < pos->width)
+		pos->curx += distance;
+	else
+	{
+		first_line = pos->width - pos->start + 1;
+		tail = (pos->len - first_line) % pos->width;
+		//ft_printf("first_line: %d, len: %d, i: %d, tail: %d\n", first_line, pos->len, pos->i, tail);
+		pos->curx = tail;
+		lns = (pos->len - first_line) / pos->width/* + 1*/;
+		if (tail)
+			++lns;
+		pos->curln += lns;
+		pos->cury += lns;
+		//ft_printf("> lines: %d, tail: %d, curx: %d, cury: %d\n", lns, tail, pos->curx, pos->cury);
+	}
+	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
+}
+
 void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
 {
 	int j;
@@ -290,7 +323,7 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
 	reset_selection(pos, line);
 	if (rb == K_CTRL_RIGHT)
 	{
-		if (pos->i < pos->len)
+		if (pos->i < pos->len && pos->curx < pos->width)
         {
          	j = pos->i;
          	if (line[j] && line[j] != ' ' && line[j] != '\t')		//start in word
@@ -305,34 +338,44 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
          	}
          	if ((dif = j - pos->i) >= 0)
         	{
+        		//ft_printf("\n> i: [%d]\n", j);
+        		//cursor_to_i(line, pos, dif);
+        		/*
         		if (pos->curx + dif < pos->width)
         			pos->curx += dif;
+        		else
+        		{
+
+        		}
          		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
+         		*/
+         		pos->i = j;
+         		cursor_to_i(line, pos/*, dif*/);
         	}
-         	pos->i = j;
+         	
         }
 	}
 	else if (rb == K_CTRL_LEFT)
 	{
 		j = pos->i;
-		if (j>0 && !line[j])	// if cursor stands at the end of line
+		if (j > 0 && !line[j])	// if cursor stands at the end of line
         	--j;
-        if (j>0 && line[j] != ' ' && line[j] != '\t' && line[j - 1] != ' ' && line[j - 1] != '\t' )	//if we are in word
+        if (j > 0 && line[j] != ' ' && line[j] != '\t' && line[j - 1] != ' ' && line[j - 1] != '\t' )	//if we are in word
         {
-        	while(j>0 && (line[j] != ' ' && line[j] != '\t'))
+        	while(j > 0 && (line[j] != ' ' && line[j] != '\t'))
         		--j;
         	if (line[j] == ' ' || line[j] == '\t')
         		++j;
         }
-        else if (j>0 && line[j] != ' ' && line[j] != '\t' && (line[j-1] == ' ' || line[j-1] == '\t'))
+        else if (j > 0 && line[j] != ' ' && line[j] != '\t' && (line[j - 1] == ' ' || line[j - 1] == '\t'))
         	--j;
-        if (j>0 && (line[j] == ' ' || line[j] == '\t'))
+        if (j > 0 && (line[j] == ' ' || line[j] == '\t'))
         {
-        	while(j>0 && (line[j] == ' ' || line[j] == '\t'))
+        	while(j > 0 && (line[j] == ' ' || line[j] == '\t'))
         		--j;
-        	if (j>0 && line[j] != ' ' && line[j] != '\t')	//if we are in word
+        	if (j > 0 && line[j] != ' ' && line[j] != '\t')	//if we are in word
 	       	{
-	       		while(j>0)
+	       		while(j > 0)
 	       		{
 	       			if (line[j] == ' ' || line[j] == '\t')
 	       			{
@@ -345,12 +388,17 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
         }
         if ((dif = pos->i - j) >= 0)
         {
+        	//ft_printf("> move to %d\n", dif);
+        	pos->i = j;
+        	cursor_to_i(line, pos/*, dif*/);
+        	/*
         	if (pos->curx > dif)
         			pos->curx -= dif;
         	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx -1, (*pos).cury), 0, ft_iputchar);
+        	*/
         }
-        pos->i = j;
-	}
+        
+    	}
 }
 
 void	ft_jump_vertical(uint64_t rb, char *line,t_cpos *pos)
@@ -401,8 +449,12 @@ void	ft_jump_vertical(uint64_t rb, char *line,t_cpos *pos)
 void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 {
 	static char* buf = NULL;
+	char *tmp;
 	int len;
-
+	int dif;
+	int x;
+	//if (buf)
+		//ft_printf("\n> buf: %s\n", buf);
 	if (rb == K_ALT_C)
 	{
 		len = pos->last - pos->first;
@@ -415,18 +467,56 @@ void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 		if (!buf)
 			return;
 		// paste where is pos->i, rewrite line
-		
-
+		if (pos->len + ft_strlen(buf) >= MAXLINE)
+		{
+			ft_printf("line is too long\n");
+			return;
+		}
+		dif = ft_strlen(buf);
+		tmp = ft_strsub(line, pos->i, pos->len - pos->i);
+		//ft_printf("\n> tmp: %s, len: %d, i: %d\n", tmp, pos->len, pos->i);
+		ft_strcpy(&line[pos->i], buf);
+		pos->i += dif;
+		pos->len += dif;
+		ft_strcpy(&line[pos->i], tmp);
+		//pos->i += ft_strlen(tmp) -1;
+		// calculate cursor position, cm
+		x = pos->curx;
+		pos->height = cmd_height(pos, line);
+		cursor_to_i(line, pos);
+		/*
+		if (!pos->curln && x + dif < pos->width)
+			pos->curx += dif;
+		else
+		{
+			int sublen = pos->i;
+			pos->curx = (sublen - pos->start) % pos->width;
+			pos->cury = (sublen - pos->start) / pos->width +1;
+		}
+		tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx - 1, (*pos).cury), 0, ft_iputchar);
+		*/
+		reset_selection(pos, line);
+		free(tmp);
 		free(buf);
 		buf = NULL;
 	}
 	else if (rb == K_ALT_X)
 	{
+		//ft_printf("\n---> %s\n", __FUNCTION__);
 		len = pos->last - pos->first;
 		if (buf)
 			free(buf);
 		buf = ft_strsub(line, pos->first, len);
-		// delete from first to last, rewrite line
+		//ft_printf(">buf: %s\n", buf);
+		// save index before first, delete from first to last, len-=buf, rewrite line
+		tmp = ft_strsub(line, pos->last, pos->len - pos->last);
+		ft_bzero(&line[pos->first], pos->len);
+		ft_strcpy(&line[pos->first], tmp);
+		pos->len -= ft_strlen(buf);
+		pos->i -= ft_strlen(buf);
+		cursor_to_i(line, pos);
+		reset_selection(pos, line);
+		free(tmp);
 	}
 }
 
@@ -587,7 +677,7 @@ void    read_line(char *line, int start)
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
-//		printf("> %ld\n", rb);
+		//printf("> %llu\n", rb);
 		if (ft_isprint(rb))
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)

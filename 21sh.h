@@ -108,7 +108,7 @@ typedef enum {
 # define K_SHFT_R		73883020516123
 # define K_ALT_C		42947		//for copy
 # define K_ALT_V		10127586	//for paste
-# define K_ALT_X		30747
+# define K_ALT_X		8948194
 
 # define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
 # define TERM_BACK	tputs(tgetstr("le", NULL), 0, ft_iputchar);\
