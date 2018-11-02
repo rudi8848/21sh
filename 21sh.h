@@ -53,11 +53,11 @@
 #define MAXLINE 		500
 
 char		**g_envp;
-	pid_t	shell_pgid;
-	int		shell_terminal;
-	int		shell_is_interactive;
-	int	g_hstr_nb;
-	char	*g_history[MAXHSTR];
+pid_t	shell_pgid;
+int		shell_terminal;
+int		shell_is_interactive;
+int		g_hstr_nb;
+char	*g_history[MAXHSTR];
 	
 
 typedef int t_bool;
@@ -167,7 +167,7 @@ typedef struct s_cpos
 	int height;		// total lines
 	int len;		// total len of command
 	int i;			// current position in command
-	int highlight;		
+	int selection;		
 	int first;		//first highlighted symb;
 	int last;		//last highlighted symb;
 } t_cpos;

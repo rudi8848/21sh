@@ -29,6 +29,14 @@ void	get_curpos(t_cpos *pos)
 	pos->cury = atoi(&buf[2]) - 1;
 }
 
+void	reset_selection(t_cpos *pos)
+{
+	pos->selection = 0;
+	pos->first = -1;
+	pos->last = -1;
+	//tputs(tgetstr("se", NULL), 0, ft_iputchar);
+}
+
 void	init_position(t_cpos *pos, int start)
 {
 	get_curpos(pos);
@@ -38,13 +46,13 @@ void	init_position(t_cpos *pos, int start)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
-	pos->highlight = 0;
-	pos->first = -1;
-	pos->last = -1;
+	reset_selection(pos);
 	if (start)
 		pos->start = pos->curx;
 	//print_pos(pos);
 }
+
+
 
 int cmd_height(t_cpos *pos, char *line)
 {
@@ -75,6 +83,7 @@ void print_pos(t_cpos *pos)
 
 void 	ft_move(uint64_t direction, char *line, t_cpos *pos)
 {
+	reset_selection(pos);
 	if (direction == K_RIGHT)
 	{
 		if (pos->i < pos->len)
@@ -111,6 +120,7 @@ void 	ft_move(uint64_t direction, char *line, t_cpos *pos)
 }
 void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
 {
+	reset_selection(pos);
 	pos->height = cmd_height(pos, line);
 	if (rb == K_HOME)
 	{
@@ -164,6 +174,7 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
 	int j;
 
+	reset_selection(pos);
 	pos->height = cmd_height(pos, line);
 	if (rb == K_DELETE || rb == K_CTRL_D)
 	{
@@ -209,6 +220,7 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 
 void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
 {
+	reset_selection(pos);
 	if (rb == K_DOWN)
     {
    			if (g_hstr_nb && *cmd < g_hstr_nb -1)
@@ -265,6 +277,8 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
 {
 	int j;
 	int dif;
+
+	reset_selection(pos);
 	if (rb == K_CTRL_RIGHT)
 	{
 		if (pos->i < pos->len)
@@ -332,6 +346,7 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
 
 void	ft_jump_vertical(uint64_t rb, char *line,t_cpos *pos)
 {
+	reset_selection(pos);
 	pos->height = cmd_height(pos, line);
 	if (rb == K_CTRL_UP)
 	{
@@ -408,14 +423,75 @@ void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 
 void	ft_highlight(uint64_t rb,char *line,t_cpos *pos)
 {
+	int first;
+	int last;
+
+	/*
+	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
+	tputs(tgetstr("mr", NULL), 0, ft_iputchar);
+	write(STDOUT_FILENO, line, pos->len);
+	tputs(tgetstr("me", NULL), 0, ft_iputchar);
+	*/
+
 	if (rb == K_SHFT_L)
 	{
-	
+		if (pos->i > 0)
+		{
+			if (pos->last < pos->i)
+				pos->last = pos->i;
+			--(*pos).i;
+			//tputs(tgetstr("le", NULL), 0, ft_iputchar);
+			--(*pos).curx;
+			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1 , (*pos).cury), 0, ft_iputchar);
+			if (pos->first > pos->i || pos->first == -1)
+				pos->first = pos->i;
+			//ft_printf("first: %d, last: %d \n", pos->first, pos->last);
+/*			
+			tputs(tgetstr("do", NULL), 0, ft_iputchar);
+           	tputs(tgetstr("cr", NULL), 0, ft_iputchar);
+*/
+			// save cursor, go home, clear, write with different modes, restore cursor
+			
+			tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
+			move_to_border(K_HOME, line, pos);
+			
+           	tputs(tgetstr("cd", NULL), 0, ft_iputchar); 	//clear
+           	
+           	write(STDOUT_FILENO, line, pos->first);
+           	
+           	pos->curx += pos->first;
+           	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx , (*pos).cury), 0, ft_iputchar);
+        	
+           	tputs(tgetstr("mr", NULL), 0, ft_iputchar);
+           	write(STDOUT_FILENO, line + pos->first, pos->last - pos->first);
+       
+           	pos->curx += pos->last - pos->first;
+           	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx , (*pos).cury), 0, ft_iputchar);
+
+           	tputs(tgetstr("me", NULL), 0, ft_iputchar);
+
+           	
+           	write(STDOUT_FILENO, line + pos->last, pos->len - pos->last);
+           	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+			
+		}
+		
 	}
 	else if (rb == K_SHFT_R)
 	{
-	
+		if (pos->i < pos->len)
+		{
+			if (pos->first > pos->i || pos->first == -1)
+				pos->first = pos->i;
+			++(*pos).i;
+
+			++(*pos).curx;
+			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1 , (*pos).cury), 0, ft_iputchar);
+			if (pos->last < pos->i || pos->last == -1)
+				pos->last = pos->i;
+		}
 	}
+	//ft_printf("first: [%d], last: [%d]\n", pos->first, pos->last);
 }
 
 void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
@@ -444,6 +520,8 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 void print(char *line, t_cpos *pos, uint64_t rb, int rr)
 {
 	int j;
+
+	reset_selection(pos);
 	if (pos->len + 1 + pos->startline  == MAXLINE)
 	{
         TERM_BELL          // bell
