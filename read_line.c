@@ -1,6 +1,7 @@
 #include "21sh.h"
 
 void print_pos(t_cpos *pos);
+void	move_to_border(uint64_t rb, char *line, t_cpos *pos);
 
 int	ft_get_width(void)
 {
@@ -29,15 +30,23 @@ void	get_curpos(t_cpos *pos)
 	pos->cury = atoi(&buf[2]) - 1;
 }
 
-void	reset_selection(t_cpos *pos)
+void	reset_selection(t_cpos *pos, char *line)
 {
+	t_cpos tmp = *pos;
+
+	tputs(tgetstr("me", NULL), 0, ft_iputchar);
+	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+	move_to_border(K_HOME, line, &tmp);
+	write(STDOUT_FILENO, line, pos->len);
+
 	pos->selection = 0;
 	pos->first = -1;
 	pos->last = -1;
-	//tputs(tgetstr("se", NULL), 0, ft_iputchar);
+	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+
 }
 
-void	init_position(t_cpos *pos, int start)
+void	init_position(t_cpos *pos, int start, char *line)
 {
 	get_curpos(pos);
 	pos->startline = start;
@@ -46,7 +55,7 @@ void	init_position(t_cpos *pos, int start)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
-	reset_selection(pos);
+	reset_selection(pos, line);
 	if (start)
 		pos->start = pos->curx;
 	//print_pos(pos);
@@ -83,7 +92,7 @@ void print_pos(t_cpos *pos)
 
 void 	ft_move(uint64_t direction, char *line, t_cpos *pos)
 {
-	reset_selection(pos);
+	reset_selection(pos, line);
 	if (direction == K_RIGHT)
 	{
 		if (pos->i < pos->len)
@@ -120,7 +129,7 @@ void 	ft_move(uint64_t direction, char *line, t_cpos *pos)
 }
 void	move_to_border(uint64_t rb, char *line, t_cpos *pos)
 {
-	reset_selection(pos);
+	//reset_selection(pos, line);
 	pos->height = cmd_height(pos, line);
 	if (rb == K_HOME)
 	{
@@ -174,7 +183,7 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
 	int j;
 
-	reset_selection(pos);
+	reset_selection(pos, line);
 	pos->height = cmd_height(pos, line);
 	if (rb == K_DELETE || rb == K_CTRL_D)
 	{
@@ -220,7 +229,7 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 
 void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
 {
-	reset_selection(pos);
+	reset_selection(pos, line);
 	if (rb == K_DOWN)
     {
    			if (g_hstr_nb && *cmd < g_hstr_nb -1)
@@ -228,7 +237,7 @@ void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
    				move_to_border(K_HOME, line, pos);
 	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen
 				ft_bzero(line, MAXLINE);
-	        	init_position(pos, 1);
+	        	init_position(pos, 1, line);
 				++(*cmd);
 				ft_strcpy(line, g_history[*cmd]);         
 	            pos->len = ft_strlen(line);
@@ -242,7 +251,7 @@ void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
         		move_to_border(K_HOME, line, pos);
 	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen
 				ft_bzero(line, MAXLINE);
-	        	init_position(pos, 1);
+	        	init_position(pos, 1, line);
 	        	++(*cmd);
 	        	TERM_BELL
         	}
@@ -256,7 +265,7 @@ void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
 	           	move_to_border(K_HOME, line, pos);
 	           	tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen
 				ft_bzero(line, MAXLINE);
-	        	init_position(pos, 1);
+	        	init_position(pos, 1, line);
 	        	if (*cmd)
 	        	{
 						--(*cmd);
@@ -278,7 +287,7 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
 	int j;
 	int dif;
 
-	reset_selection(pos);
+	reset_selection(pos, line);
 	if (rb == K_CTRL_RIGHT)
 	{
 		if (pos->i < pos->len)
@@ -346,7 +355,7 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
 
 void	ft_jump_vertical(uint64_t rb, char *line,t_cpos *pos)
 {
-	reset_selection(pos);
+	reset_selection(pos, line);
 	pos->height = cmd_height(pos, line);
 	if (rb == K_CTRL_UP)
 	{
@@ -421,18 +430,35 @@ void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 	}
 }
 
+void	reprint(char *line, t_cpos *pos)
+{
+	int x;
+	int y;
+	int i;
+
+	x = pos->curx;
+	y = pos->cury;
+	i = pos->i;
+	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+	move_to_border(K_HOME, line, pos);
+    pos->i = i;
+    tputs(tgetstr("cd", NULL), 0, ft_iputchar);
+	write(STDOUT_FILENO, line, pos->first);
+    pos->curx += pos->first;
+    tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx  - 1, (*pos).cury), 0, ft_iputchar);
+    tputs(tgetstr("mr", NULL), 0, ft_iputchar);
+    write(STDOUT_FILENO, line + pos->first, pos->last - pos->first);
+    pos->curx += pos->last - pos->first;
+    tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx - 1, (*pos).cury), 0, ft_iputchar);
+    tputs(tgetstr("me", NULL), 0, ft_iputchar);
+    write(STDOUT_FILENO, line + pos->last, pos->len - pos->last);
+    tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+	pos->curx = x;
+	pos->cury = y;
+}
+
 void	ft_highlight(uint64_t rb,char *line,t_cpos *pos)
 {
-	int first;
-	int last;
-
-	/*
-	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
-	tputs(tgetstr("mr", NULL), 0, ft_iputchar);
-	write(STDOUT_FILENO, line, pos->len);
-	tputs(tgetstr("me", NULL), 0, ft_iputchar);
-	*/
-
 	if (rb == K_SHFT_L)
 	{
 		if (pos->i > 0)
@@ -440,42 +466,12 @@ void	ft_highlight(uint64_t rb,char *line,t_cpos *pos)
 			if (pos->last < pos->i)
 				pos->last = pos->i;
 			--(*pos).i;
-			//tputs(tgetstr("le", NULL), 0, ft_iputchar);
 			--(*pos).curx;
-			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1 , (*pos).cury), 0, ft_iputchar);
-			if (pos->first > pos->i || pos->first == -1)
-				pos->first = pos->i;
-			//ft_printf("first: %d, last: %d \n", pos->first, pos->last);
-/*			
-			tputs(tgetstr("do", NULL), 0, ft_iputchar);
-           	tputs(tgetstr("cr", NULL), 0, ft_iputchar);
-*/
-			// save cursor, go home, clear, write with different modes, restore cursor
-			
-			tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
-			move_to_border(K_HOME, line, pos);
-			
-           	tputs(tgetstr("cd", NULL), 0, ft_iputchar); 	//clear
-           	
-           	write(STDOUT_FILENO, line, pos->first);
-           	
-           	pos->curx += pos->first;
-           	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx , (*pos).cury), 0, ft_iputchar);
-        	
-           	tputs(tgetstr("mr", NULL), 0, ft_iputchar);
-           	write(STDOUT_FILENO, line + pos->first, pos->last - pos->first);
-       
-           	pos->curx += pos->last - pos->first;
-           	tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx , (*pos).cury), 0, ft_iputchar);
-
-           	tputs(tgetstr("me", NULL), 0, ft_iputchar);
-
-           	
-           	write(STDOUT_FILENO, line + pos->last, pos->len - pos->last);
-           	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
-			
+			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx - 1, (*pos).cury), 0, ft_iputchar);
+			if ((*pos).first == -1 || (*pos).first > pos->i)
+				(*pos).first = (*pos).i;
+			reprint(line, pos);
 		}
-		
 	}
 	else if (rb == K_SHFT_R)
 	{
@@ -484,14 +480,13 @@ void	ft_highlight(uint64_t rb,char *line,t_cpos *pos)
 			if (pos->first > pos->i || pos->first == -1)
 				pos->first = pos->i;
 			++(*pos).i;
-
 			++(*pos).curx;
 			tputs(tgoto(tgetstr("cm", NULL),  (*pos).curx-1 , (*pos).cury), 0, ft_iputchar);
 			if (pos->last < pos->i || pos->last == -1)
 				pos->last = pos->i;
+			reprint(line, pos);	
 		}
 	}
-	//ft_printf("first: [%d], last: [%d]\n", pos->first, pos->last);
 }
 
 void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
@@ -521,7 +516,7 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
 {
 	int j;
 
-	reset_selection(pos);
+	reset_selection(pos, line);
 	if (pos->len + 1 + pos->startline  == MAXLINE)
 	{
         TERM_BELL          // bell
@@ -588,7 +583,7 @@ void    read_line(char *line, int start)
 	else
 		pos.start = 0;
 	ft_bzero(line, MAXLINE - start);
-	init_position(&pos, start);
+	init_position(&pos, start, line);
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
@@ -612,10 +607,10 @@ void    read_line(char *line, int start)
 
 
 /*
- 		- shift->, shift<-
+ 		
 		- copy/paste/cut
 
-   			
+   		* shift->, shift<-	
 		* history (cursor at the last symbol) + segfault
 		* ctrl + left, ctrl + right
 		* ctrl + up, ctrl + down
