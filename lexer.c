@@ -63,7 +63,8 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 	{
 		if (line[j] == ';' || line[j] == '&' ||
 		line[j] == '|' || line[j] == '<' || line[j] == '>' ||
-		line[j] == '\n' || line[j] == '\t' || line[j] == ' ')
+		line[j] == '\n' || line[j] == '\t' || line[j] == ' ' ||
+		line[j] == '\"' || line[j] == '\'')
 			break;
 		var[vname_len] = line[j];
 		vname_len++;
@@ -77,8 +78,7 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 		*wordn += ft_strlen(var);
 	}
 	if (vname_len)
-		*i += vname_len-1;
-	
+		*i += vname_len - 1;
 }
 
 void	read_more(char *line, int i, char *prompt)
