@@ -92,7 +92,7 @@ void	copy_env(void)
 
 	i = 0;
 	size = env_size(environ);
-	copy = (char**)ft_memalloc(sizeof(char*) * size);
+	copy = (char**)ft_memalloc(sizeof(char*) * (size + 1));
 	if (!copy)
 	{
 		ft_printf("Error: cannot copy environement\n");
