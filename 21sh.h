@@ -30,7 +30,7 @@
 # define PARENT 1
 # define ERROR -1
 
-//# define OK 0
+# define NORM 0
 # define MUTE 1
 
 # define TRUE 1
@@ -246,7 +246,7 @@ void	set_stopsignals(sig_t func);
 void	wait_for_job(t_job *j);
 int	job_is_stopped(t_job *j);
 int	job_is_completed(t_job *j);
-void	print_processes(t_job *j);
+void	print_processes(t_job *j, int fd);
 void	put_job_in_foreground(t_job *j, int cont);
 void	put_job_in_background(t_job *j, int cont);
 void	continue_job(t_job *j, int foreground);

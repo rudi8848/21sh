@@ -1,20 +1,8 @@
 #include "21sh.h"
 
-int			ft_path_fitting(t_process *cmd, char **p_arr)
+int			check_access(t_process *cmd, char *tmp, char **p_arr)
 {
-	char	*tmp;
-	char	*tmp1;
-	int		i;
-
-	i = 0;
-	while (p_arr[i] != NULL)
-	{
-		tmp1 = ft_strjoin(p_arr[i], "/");
-		tmp = ft_strjoin(tmp1, cmd->argv[0]);
-		free(tmp1);
-		if (access(tmp, F_OK) == OK)
-		{	
-			if (access(tmp, X_OK) != OK)
+	if (access(tmp, X_OK) != NORM)
 			{
 				ft_putstr_fd(tmp, STDERR_FILENO);
 				ft_putstr_fd(": permission denied\n", STDERR_FILENO);
@@ -27,10 +15,25 @@ int			ft_path_fitting(t_process *cmd, char **p_arr)
 			free_arr(p_arr);
 			free(tmp);
 			return (1);
-		}
+}
+
+int			ft_path_fitting(t_process *cmd, char **p_arr)
+{
+	char	*tmp;
+	char	*tmp1;
+	int		i;
+
+	i = 0;
+	while (p_arr[i] != NULL)
+	{
+		tmp1 = ft_strjoin(p_arr[i], "/");
+		tmp = ft_strjoin(tmp1, cmd->argv[0]);
+		free(tmp1);
+		if (access(tmp, F_OK) == NORM)
+			return check_access(cmd, tmp, p_arr);
 		if (tmp)
 			free(tmp);
-		i++;
+		++i;
 	}
 	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
@@ -45,16 +48,16 @@ int			ft_find(t_process *commands)
 
 	if (!commands->argv[0])
 		return (0);
-	if (access(commands->argv[0], F_OK) != OK)
+	if (access(commands->argv[0], F_OK) != NORM)
 	{
-		if (!(env_path = get_copy_env("PATH", OK)))
+		if (!(env_path = get_copy_env("PATH", NORM)))
 			return (0);
 		path_arr = ft_strsplit(env_path, ':');
 		if (!path_arr)
 			return (0);
 		return (ft_path_fitting(commands, path_arr));
 	}
-	else if (access(commands->argv[0], X_OK) != OK)
+	else if (access(commands->argv[0], X_OK) != NORM)
 	{
 		ft_putstr_fd(commands->argv[0], STDERR_FILENO);
 		ft_putstr_fd(": permission denied\n", STDERR_FILENO);

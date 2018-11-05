@@ -44,6 +44,7 @@ void	ft_set_builtins(t_pfb *built_tab)
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 {
+	//ft_printf("> %s: in: %d, out: %d\n", __FUNCTION__, infile, outfile);
 	static t_pfb	*built_tab = NULL;
 	t_pfb			ft_run;
 
@@ -80,7 +81,7 @@ int		ft_echo(char **argv, int infile, int outfile)
 		ft_putstr_fd(argv[i], outfile);
 		if (argv[i + 1])
 			ft_putchar_fd(' ', outfile);
-		i++;
+		++i;
 	}
 	if (!opt)
 		ft_putchar_fd('\n', outfile);
@@ -168,34 +169,10 @@ int		ft_unsetenv(char **args, int infile, int outfile)
 
 int		ft_env(char **args, int infile, int outfile)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
-	char		**envp_cp;
-	char		**ptr;
-	/*t_process	*cmd;
-
-	cmd = NULL;
-	if (ft_strequ(args[1], "-i"))
-	{
-		envp_cp = (char **)ft_memalloc(sizeof(char*) * 2);
-		envp_cp[0] = ft_strjoin("PATH=", get_copy_env("PATH", MUTE));
-		envp_cp[1] = NULL;
-		ptr = ft_cp_array(args + 2);
-		//push(&cmd, ptr);
-		if (ptr)
-			//executor(cmd, &envp_cp);
-		free(envp_cp[0]);
-		free(envp_cp);
-	}
-	else*/
-		ft_print_env(args, infile, outfile);
+	ft_print_env(args, infile, outfile);
 	return (0);
 }
-/*
-int		ft_jobs(char **args, int infile, int outfile)
-{
-	return 0;
-}
-*/
+
 int		ft_bg(char **args, int infile, int outfile)
 {
 
@@ -259,11 +236,8 @@ int		ft_killj(char **args, int infile, int outfile)
 			j = j->next;
 		}
 		if (j)
-		{
 			kill(-j->pgid, SIGKILL);
-		}
 	}
-	
 	return 0;
 }
 

@@ -1,6 +1,6 @@
 #include "21sh.h"
 
-void	print_processes(t_job *j/*, int fd*/)
+void	print_processes(t_job *j, int fd)
 {
 	int i;
 	t_process *p;
@@ -11,7 +11,9 @@ void	print_processes(t_job *j/*, int fd*/)
 			i = 0;
 			while (p->argv[i])
 			{
-				ft_printf(" %s ", p->argv[i]/*, j->argv[i + 1] ? ' ' : '\n'*/);
+				ft_putchar_fd(' ', fd);
+				ft_putstr_fd(p->argv[i], fd);
+				ft_putchar_fd(' ', fd);
 				i++;
 			}
 			p = p->next;
@@ -35,13 +37,15 @@ int		ft_jobs(char **argv, int infile, int outfile)
 		}
 		else if (job_is_stopped(j))
 			status_str = "stopped";
-
 		else
 			status_str = "running";
-		ft_printf("[%d] %s", j->nbr, status_str);
-		print_processes(j);
-		ft_printf("\n");
+		ft_putchar_fd('[', outfile);
+		ft_putnbr_fd(j->nbr, outfile);
+		ft_putstr_fd("] ", outfile);
+		ft_putstr_fd(status_str, outfile);
+		print_processes(j, outfile);
+		ft_putchar_fd('\n', outfile);
 		j = j->next;
 	}
-	return 0;
+	return (0);
 }

@@ -41,7 +41,6 @@ void	free_job(t_job *j)
 void    ft_exit(void)
 {
     ft_restore();
-    //system("leaks a.out");
     exit(EXIT_SUCCESS);
 }
 
@@ -49,11 +48,6 @@ int ft_iputchar(int c)
 {
     return(write(1, &c, 1));
 }
-/*
-void    ft_prompt(void)
-{
-    write(STDOUT_FILENO, "# ", 2);
-}*/
 
 int	type_prompt()
 {
@@ -172,28 +166,20 @@ t_job	*find_job(pid_t pgid)
 
 int	job_is_stopped(t_job *j)
 {
-	//ft_printf("--> %s\n", __FUNCTION__);
 	t_process	*p;
 
 	p = j->first_process;
 	while (p)
 	{
-		if (!(p->state & (STOPPED /*| COMPLETED*/)))
+		if (!(p->state & (STOPPED)))
 			return 0;
 		p = p->next;
 	}
 	return 1;
-
-/*
-	for (p = j->first_process; p; p = p->next)
-		if (!(p->state & (STOPPED | COMPLETED)))
-			return 0;
-	return 1;*/
 }
 
 int	job_is_completed(t_job *j)
 {
-	//ft_printf("--> %s\n", __FUNCTION__);
 	t_process	*p;
 
 	p = j->first_process;
@@ -203,13 +189,7 @@ int	job_is_completed(t_job *j)
 			return 0;
 		p = p->next;
 	}
-	/*
-	for (p = j->first_process; p; p = p->next)
-		if (!(p->state & COMPLETED))
-			return 0;
-			*/
 	return 1;
-	
 }
 
 void	launch_process(t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
@@ -346,8 +326,10 @@ void	wait_for_job(t_job *j)
 	int res = 0;
 	while (!job_is_stopped(j) && res == 0 && !job_is_completed(j))
 	{
+		ft_printf("> wait.. %d\n", j->pgid);
 		pid = waitpid(-j->pgid, &status, WUNTRACED);
 		res = mark_process_status(pid, status);
+		ft_printf("> res: %d\n", res);
 	}
 }
 
@@ -414,12 +396,13 @@ void	continue_job(t_job *j, int foreground)
 void	launch_job(t_job *j, int foreground)
 {
 	t_process	*p;
-	pid_t		pid;
+	pid_t		pid = 0;
 	int		mypipe[2] = {-1, -1};
 	int		infile = -1;
 	int		outfile = -1;
 	int ret;
 
+	ret = -1;
 	if (j->in_fd == -1 && (j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
 	{
 		perror("open");
@@ -442,13 +425,16 @@ void	launch_job(t_job *j, int foreground)
 		ptr = ptr->next;
 	}
 	//----------------------
+
 	while(p)
 	{
+		ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, FILE_PERM )) == -1)
 		{
 			perror("open");
 			return ;
 		}
+//------------------------------------ set outfile
 		if (p->next)
 		{
 			if (pipe(mypipe) < 0)
@@ -460,7 +446,7 @@ void	launch_job(t_job *j, int foreground)
 		}
 		else
 			outfile = j->out_fd;
-
+//------------------------------------
 		if ((ret = check_built(p->argv[0])) >= 0)
 		{
 			p->state |= COMPLETED;
@@ -482,7 +468,7 @@ void	launch_job(t_job *j, int foreground)
 			else if (pid == ERROR)
 			{
 				perror("fork");
-				exit(1);
+				ft_exit();
 			}
 			else
 			{
@@ -492,7 +478,7 @@ void	launch_job(t_job *j, int foreground)
 					if (!j->pgid)			//first process sets pgid for new group
 						j->pgid = pid;
 					setpgid(pid, j->pgid);
-					//ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
+					ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 				}	
 			}
 		}		//END not built
@@ -702,12 +688,11 @@ int	main(int argc, char **argv)
 				ptr = ptr->next;
 
 			}
-			do_job_notification();	// <--- in jobs 
+			do_job_notification();
 			if (shell_is_interactive)
 			{
 				close(g_hstr_fd);
 				g_hstr_fd = -1;
-				//fd_check();
 			}
 		}
 	}

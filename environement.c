@@ -77,9 +77,25 @@ void	ft_move_env(int i, int find)
 				g_envp[i] = NULL;
 			else
 				g_envp[i] = ft_strdup(g_envp[i + 1]);
-			i++;
+			++i;
 		}
 	}
+}
+
+void	set_shlvl(void)
+{
+	int				shlvl;
+	char *nbr;
+	char *args[4];
+
+	shlvl = (ft_atoi(get_copy_env("SHLVL", MUTE))) + 1;
+	args[0] = "";
+	args[1] = "SHLVL";
+	nbr = ft_itoa(shlvl);
+	args[2] = nbr;
+	args[3] = NULL;
+	ft_setenv(args, -1, -1);
+	free(nbr);
 }
 
 void	copy_env(void)
@@ -88,7 +104,6 @@ void	copy_env(void)
 	int				size;
 	char			**copy;
 	int				i;
-	int				shlvl;
 
 	i = 0;
 	size = env_size(environ);
@@ -105,14 +120,5 @@ void	copy_env(void)
 	}
 	copy[i] = NULL;
 	g_envp = copy;
-	shlvl = (ft_atoi(get_copy_env("SHLVL", MUTE))) + 1;
-	char *nbr;
-	char *args[4];
-	args[0] = "";
-	args[1] = "SHLVL";
-	nbr = ft_itoa(shlvl);
-	args[2] = nbr;
-	args[3] = NULL;
-	ft_setenv(args, -1, -1);
-	free(nbr);
+	set_shlvl();
 }
