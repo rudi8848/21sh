@@ -22,6 +22,6 @@ void	ft_bzero(void *s, size_t n)
 	while (i < n)
 	{
 		ptr[i] = '\0';
-		i++;
+		++i;
 	}
 }

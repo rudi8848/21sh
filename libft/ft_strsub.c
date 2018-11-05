@@ -20,14 +20,14 @@ char	*ft_strsub(char const *s, unsigned int start, size_t len)
 	i = 0;
 	if (s)
 	{
-		sub = ft_strnew(len);
+		sub = ft_memalloc(sizeof(char) * len);
 		if (!sub)
 			return (NULL);
 		while (i < len)
 		{
 			sub[i] = s[start];
-			i++;
-			start++;
+			++i;
+			++start;
 		}
 		return (sub);
 	}
