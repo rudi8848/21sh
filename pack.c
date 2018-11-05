@@ -132,6 +132,11 @@ int	pack_args(char *line, t_job *j)
 				//	CLEAN ALL
 				return 0;
 			}
+			if (!argc)
+			{
+				ft_printf("Error\n");
+				return 0;
+			}
 			// --- if next is not name of file
 			if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 			{

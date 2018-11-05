@@ -44,7 +44,6 @@ void	ft_set_builtins(t_pfb *built_tab)
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
 	static t_pfb	*built_tab = NULL;
 	t_pfb			ft_run;
 
@@ -66,16 +65,25 @@ void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 int		ft_echo(char **argv, int infile, int outfile)
 {
 	int			i;
+	int			opt;
 
+	opt = 0;
 	i = 1;
 	while (argv[i])
 	{
+		if (ft_strequ(argv[i], "-n"))
+		{
+			opt = 1;
+			++i;
+			continue;
+		}
 		ft_putstr_fd(argv[i], outfile);
 		if (argv[i + 1])
 			ft_putchar_fd(' ', outfile);
 		i++;
 	}
-	ft_putchar_fd('\n', outfile);
+	if (!opt)
+		ft_putchar_fd('\n', outfile);
 	return (0);
 }
 
