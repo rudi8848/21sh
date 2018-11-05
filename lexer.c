@@ -38,13 +38,10 @@ size_t	ft_itoa_buf(int value, char *buf)
 	buf[len] = '\0';
 	while (i > -1)
 	{
-
 		buf[i] = (value % 10) + '0';
 		value = value / 10;
-		//ft_printf("buf[%d] = [%c]\n", i, buf[i]);
 		--i;
 	}
-	//ft_printf("> %s [%d]\n", buf, len);
 	return len;
 }
 
@@ -57,11 +54,9 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 
 	if (line[j + 1] == '$')
 	{
-		//ft_printf("> %s: *i = %d, line[*i] = [%c][%c], *wordn = %zu, [%d]\n", __FUNCTION__, *i, line[*i], line[(*i)+1], *wordn, getpid());
 		vname_len = ft_itoa_buf(getpid(), &word[*wordn]);
-		*wordn += vname_len - 1;
-		*i += vname_len - 1;
-		//ft_printf(">> %s\n", word);
+		*wordn += vname_len;
+		*i += 1;
 		return;
 	}
 	while (line[j] != '\0') 
@@ -74,7 +69,7 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 		vname_len++;
 		j++;
 	}
-	var[vname_len] = '\0';
+	var[vname_len+1] = '\0';
 	if ((ptr = getenv(var + 1)) != NULL)
 	{
 		ft_strcpy(var, get_copy_env(var + 1, MUTE));
@@ -82,7 +77,7 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 		*wordn += ft_strlen(var);
 	}
 	if (vname_len)
-		*i += vname_len - 1;
+		*i += vname_len-1;
 	
 }
 
