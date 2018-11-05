@@ -16,7 +16,7 @@ char	*get_copy_env(char *needle, int warning)
 			res = g_envp[i] + (len + 1);
 			return (res);
 		}
-		i++;
+		++i;
 	}
 	if (!res)
 	{
@@ -33,7 +33,7 @@ int		env_size(char **envp)
 
 	i = 0;
 	while (envp[i] != NULL)
-		i++;
+		++i;
 	return (i);
 }
 
@@ -92,7 +92,7 @@ void	copy_env(void)
 
 	i = 0;
 	size = env_size(environ);
-	copy = (char**)ft_memalloc(sizeof(char*) * size + 1);
+	copy = (char**)ft_memalloc(sizeof(char*) * size);
 	if (!copy)
 	{
 		ft_printf("Error: cannot copy environement\n");
@@ -101,7 +101,7 @@ void	copy_env(void)
 	while (environ[i])
 	{
 		copy[i] = ft_strdup(environ[i]);
-		i++;
+		++i;
 	}
 	copy[i] = NULL;
 	g_envp = copy;
