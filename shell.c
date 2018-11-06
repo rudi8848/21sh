@@ -151,6 +151,7 @@ void	set_stopsignals(sig_t func)
 	signal(SIGTTIN, func);
 	signal(SIGTTOU, func);
 	signal(SIGCHLD, SIG_DFL);
+	//signal(SIGCHLD, func);
 }
 
 t_job	*find_job(pid_t pgid)
@@ -322,16 +323,29 @@ void	wait_for_job(t_job *j)
 	pid_t	pid;
 
 	status = 0;
-
 	int res = 0;
 	while (!job_is_stopped(j) && res == 0 && !job_is_completed(j))
 	{
-		ft_printf("> wait.. %d\n", j->pgid);
+		//ft_printf("> wait.. %d\n", j->pgid);
 		pid = waitpid(-j->pgid, &status, WUNTRACED);
 		res = mark_process_status(pid, status);
-		ft_printf("> res: %d\n", res);
+		//ft_printf("> res: %d\n", res);
 	}
-}
+/*	
+	t_process *p = j->first_process;
+	while (p)
+	{
+		ft_printf("> %s\n", p->argv[0]);
+		if (p->pid)
+		{
+			ft_printf("waiting for  %s\n", p->argv[0]);
+			pid = waitpid(p->pid, &status, WUNTRACED);
+			mark_process_status(pid, status);
+		}
+		p = p->next;
+	}
+*/
+	}
 
 void	format_job_info(t_job *j, const char *status)
 {
@@ -428,7 +442,6 @@ void	launch_job(t_job *j, int foreground)
 
 	while(p)
 	{
-		ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 		if (j->out_fd == -1 && (j->out_fd = open(j->dstfile, j->flags, FILE_PERM )) == -1)
 		{
 			perror("open");
@@ -451,6 +464,13 @@ void	launch_job(t_job *j, int foreground)
 		{
 			p->state |= COMPLETED;
 			ft_built_exe(p->argv, ret, infile, outfile);
+		if (infile != j->in_fd)
+			close(infile);
+		
+		if (outfile != j->out_fd)
+			close(outfile);
+		
+		infile = mypipe[0];
 			p = p->next;
 			continue;
 		}
@@ -478,7 +498,6 @@ void	launch_job(t_job *j, int foreground)
 					if (!j->pgid)			//first process sets pgid for new group
 						j->pgid = pid;
 					setpgid(pid, j->pgid);
-					ft_printf("j->pgid:[%d], pid:[%d]\n", j->pgid, pid);
 				}	
 			}
 		}		//END not built
