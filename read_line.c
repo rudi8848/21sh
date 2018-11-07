@@ -22,10 +22,11 @@ void	get_curpos(t_cpos *pos)
 {
 	char buf[21];
 	int ret = 0;
+	
 	memset(buf, 0, 21);
 	write(0, "\033[6n", 4);
-	ret = read(0, buf, 20);
-
+	if ((ret = read(0, buf, 20)) < 0)
+		ft_printf("Cannot get current position\n");
 	pos->curx = atoi(strrchr(buf, ';') + 1);
 	pos->cury = atoi(&buf[2]) - 1;
 }

@@ -92,13 +92,13 @@ int		ft_echo(char **argv, int infile, int outfile)
 int		ft_cd(char **args, int infile, int outfile)
 {
 	int		ret;
-	int		i;
+//	int		i;
 	char	*new;
-	char	*ptr;
+//	char	*ptr;
 	char	*old;
 
-	i = 0;
-	ptr = NULL;
+	//i = 0;
+	//ptr = NULL;
 	if (infile < -1 || outfile < -1)
 		ft_printf("Wrong input or output file\n");
 	if (ft_strequ(".", args[1]))
