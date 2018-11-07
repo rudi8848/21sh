@@ -39,9 +39,8 @@ char	**ft_cp_array(char **src)
 	return (dest);
 }
 
-int		ft_print_env(char **args, int infile, int outfile)
+int		ft_print_env(int outfile)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
 	int i;
 
 	i = 0;

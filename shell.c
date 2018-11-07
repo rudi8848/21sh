@@ -5,10 +5,7 @@
 
 struct termios saved;
 extern char **environ;
-
-//===========================================
-	int	g_hstr_fd = -1;
-//===========================================
+int	g_hstr_fd = -1;
 
 void    ft_restore()
 {
@@ -58,6 +55,7 @@ int	type_prompt()
 	char	*tmp;
 	int totallen = 0;
 
+	tmp = NULL;
 	user = get_copy_env("LOGNAME", MUTE);
 	pwd = get_current_wd();
 	home = get_copy_env("HOME",  MUTE);
@@ -304,12 +302,12 @@ int	mark_process_status(pid_t pid, int status)
 
 void	update_status(void)
 {
-	int	status;
+	int status;
 	pid_t	pid;
-
+	int res;
+	
 	status = 0;
-	//----------------------------
-	int res = 0;
+	res = 0;
 	while (res == 0)
 	{
 		pid = waitpid(WAIT_ANY, &status, WUNTRACED|WNOHANG);
@@ -326,26 +324,10 @@ void	wait_for_job(t_job *j)
 	int res = 0;
 	while (!job_is_stopped(j) && res == 0 && !job_is_completed(j))
 	{
-		//ft_printf("> wait.. %d\n", j->pgid);
 		pid = waitpid(-j->pgid, &status, WUNTRACED);
 		res = mark_process_status(pid, status);
-		//ft_printf("> res: %d\n", res);
 	}
-/*	
-	t_process *p = j->first_process;
-	while (p)
-	{
-		ft_printf("> %s\n", p->argv[0]);
-		if (p->pid)
-		{
-			ft_printf("waiting for  %s\n", p->argv[0]);
-			pid = waitpid(p->pid, &status, WUNTRACED);
-			mark_process_status(pid, status);
-		}
-		p = p->next;
-	}
-*/
-	}
+}
 
 void	format_job_info(t_job *j, const char *status)
 {
@@ -527,7 +509,7 @@ void	launch_job(t_job *j, int foreground)
 	else
 		put_job_in_background(j, 0);
 }
-
+/*
 void 	print_jobs()
 {
 		int i;
@@ -559,7 +541,7 @@ void 	print_jobs()
 	}
 	printf("+++ DONE +++\n");
 }
-
+*/
 void	init_shell(void)
 {
 	shell_terminal = STDIN_FILENO;

@@ -44,7 +44,6 @@ void	ft_set_builtins(t_pfb *built_tab)
 }
 void	ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 {
-	//ft_printf("> %s: in: %d, out: %d\n", __FUNCTION__, infile, outfile);
 	static t_pfb	*built_tab = NULL;
 	t_pfb			ft_run;
 
@@ -70,6 +69,8 @@ int		ft_echo(char **argv, int infile, int outfile)
 
 	opt = 0;
 	i = 1;
+	if (infile < -1)
+		ft_printf("Wrong input file\n");
 	while (argv[i])
 	{
 		if (ft_strequ(argv[i], "-n"))
@@ -98,6 +99,8 @@ int		ft_cd(char **args, int infile, int outfile)
 
 	i = 0;
 	ptr = NULL;
+	if (infile < -1 || outfile < -1)
+		ft_printf("Wrong input or output file\n");
 	if (ft_strequ(".", args[1]))
 		return (0);
 	new = ft_set_new_path(args);
@@ -120,6 +123,8 @@ int		ft_setenv(char **args, int infile, int outfile)
 	int		len;
 
 	i = 0;
+	if (infile < -1 || outfile < -1)
+		ft_printf("Wrong input or output file\n");
 	if ((str = ft_check_args(args)))
 	{
 		size = env_size(g_envp);
@@ -148,6 +153,8 @@ int		ft_unsetenv(char **args, int infile, int outfile)
 	int		find;
 
 	find = 0;
+	if (infile < -1 || outfile < -1)
+		ft_printf("Wrong input or output file\n");
 	if (args[1])
 	{
 		len = ft_strlen(args[1]);
@@ -169,7 +176,8 @@ int		ft_unsetenv(char **args, int infile, int outfile)
 
 int		ft_env(char **args, int infile, int outfile)
 {
-	ft_print_env(args, infile, outfile);
+	if (args || infile >= -1)
+		ft_print_env(outfile);
 	return (0);
 }
 
@@ -177,6 +185,8 @@ int		ft_bg(char **args, int infile, int outfile)
 {
 
 	t_job *j;
+	if (infile < -1 || outfile < -1)
+		ft_printf("Wrong input or output file\n");
 	if (args[1] && args[1][0] == '%')
 	{
 		int nbr = ft_atoi(&args[1][1]);
@@ -199,8 +209,10 @@ int		ft_bg(char **args, int infile, int outfile)
 
 int		ft_fg(char **args, int infile, int outfile)
 {
-	
 	t_job *j;
+
+	if (infile < -1 || outfile < -1)
+		ft_printf("Wrong input or output file\n");
 	if (args[1] && args[1][0] == '%')
 	{
 		int nbr = ft_atoi(&args[1][1]);
@@ -223,8 +235,10 @@ int		ft_fg(char **args, int infile, int outfile)
 
 int		ft_killj(char **args, int infile, int outfile)
 {
-	
 	t_job *j;
+
+	if (infile < -1 || outfile < -1)
+		ft_printf("Wrong input or output file\n");
 	if (args[1] && args[1][0] == '%')
 	{
 		int nbr = ft_atoi(&args[1][1]);
@@ -243,6 +257,8 @@ int		ft_killj(char **args, int infile, int outfile)
 
 int		b_exit(char **args, int infile, int outfile)
 {
+	if (infile < -1 || outfile < -1 || !args)
+		ft_printf("Wrong input or output file\n");
 	ft_exit();
 	return 0;
 }

@@ -24,28 +24,27 @@ int		ft_jobs(char **argv, int infile, int outfile)
 {
 	t_job *j;
 	char *status_str;
-	int i;
-	t_process *p;
 
 	j = first_job;
-	while (j)
-	{
-		if (job_is_completed(j))
+	if (argv || infile >= -1)
+		while (j)
 		{
+			if (job_is_completed(j))
+			{
+				j = j->next;
+				continue;
+			}
+			else if (job_is_stopped(j))
+				status_str = "stopped";
+			else
+				status_str = "running";
+			ft_putchar_fd('[', outfile);
+			ft_putnbr_fd(j->nbr, outfile);
+			ft_putstr_fd("] ", outfile);
+			ft_putstr_fd(status_str, outfile);
+			print_processes(j, outfile);
+			ft_putchar_fd('\n', outfile);
 			j = j->next;
-			continue;
 		}
-		else if (job_is_stopped(j))
-			status_str = "stopped";
-		else
-			status_str = "running";
-		ft_putchar_fd('[', outfile);
-		ft_putnbr_fd(j->nbr, outfile);
-		ft_putstr_fd("] ", outfile);
-		ft_putstr_fd(status_str, outfile);
-		print_processes(j, outfile);
-		ft_putchar_fd('\n', outfile);
-		j = j->next;
-	}
 	return (0);
 }

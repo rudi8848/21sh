@@ -34,7 +34,7 @@ size_t	ft_itoa_buf(int value, char *buf)
 	int i;
 
 	len = ft_len(value);
-	i = len-1;
+	i = len - 1;
 	buf[len] = '\0';
 	while (i > -1)
 	{
@@ -89,65 +89,169 @@ void	read_more(char *line, int i, char *prompt)
 	ft_restore();
 }
 
+static t_token plane_ret(char *line, int *i)
+{
+	if (line[*i] == ';')
+	{
+		++(*i);
+		return T_SEMI;
+	}
+	else if (line[*i] == '&')
+	{
+		++(*i);
+		return T_BG;
+	}
+	else if (line[*i] == '|')
+	{
+		++(*i);
+		return T_PIPE;
+	}
+	else if (line[*i] == '<')
+	{
+		++(*i);
+			if (line[*i] == '<')
+			{
+				++(*i);
+				return T_HRDOC;
+			}
+		return T_LESS;
+	}					
+	else if (line[*i] == '\n')
+	{
+		++(*i);
+		return T_NLINE;
+	}
+	return T_EOF;
+}
+
+void plane_cont(char *line, int *i, t_state *state)
+{
+	if (line[*i] == '>')
+	{
+		*state = GGREAT;
+		++(*i);
+	}
+	else if (line[*i] == '\'')
+	{
+		*state = INQUOTE;
+		++(*i);
+	}
+	else if (line[*i] == '"')
+	{
+		*state = INDQUOTE;
+		++(*i);
+	}
+}
+
+static t_token is_greate(char *line, int *i)
+{
+	if (line[*i] == '>')
+	{
+		++(*i);
+		return T_GGREAT;
+	}
+	return T_GREAT;
+}
+
+//int 	plane_in_word(char *line, )
+
+
+/*
+
+	int func(char *line, int *i, t_state *state, t_state *ret_token)
+
+if ((ret = func(...)) == -1)
+	return ret_token;
+else if (-2)
+	continue;
+
+
+
+*/
+
+
+int plane_tokens(char *line, int *i, t_state *state, t_token *ret_token, char *word, size_t maxword, size_t wordn)
+{
+	if (line[*i] == ';' || line[*i] == '&' || line[*i] == '|' || line[*i] == '<' || line[*i] == '\n')
+	{
+		*ret_token =  plane_ret(line, i);
+		return (RETURN);
+	}
+	else if (line[*i] == ' ' || line[*i] == '\t')
+	{
+		++(*i);
+		return (0);
+	}
+	else if (line[*i] == '>' || line[*i] == '\'' || line[*i] == '"')
+	{
+		plane_cont(line, i, state);
+		return (CONTINUE);
+	}
+	else
+	{
+		*state = INWORD;
+		if (line[*i] == '\\' && line[(*i) + 1])			//		BEGINNING of the word
+		{
+			++(*i);
+			if (line[*i] == '\n' && !line[(*i) + 1])
+				read_more(&line[(*i) + 1], (*i)+1, ">");
+			else 
+			{
+				if (!store_char(word, maxword, line[*i], &wordn))
+				{
+					*ret_token = T_ERROR;
+					return (RETURN);
+				}
+			}
+			++(*i);
+			return (CONTINUE);
+
+		}
+		else if (line[*i] == '$')
+		{
+			insert_variable(line, word, i, &wordn);
+			++(*i);
+		}
+		else
+		{
+			if (!store_char(word, maxword, line[*i], &wordn))
+			{
+				*ret_token = T_ERROR;
+				return (RETURN);
+			}
+			++(*i);
+		}
+		return (CONTINUE);
+	}
+	return (0);
+}
+
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
-	t_state state = PLANE;
-	//int c;
-	size_t wordn = 0;
+	t_state state;
+	size_t wordn;
+	t_token ret_token;
+	int ret;
 
+	state = PLANE;
+	wordn = 0;
 	while (line[*i])
 	{
+		//------------------------------------------------------
 		if (state == PLANE)
 		{
-			if (line[*i] == ';')
-			{
-				(*i)++;
-				return T_SEMI;
-			}
-			else if (line[*i] == '&')
-			{
-				(*i)++;
-				return T_BG;
-			}
-			else if (line[*i] == '|')
-			{
-				(*i)++;
-				return T_PIPE;
-			}
-			else if (line[*i] == '<')
-			{
-				(*i)++;
-					if (line[*i] == '<')
-					{
-						(*i)++;
-						return T_HRDOC;
-					}
-				return T_LESS;
-			}					
-			else if (line[*i] == '\n')
-			{
-				(*i)++;
-				return T_NLINE;
-			}
+			if ((ret = plane_tokens(line, i, &state, &ret_token, word, maxword, wordn)) == RETURN)
+				return ret_token;
+			else if (ret == CONTINUE)
+				continue;
+			/*
+			if (line[*i] == ';' || line[*i] == '&' || line[*i] == '|' || line[*i] == '<' || line[*i] == '\n')
+				return plane_ret(line, i);
 			else if (line[*i] == ' ' || line[*i] == '\t')
-				(*i)++;
-			else if (line[*i] == '>')
+				++(*i);
+			else if (line[*i] == '>' || line[*i] == '\'' || line[*i] == '"')
 			{
-				state = GGREAT;
-				(*i)++;
-				continue;
-			}
-			else if (line[*i] == '\'')
-			{
-				state = INQUOTE;
-				(*i)++;
-				continue;
-			}
-			else if (line[*i] == '"')
-			{
-				state = INDQUOTE;
-				(*i)++;
+				plane_cont(line, i, &state);
 				continue;
 			}
 			else
@@ -155,44 +259,38 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				state = INWORD;
 				if (line[*i] == '\\' && line[(*i) + 1])			//		BEGINNING of the word
 				{
-					(*i)++;
+					++(*i);
 					if (line[*i] == '\n' && !line[(*i) + 1])
 						read_more(&line[(*i) + 1], (*i)+1, ">");
 					else 
 						if (!store_char(word, maxword, line[*i], &wordn))
 						return T_ERROR;
-					
-					(*i)++;
+					++(*i);
 					continue;
 				}
 				else if (line[*i] == '$')
 				{
 					insert_variable(line, word, i, &wordn);
-					(*i)++;
+					++(*i);
 				}
 				else
 				{
 					if (!store_char(word, maxword, line[*i], &wordn))
 						return T_ERROR;
-						(*i)++;
+						++(*i);
 				}
 				continue;
-			}
+			}*/
 		}
+		//------------------------------------------------------
 		else if (state == GGREAT)
-		{
-			if (line[*i] == '>')
-			{
-				(*i)++;
-				return T_GGREAT;
-			}
-			return T_GREAT;
-		}
+			return is_greate(line, i);
+		//------------------------------------------------------
 		else if (state == INQUOTE)
 		{
 			 if (line[*i] == '\'')
 			{
-				(*i)++;
+				++(*i);
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
 				return T_WORD;
@@ -203,14 +301,15 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					read_more(&line[(*i) + 1], (*i) + 1, "quote> ");
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
-				(*i)++;
+				++(*i);
 			}
 		}
+		//------------------------------------------------------
 		else if (state == INDQUOTE)
 		{
 			if (line[*i] == '\\' && line[(*i) + 1])
 			{
-				(*i)++;
+				++(*i);
 				if (line[*i] == '\n' && !line[(*i) + 1])
 						read_more(&line[(*i) + 1], (*i)+1, ">");
 				else
@@ -218,18 +317,18 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					if (!store_char(word, maxword, line[*i], &wordn))
 						return T_ERROR;
 				}
-				(*i)++;
+				++(*i);
 			}
 			else if (line[*i] == '$')
 			{
 				insert_variable(line, word, i, &wordn);
-				(*i)++;
+				++(*i);
 			}
 			else if (line[*i] == '"')
 			{
 				if (!store_char(word, maxword, '\0', &wordn))
 					return T_ERROR;
-				(*i)++;
+				++(*i);
 				return T_WORD;
 			}
 			else
@@ -238,27 +337,27 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 					read_more(&line[(*i) + 1], (*i) + 1, "dquote> ");
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
-				(*i)++;
+				++(*i);
 			}
 		}
+		//------------------------------------------------------
 		else if (state == INWORD)
 		{			
 			if (line[*i] == '\\' && line[(*i) + 1])
 			{
-				(*i)++;
+				++(*i);
 				if (line[*i] == '\n' && !line[(*i) + 1])
 					read_more(&line[(*i) + 1], (*i)+1, ">");
 				else 
 					if (!store_char(word, maxword, line[*i], &wordn))
 						return T_ERROR;
-				(*i)++;
+				++(*i);
 				continue;
 			}
-			
 			else if (line[*i] == '$')
 			{
 					insert_variable(line, word, i, &wordn);
-					(*i)++;
+					++(*i);
 			}
 			else if ( line[*i] == ';' || line[*i]== '&' || line[*i]== '|' || line[*i]== '<'
 				|| line[*i]== '>' || line[*i]== '\n' || line[*i]== '\t' || line[*i]== ' ')
@@ -271,7 +370,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 			{
 				if (!store_char(word, maxword, line[*i], &wordn))
 					return T_ERROR;
-				(*i)++;
+				++(*i);
 			}
 		}
 	}

@@ -282,7 +282,7 @@ void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
         }
 }
 
-void	cursor_to_i(char *line, t_cpos *pos)
+void	cursor_to_i(/*char *line,*/ t_cpos *pos)
 {
 
 	int first_line;
@@ -335,7 +335,7 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
          	if ((dif = j - pos->i) >= 0)
         	{
          		pos->i = j;
-         		cursor_to_i(line, pos);
+         		cursor_to_i(/*line,*/ pos);
         	}
          	
         }
@@ -374,7 +374,7 @@ void	ft_jump(uint64_t rb, char *line,t_cpos *pos)
         if ((dif = pos->i - j) >= 0)
         {
         	pos->i = j;
-        	cursor_to_i(line, pos);
+        	cursor_to_i(/*line,*/ pos);
         }
         
     	}
@@ -431,7 +431,7 @@ void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 	char *tmp;
 	int len;
 	int dif;
-	int x;
+	//int x;
 
 	if (rb == K_ALT_C)
 	{
@@ -456,7 +456,7 @@ void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 		pos->len += dif;
 		ft_strcpy(&line[pos->i], tmp);
 		pos->height = cmd_height(pos, line);
-		cursor_to_i(line, pos);
+		cursor_to_i(/*line, */pos);
 		reset_selection(pos, line);
 		free(tmp);
 		free(buf);
@@ -473,7 +473,7 @@ void	ft_copy_pase(uint64_t rb,char* line,t_cpos *pos)
 		ft_strcpy(&line[pos->first], tmp);
 		pos->len -= ft_strlen(buf);
 		pos->i -= ft_strlen(buf);
-		cursor_to_i(line, pos);
+		cursor_to_i(/*line, */pos);
 		reset_selection(pos, line);
 		free(tmp);
 	}

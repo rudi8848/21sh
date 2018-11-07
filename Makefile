@@ -5,15 +5,15 @@ SRCS = shell.c lexer.c pack.c \
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)
-FLAGS = -lncurses -ltermcap
+FLAGS = -Wall -Wextra -Werror
 
 all:	$(NAME)
 
 $(NAME): $(OBJS) $(LIB) $(HDRS)
-	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS)
+	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -lncurses -ltermcap
 
 $(OBJS):	$(SRCS) $(LIB)
-	gcc -g3 -c $(SRCS)
+	gcc -g3 -c $(SRCS) $(FLAGS)
 
 $(LIB):
 	make -C libft

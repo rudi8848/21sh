@@ -36,6 +36,9 @@
 # define TRUE 1
 # define FALSE 0
 
+# define RETURN -1
+# define CONTINUE -2
+
 # define COMPLETED 1		//for state in t_process
 # define STOPPED 2		//for state in t_process
 
@@ -172,46 +175,8 @@ typedef struct s_cpos
 	int last;		//last highlighted symb;
 } t_cpos;
 
-/*
-	move( direction )
-	{
-		if direction == RIGHT:
-		{
-			if (pos < width)
-				MOVE_RIGHT
-			else
-			{
-				curln++
-				height++; (if WRITE, not just move)
-				MOVE_START_NEXT_LINE
-			}
-		}
-		
-		if direction == LEFT:
-		{
-			if (pos > 0)
-				MOVE_LEFT
-			else
-			{
-				if curln > 0 : curln--
-				MOVE_END_PREV_LINE
-			}
-
-		}
-
-		if direction == UP:
-		{
-			if (curln > 0)
-			{
-				
-			}
-		}
-	}
-
-*/
-
-
 typedef	int	(*t_pfb) (char**, int , int);
+//typedef	int	(*t_pfb) (char**, ...);
 
 typedef enum {
 	B_ECHO,
@@ -276,7 +241,7 @@ int				ft_env_rewrite(char *str, int size);
 int				ft_check_symb(char *s, int index);
 int				check_built(char *cmd);
 void			ft_cmd_exe(char **args, int infile, int outfile);
-int				ft_print_env(char **args, int infile, int outfile);
+int				ft_print_env(/*char **args, int infile, */int outfile);
 int				ft_check_dir(char *name);
 char			*ft_set_new_path(char **args);
 char			**ft_cp_array(char **src);
