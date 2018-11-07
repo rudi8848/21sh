@@ -45,20 +45,13 @@ size_t	ft_itoa_buf(int value, char *buf)
 	return (len);
 }
 
-static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
+int get_var_name(char *line, int *i, char *var)
 {
-	int j = *i;
-	int vname_len = 0;
-	char var[256];
-	char *ptr = &var[0];
+	int j;
+	int vname_len;
 
-	if (line[j + 1] == '$')
-	{
-		vname_len = ft_itoa_buf(getpid(), &word[*wordn]);
-		*wordn += vname_len;
-		*i += 1;
-		return;
-	}
+	vname_len = 0;
+	j = *i;
 	while (line[j] != '\0') 
 	{
 		if (line[j] == ';' || line[j] == '&' ||
@@ -70,7 +63,26 @@ static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
 		++vname_len;
 		++j;
 	}
-	var[vname_len + 1] = '\0';
+	return (vname_len);
+}
+
+static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
+{
+	int vname_len;
+	char var[256];
+	char *ptr;
+
+	vname_len = 0;
+	ptr = &var[0];
+	ft_bzero(var, 256);
+	if (line[*i + 1] == '$')
+	{
+		vname_len = ft_itoa_buf(getpid(), &word[*wordn]);
+		*wordn += vname_len;
+		*i += 1;
+		return ;
+	}
+	vname_len = get_var_name(line, i, &var[0]);
 	if ((ptr = get_copy_env(var + 1, MUTE)) != NULL)
 	{
 		ft_strcpy(var, ptr);
@@ -89,37 +101,36 @@ void	read_more(char *line, int i, char *prompt)
 	ft_restore();
 }
 
+t_token plane_simple_ret(char *line, int *i)
+{
+	t_token ret;
+
+	++(*i);
+	if (line[*i] == ';')
+		ret = T_SEMI;
+	else if (line[*i] == '&')
+		ret = T_BG;
+	else if (line[*i] == '|')
+		ret = T_PIPE;
+	else
+		ret = T_NLINE;
+	return ret;
+}
+
 static t_token plane_ret(char *line, int *i)
 {
-	if (line[*i] == ';')
-	{
-		++(*i);
-		return (T_SEMI);
-	}
-	else if (line[*i] == '&')
-	{
-		++(*i);
-		return (T_BG);
-	}
-	else if (line[*i] == '|')
-	{
-		++(*i);
-		return (T_PIPE);
-	}
+	if (line[*i] == ';' || line[*i] == '&'|| 
+		line[*i] == '|' || line[*i] == '\n')
+		return (plane_simple_ret(line, i));
 	else if (line[*i] == '<')
 	{
 		++(*i);
-			if (line[*i] == '<')
-			{
-				++(*i);
-				return (T_HRDOC);
-			}
+		if (line[*i] == '<')
+		{
+			++(*i);
+			return (T_HRDOC);
+		}
 		return (T_LESS);
-	}					
-	else if (line[*i] == '\n')
-	{
-		++(*i);
-		return (T_NLINE);
 	}
 	return (T_EOF);
 }
@@ -153,8 +164,45 @@ static t_token is_great(char *line, int *i)
 	return (T_GREAT);
 }
 
+int plane_inword(char *line, int *i, t_lex *lex)
+{
+	if (line[*i] == '\\' && line[(*i) + 1])			//		BEGINNING of the word
+	{
+		++(*i);
+		if (line[*i] == '\n' && !line[(*i) + 1])
+			read_more(&line[(*i) + 1], (*i) + 1, ">");
+		else 
+		{
+			if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
+			{
+				lex->ret_token = T_ERROR;
+				return (RETURN);
+			}
+		}
+		++(*i);
+		return (CONTINUE);
+	}
+	else if (line[*i] == '$')
+	{
+		insert_variable(line, lex->word, i, &lex->wordn);
+		++(*i);
+	}
+	else
+	{
+		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
+		{
+			lex->ret_token = T_ERROR;
+			return (RETURN);
+		}
+		++(*i);
+	}
+	return (CONTINUE);
+}
+
 int plane_tokens(char *line, int *i, t_lex *lex)
 {
+	int ret;
+
 	if (line[*i] == ';' || line[*i] == '&' || line[*i] == '|' || line[*i] == '<' || line[*i] == '\n')
 	{
 		lex->ret_token =  plane_ret(line, i);
@@ -173,38 +221,10 @@ int plane_tokens(char *line, int *i, t_lex *lex)
 	else
 	{
 		lex->state = INWORD;
-		if (line[*i] == '\\' && line[(*i) + 1])			//		BEGINNING of the word
-		{
-			++(*i);
-			if (line[*i] == '\n' && !line[(*i) + 1])
-				read_more(&line[(*i) + 1], (*i) + 1, ">");
-			else 
-			{
-				if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-				{
-					lex->ret_token = T_ERROR;
-					return (RETURN);
-				}
-			}
-			++(*i);
-			return (CONTINUE);
-
-		}
-		else if (line[*i] == '$')
-		{
-			insert_variable(line, lex->word, i, &lex->wordn);
-			++(*i);
-		}
-		else
-		{
-			if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-			{
-				lex->ret_token = T_ERROR;
-				return (RETURN);
-			}
-			++(*i);
-		}
-		return (CONTINUE);
+		if ((ret = plane_inword(line, i, lex)) == RETURN)
+			return (RETURN);
+		else if (ret == CONTINUE)
+			return CONTINUE;
 	}
 	return (0);
 }
