@@ -194,6 +194,23 @@ typedef enum {
 	BUILT
 }	t_built;
 
+/*
+t_state state;
+size_t wordn;
+t_token ret_token;
+int ret;
+*/
+
+
+typedef struct s_lex
+{
+	t_state state;
+	size_t wordn;
+	t_token ret_token;
+	char *word;
+	size_t maxword;
+} t_lex;
+
 t_job	*first_job;
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
 int	pack_args(char *line, t_job *j);
