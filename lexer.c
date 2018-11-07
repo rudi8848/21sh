@@ -2,7 +2,7 @@
 #include <strings.h>
 #include <string.h>
 
-static int store_char(char *word, size_t maxword, int c, size_t *np)
+static int	store_char(char *word, size_t maxword, int c, size_t *np)
 {
 	if (*np < maxword)
 	{
@@ -16,7 +16,7 @@ static int store_char(char *word, size_t maxword, int c, size_t *np)
 size_t		ft_len(int nbr)
 {
 	size_t			i;
-	
+
 	i = 0;
 	if (nbr == 0)
 		return (1);
@@ -30,8 +30,8 @@ size_t		ft_len(int nbr)
 
 size_t	ft_itoa_buf(int value, char *buf)
 {
-	size_t			len;
-	int i;
+	size_t		len;
+	int			i;
 
 	len = ft_len(value);
 	i = len - 1;
@@ -45,14 +45,14 @@ size_t	ft_itoa_buf(int value, char *buf)
 	return (len);
 }
 
-int get_var_name(char *line, int *i, char *var)
+int		get_var_name(char *line, int *i, char *var)
 {
-	int j;
-	int vname_len;
+	int		j;
+	int		vname_len;
 
 	vname_len = 0;
 	j = *i;
-	while (line[j] != '\0') 
+	while (line[j] != '\0')
 	{
 		if (line[j] == ';' || line[j] == '&' ||
 		line[j] == '|' || line[j] == '<' || line[j] == '>' ||
@@ -66,11 +66,11 @@ int get_var_name(char *line, int *i, char *var)
 	return (vname_len);
 }
 
-static	void insert_variable(char *line, char *word, int *i, size_t *wordn)
+void	insert_variable(char *line, char *word, int *i, size_t *wordn)
 {
-	int vname_len;
-	char var[256];
-	char *ptr;
+	int		vname_len;
+	char	var[256];
+	char	*ptr;
 
 	vname_len = 0;
 	ptr = &var[0];
@@ -101,11 +101,10 @@ void	read_more(char *line, int i, char *prompt)
 	ft_restore();
 }
 
-t_token plane_simple_ret(char *line, int *i)
+t_token		plane_simple_ret(char *line, int *i)
 {
 	t_token ret;
 
-	++(*i);
 	if (line[*i] == ';')
 		ret = T_SEMI;
 	else if (line[*i] == '&')
@@ -114,12 +113,13 @@ t_token plane_simple_ret(char *line, int *i)
 		ret = T_PIPE;
 	else
 		ret = T_NLINE;
-	return ret;
+	++(*i);
+	return (ret);
 }
 
-static t_token plane_ret(char *line, int *i)
+t_token		plane_ret(char *line, int *i)
 {
-	if (line[*i] == ';' || line[*i] == '&'|| 
+	if (line[*i] == ';' || line[*i] == '&' ||
 		line[*i] == '|' || line[*i] == '\n')
 		return (plane_simple_ret(line, i));
 	else if (line[*i] == '<')
@@ -135,7 +135,7 @@ static t_token plane_ret(char *line, int *i)
 	return (T_EOF);
 }
 
-void plane_cont(char *line, int *i, t_state *state)
+void	plane_cont(char *line, int *i, t_state *state)
 {
 	if (line[*i] == '>')
 	{
@@ -154,7 +154,7 @@ void plane_cont(char *line, int *i, t_state *state)
 	}
 }
 
-static t_token is_great(char *line, int *i)
+t_token		is_great(char *line, int *i)
 {
 	if (line[*i] == '>')
 	{
@@ -164,24 +164,27 @@ static t_token is_great(char *line, int *i)
 	return (T_GREAT);
 }
 
-int plane_inword(char *line, int *i, t_lex *lex)
+int		plane_inword_backslash(char *line, int *i, t_lex *lex)
 {
-	if (line[*i] == '\\' && line[(*i) + 1])			//		BEGINNING of the word
+	++(*i);
+	if (line[*i] == '\n' && !line[(*i) + 1])
+		read_more(&line[(*i) + 1], (*i) + 1, ">");
+	else
 	{
-		++(*i);
-		if (line[*i] == '\n' && !line[(*i) + 1])
-			read_more(&line[(*i) + 1], (*i) + 1, ">");
-		else 
+		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
 		{
-			if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-			{
-				lex->ret_token = T_ERROR;
-				return (RETURN);
-			}
+			lex->ret_token = T_ERROR;
+			return (RETURN);
 		}
-		++(*i);
-		return (CONTINUE);
 	}
+	++(*i);
+	return (CONTINUE);
+}
+
+int		plane_inword(char *line, int *i, t_lex *lex)
+{
+	if (line[*i] == '\\' && line[(*i) + 1])
+		return (plane_inword_backslash(line, i, lex));
 	else if (line[*i] == '$')
 	{
 		insert_variable(line, lex->word, i, &lex->wordn);
@@ -199,20 +202,18 @@ int plane_inword(char *line, int *i, t_lex *lex)
 	return (CONTINUE);
 }
 
-int plane_tokens(char *line, int *i, t_lex *lex)
+int		plane_tokens(char *line, int *i, t_lex *lex)
 {
-	int ret;
+	int	ret;
 
-	if (line[*i] == ';' || line[*i] == '&' || line[*i] == '|' || line[*i] == '<' || line[*i] == '\n')
+	if (line[*i] == ';' || line[*i] == '&' || line[*i] == '|'
+		|| line[*i] == '<' || line[*i] == '\n')
 	{
-		lex->ret_token =  plane_ret(line, i);
+		lex->ret_token = plane_ret(line, i);
 		return (RETURN);
 	}
 	else if (line[*i] == ' ' || line[*i] == '\t')
-	{
 		++(*i);
-		return (0);
-	}
 	else if (line[*i] == '>' || line[*i] == '\'' || line[*i] == '"')
 	{
 		plane_cont(line, i, &lex->state);
@@ -224,12 +225,12 @@ int plane_tokens(char *line, int *i, t_lex *lex)
 		if ((ret = plane_inword(line, i, lex)) == RETURN)
 			return (RETURN);
 		else if (ret == CONTINUE)
-			return CONTINUE;
+			return (CONTINUE);
 	}
 	return (0);
 }
 
-int quote_tokens(char *line, int *i, t_lex *lex)
+int		quote_tokens(char *line, int *i, t_lex *lex)
 {
 	if (line[*i] == '\'')
 	{
@@ -256,22 +257,54 @@ int quote_tokens(char *line, int *i, t_lex *lex)
 	return (0);
 }
 
-int dquote_tokens(char *line, int *i, t_lex *lex)
+int		dquote_tokens_bs(char *line, int *i, t_lex *lex)
+{
+	++(*i);
+	if (line[*i] == '\n' && !line[(*i) + 1])
+		read_more(&line[(*i) + 1], (*i) + 1, ">");
+	else
+	{
+		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
+		{
+			lex->ret_token = T_ERROR;
+			return (RETURN);
+		}
+	}
+	++(*i);
+	return (0);
+}
+
+int		dquote_tokens_end(int *i, t_lex *lex)
+{
+	if (!store_char(lex->word, lex->maxword, '\0', &lex->wordn))
+	{
+		lex->ret_token = T_ERROR;
+		return (RETURN);
+	}
+	++(*i);
+	lex->ret_token = T_WORD;
+	return (RETURN);
+}
+
+int		dquote_tokens_srore(char *line, int *i, t_lex *lex)
+{
+	if (line[(*i) + 1] == '\0')
+		read_more(&line[(*i) + 1], (*i) + 1, "dquote> ");
+	if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
+	{
+		lex->ret_token = T_ERROR;
+		return (RETURN);
+	}
+	++(*i);
+	return (0);
+}
+
+int		dquote_tokens(char *line, int *i, t_lex *lex)
 {
 	if (line[*i] == '\\' && line[(*i) + 1])
 	{
-		++(*i);
-		if (line[*i] == '\n' && !line[(*i) + 1])
-			read_more(&line[(*i) + 1], (*i) + 1, ">");
-		else
-		{
-			if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-			{
-				lex->ret_token = T_ERROR;
-				return (RETURN);
-			}
-		}
-		++(*i);
+		if (dquote_tokens_bs(line, i, lex) == RETURN)
+			return (RETURN);
 	}
 	else if (line[*i] == '$')
 	{
@@ -279,66 +312,57 @@ int dquote_tokens(char *line, int *i, t_lex *lex)
 		++(*i);
 	}
 	else if (line[*i] == '"')
-	{
-		if (!store_char(lex->word, lex->maxword, '\0', &lex->wordn))
-		{
-			lex->ret_token = T_ERROR;
-			return (RETURN);
-		}
-		++(*i);
-		lex->ret_token = T_WORD;
-		return (RETURN);
-	}
+		return (dquote_tokens_end(i, lex));
 	else
 	{
-		if (line[(*i) + 1] == '\0')
-			read_more(&line[(*i) + 1], (*i) + 1, "dquote> ");
-		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-			{
-				lex->ret_token = T_ERROR;
-				return (RETURN);
-			}
-		++(*i);
+		if (dquote_tokens_srore(line, i, lex) == RETURN)
+			return (RETURN);
 	}
 	return (0);
 }
 
-int word_tokens(char *line, int *i, t_lex *lex)
+int		word_tokens_bs(char *line, int *i, t_lex *lex)
+{
+	++(*i);
+	if (line[*i] == '\n' && !line[(*i) + 1])
+		read_more(&line[(*i) + 1], (*i) + 1, ">");
+	else if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
+	{
+		lex->ret_token = T_ERROR;
+		return (RETURN);
+	}
+	++(*i);
+	return (CONTINUE);
+}
+
+int		word_tokens_end(t_lex *lex)
+{
+	if (!store_char(lex->word, lex->maxword, '\0', &lex->wordn))
+	{
+		lex->ret_token = T_ERROR;
+		return (RETURN);
+	}
+	lex->ret_token = T_WORD;
+	return (RETURN);
+}
+
+int		word_tokens(char *line, int *i, t_lex *lex)
 {
 	if (line[*i] == '\\' && line[(*i) + 1])
-	{
-		++(*i);
-		if (line[*i] == '\n' && !line[(*i) + 1])
-			read_more(&line[(*i) + 1], (*i) + 1, ">");
-		else 
-			if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-			{
-					lex->ret_token = T_ERROR;
-					return (RETURN);
-			}
-		++(*i);
-		return (CONTINUE);
-	}
+		return (word_tokens_bs(line, i, lex));
 	else if (line[*i] == '$')
 	{
 		insert_variable(line, lex->word, i, &lex->wordn);
 		++(*i);
 	}
-	else if ( line[*i] == ';' || line[*i] == '&' || line[*i] == '|' || line[*i] == '<'
-		|| line[*i] == '>' || line[*i] == '\n' || line[*i] == '\t' || line[*i] == ' ')
-	{
-		if (!store_char(lex->word, lex->maxword, '\0', &lex->wordn))
-		{
-			lex->ret_token = T_ERROR;
-			return (RETURN);
-		}
-		lex->ret_token = T_WORD;
-		return (RETURN);
-	}
+	else if (line[*i] == ';' || line[*i] == '&' || line[*i] == '|'
+			|| line[*i] == '<' || line[*i] == '>' || line[*i] == '\n'
+			|| line[*i] == '\t' || line[*i] == ' ')
+		return (word_tokens_end(lex));
 	else
 	{
 		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
-		{	
+		{
 			lex->ret_token = T_ERROR;
 			return (RETURN);
 		}
@@ -347,7 +371,7 @@ int word_tokens(char *line, int *i, t_lex *lex)
 	return (0);
 }
 
-int manage_qoutes(char *line, int *i, t_lex *lex)
+int		manage_qoutes(char *line, int *i, t_lex *lex)
 {
 	int ret;
 
@@ -361,28 +385,28 @@ int manage_qoutes(char *line, int *i, t_lex *lex)
 		if ((ret = dquote_tokens(line, i, lex)) == RETURN)
 			return (RETURN);
 	}
-	return 0;
+	return (0);
 }
 
-int manage_plane_inword(char *line, int *i, t_lex *lex)
+int		manage_plane_inword(char *line, int *i, t_lex *lex)
 {
-	int ret;
+	int	ret;
 
 	if (lex->state == PLANE)
 	{
 		if ((ret = plane_tokens(line, i, lex)) == RETURN)
-				return (RETURN);
-			else if (ret == CONTINUE)
-				return (CONTINUE);
+			return (RETURN);
+		else if (ret == CONTINUE)
+			return (CONTINUE);
 	}
 	else if (lex->state == INWORD)
 	{
 		if ((ret = word_tokens(line, i, lex)) == RETURN)
-				return (RETURN);
-			else if (ret == CONTINUE)
-				return (CONTINUE);
+			return (RETURN);
+		else if (ret == CONTINUE)
+			return (CONTINUE);
 	}
-	return 0;
+	return (0);
 }
 
 void	init_lex(t_lex *lex, char *word, size_t maxword)
@@ -393,10 +417,10 @@ void	init_lex(t_lex *lex, char *word, size_t maxword)
 	lex->maxword = maxword;
 }
 
-t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
+t_token		ft_gettoken(char *line, int *i, char *word, size_t maxword)
 {
-	t_lex lex;
-	int ret;
+	t_lex	lex;
+	int		ret;
 
 	init_lex(&lex, word, maxword);
 	while (line[*i])
@@ -409,7 +433,7 @@ t_token ft_gettoken(char *line, int *i,char *word, size_t maxword)
 				continue;
 		}
 		else if (lex.state == GGREAT)
-			return is_great(line, i);
+			return (is_great(line, i));
 		else if (lex.state == INQUOTE || lex.state == INDQUOTE)
 		{
 			if ((ret = manage_qoutes(line, i, &lex)) == RETURN)

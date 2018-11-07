@@ -18,10 +18,6 @@ $(OBJS):	$(SRCS) $(LIB)
 $(LIB):
 	make -C libft
 
-left: left.c $(SRCS) $(LIB)
-	gcc -g3 -c left.c shell.c
-	gcc -o left left.o shell.o -L. $(LIB) $(FLAGS)
-
 clean:
 	/bin/rm -f $(OBJS)
 	make clean -C libft
