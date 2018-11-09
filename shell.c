@@ -18,7 +18,6 @@ void	free_job(t_job *j)
 	t_process *pprev;
 	if (j)
 	{
-		//ft_printf("> delete %s\n", j->first_process->argv[0]);
 		while (j->first_process)
 		{
 			pprev = j->first_process;
@@ -237,9 +236,7 @@ void	put_job_in_foreground(t_job *j, int cont)
 		if (kill( -j->pgid, SIGCONT) < 0)
 			perror("kill(SIGCONT)");
 	}
-
 	wait_for_job(j);
-
 	tcsetpgrp(shell_terminal, shell_pgid);
 	tcgetattr(shell_terminal, &j->tmodes);
 	tcsetattr(shell_terminal, TCSAFLUSH, &saved);
@@ -350,7 +347,6 @@ void	do_job_notification(void)
 	j = first_job;
 	while(j)
 	{
-		
 		jnext = j->next;
 		if (job_is_completed(j))
 		{
@@ -511,7 +507,7 @@ void	launch_job(t_job *j, int foreground)
 	else
 		put_job_in_background(j, 0);
 }
-
+/*
 void 	print_jobs()
 {
 		int i;
@@ -543,7 +539,7 @@ void 	print_jobs()
 	}
 	printf("+++ DONE +++\n");
 }
-
+*/
 void	init_shell(void)
 {
 	shell_terminal = STDIN_FILENO;
