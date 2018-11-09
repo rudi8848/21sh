@@ -2,7 +2,6 @@
 
 void	init_job(t_job *j)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
 	j->in_fd = STDIN_FILENO;
 	j->out_fd = STDOUT_FILENO;
 	j->err_fd = STDERR_FILENO;
@@ -29,7 +28,6 @@ void	init_job(t_job *j)
 
 void	push_back(t_job *elem)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
 	t_job *ptr;
 
 	if (!first_job)
@@ -43,52 +41,72 @@ void	push_back(t_job *elem)
 	ptr->next = elem;
 }
 
+void	init_pack(t_pack *pack)
+{
+	pack->i = 0;
+	pack->argc = 0;
+	pack->makepipe = 0;
+}
+
 int	pack_args(char *line, t_job *j)
 {
-	//ft_printf("---> %s\n", __FUNCTION__);
+	/*
 	t_token	token;
 	t_token	tkn;
 	char word[MAXWORD];
 	int argc;
+	int makepipe;
+	int i;
+	*/
 	t_process *p;
-	int makepipe = 0;
-	int i = 0;
+	t_pack	pack;
+/*
+	i = 0;
 	argc = 0;
-
+	makepipe = 0;
+*/
 	init_job(j);
 	push_back(j);
+	init_pack(&pack);
 	p = j->first_process;
 	while (1)
 	{
-		ft_bzero(word, sizeof(word));
-		token = ft_gettoken(line, &i, word, sizeof(word));
+		ft_bzero(pack.word, sizeof(pack.word));
+		pack.token = ft_gettoken(line, &pack.i, pack.word, sizeof(pack.word));
 //--- T_WORD
-		if (token == T_WORD)
+		if (pack.token == T_WORD)
 		{
-			if (argc >= MAXARG-1)
+			if (pack.argc >= MAXARG - 1)
 			{
 				ft_printf("Too many args\n");
 				continue;
 			}
+			if (!(p->argv[pack.argc] = ft_strdup(pack.word)))
+			{
+				ft_printf("Out of memory\n");
+				continue;
+			}
+			/*
 			if (!(p->argv[argc] = (char*)ft_memalloc(ft_strlen(word) + 1)))
 			{
 				ft_printf("Out of memory\n");
 				continue;
 			}
 			ft_strcpy(p->argv[argc], word);
-			argc++;
+			*/
+			++pack.argc;
 			continue;
 		}
 //----------------------------------
 //--- T_LESS
-		else if (token == T_LESS)
+		else if (pack.token == T_LESS)
 		{
-			if (makepipe)
+			if (pack.makepipe)
 			{
 				ft_printf("Extra <\n");
 				return 0;
 			}
-			if (ft_gettoken(line, &i, j->srcfile, sizeof(j->srcfile)) != T_WORD)	// OR BG
+			if (ft_gettoken(line, &pack.i, j->srcfile, sizeof(j->srcfile)) != T_WORD)	// OR BG
 			{
 				ft_printf("Illegal <\n");
 				return 0;
@@ -98,16 +116,18 @@ int	pack_args(char *line, t_job *j)
 		}
 //----------------------------------
 //--- T_HRDOC
-		else if (token == T_HRDOC)
+		else if (pack.token == T_HRDOC)
 		{
-			if (ft_gettoken(line, &i, word, sizeof(word)) != T_WORD)
+			if (ft_gettoken(line, &pack.i, pack.word, sizeof(pack.word)) != T_WORD)
 			{
 				ft_printf("Error near << \n");
+				p->argv[pack.argc] = NULL;
+				free_job(j);
 				return 0;
 			}
 			t_process *prev = ft_memalloc(sizeof(t_process));
 			prev->argv[0] = ft_strdup("heredoc");
-			prev->argv[1] = ft_strjoin(word, "\n");
+			prev->argv[1] = ft_strjoin(pack.word, "\n");
 			if (p == j->first_process)
 			{
 				prev->next = p;
@@ -123,7 +143,7 @@ int	pack_args(char *line, t_job *j)
 		}
 //----------------------------------
 //--- T_GREAT || T_GGREAT
-		else if (token == T_GREAT || token == T_GGREAT)
+		else if (pack.token == T_GREAT || pack.token == T_GGREAT)
 		{
 			// --- check errors
 			if (j->out_fd != STDOUT_FILENO)
@@ -132,18 +152,18 @@ int	pack_args(char *line, t_job *j)
 				//	CLEAN ALL
 				return 0;
 			}
-			if (!argc)
+			if (!pack.argc)
 			{
 				ft_printf("Error\n");
 				return 0;
 			}
 			// --- if next is not name of file
-			if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
+			if ((pack.tkn = ft_gettoken(line, &pack.i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 			{
 				//	--- redirection fd to fd or close
-				if (tkn == T_BG)
+				if (pack.tkn == T_BG)
 				{
-						if ((tkn = ft_gettoken(line, &i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
+						if ((pack.tkn = ft_gettoken(line, &pack.i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 						{
 							ft_printf("ERROR\n");
 							return 0;
@@ -151,8 +171,8 @@ int	pack_args(char *line, t_job *j)
 						if (ft_strequ("-", j->dstfile))
 						{
 							int nbr;
-							if (ft_isdigit(p->argv[argc - 1][0]))
-								nbr = ft_atoi(p->argv[argc - 1]);
+							if (ft_isdigit(p->argv[pack.argc - 1][0]))
+								nbr = ft_atoi(p->argv[pack.argc - 1]);
 							else
 								nbr = 1;
 							if (nbr == j->in_fd)
@@ -175,20 +195,20 @@ int	pack_args(char *line, t_job *j)
 								ft_printf("Bad file descriptor: %d\n", nbr);
 								return 0;
 							}
-							if (ft_isdigit(p->argv[argc - 1][0]))
+							if (ft_isdigit(p->argv[pack.argc - 1][0]))
 							{
-								argc--;
-								free(p->argv[argc]);
-								p->argv[argc] = NULL;
+								--pack.argc;
+								free(p->argv[pack.argc]);
+								p->argv[pack.argc] = NULL;
 							}
 
 						}
 						else if (ft_isdigit(j->dstfile[0]))
 						{
 							//j->out_fd = ft_atoi(j->dstfile);
-							if (ft_isdigit(p->argv[argc - 1][0]))
+							if (ft_isdigit(p->argv[pack.argc - 1][0]))
 							{
-								int nbr = ft_atoi(p->argv[argc - 1]);
+								int nbr = ft_atoi(p->argv[pack.argc - 1]);
 								if (nbr == j->in_fd)
 									;//j->in_fd = ft_atoi(j->dstfile);
 								else if (nbr == j->out_fd)
@@ -200,9 +220,9 @@ int	pack_args(char *line, t_job *j)
 									ft_printf("Bad file descriptor: %d\n", nbr);
 									return 0;
 								}
-								argc--;
-								free(p->argv[argc]);
-								p->argv[argc] = NULL;
+								--pack.argc;
+								free(p->argv[pack.argc]);
+								p->argv[pack.argc] = NULL;
 							}
 							else	//	p->argv[argc]	not digit
 							{
@@ -228,9 +248,9 @@ int	pack_args(char *line, t_job *j)
 				return 0;
 			}
 			//-----------
-			if (ft_isdigit(p->argv[argc - 1][0]))
+			if (ft_isdigit(p->argv[pack.argc - 1][0]))
 			{
-				int nbr = ft_atoi(p->argv[argc - 1]);
+				int nbr = ft_atoi(p->argv[pack.argc - 1]);
 				if (nbr == j->in_fd)
 					j->in_fd = open(j->dstfile, j->flags, FILE_PERM);
 				else if (nbr == j->out_fd)
@@ -242,13 +262,13 @@ int	pack_args(char *line, t_job *j)
 					ft_printf("Bad file descriptor: %d\n", nbr);
 					return 0;
 				}
-				argc--;
-				free(p->argv[argc]);
-				p->argv[argc] = NULL;
+				--pack.argc;
+				free(p->argv[pack.argc]);
+				p->argv[pack.argc] = NULL;
 			}
 			//-----------
 			j->out_fd = -1;
-			if ( token == T_GGREAT)
+			if ( pack.token == T_GGREAT)
 				j->flags |= O_APPEND;
 			else
 				j->flags |= O_TRUNC;
@@ -256,15 +276,15 @@ int	pack_args(char *line, t_job *j)
 		}
 //----------------------------------
 //--- T_PIPE || T_BG || T_SEMI || T_NLINE
-		else if (token == T_PIPE || token == T_BG || token == T_SEMI || token == T_NLINE)
+		else if (pack.token == T_PIPE || pack.token == T_BG || pack.token == T_SEMI || pack.token == T_NLINE)
 		{
-			p->argv[argc] = NULL;
-			if (token == T_BG)
+			p->argv[pack.argc] = NULL;
+			if (pack.token == T_BG)
 			{
 				j->foreground = 0;
 				continue;
 			}
-			if (token == T_PIPE)
+			if (pack.token == T_PIPE)
 			{
 				if (j->out_fd != STDOUT_FILENO)
 				{
@@ -274,40 +294,40 @@ int	pack_args(char *line, t_job *j)
 				}
 				p->next  = (t_process*)ft_memalloc(sizeof(t_process));
 				p = p->next;
-				makepipe = 1;
-				argc = 0;
+				pack.makepipe = 1;
+				pack.argc = 0;
 				continue;
 			}
-			if (token == T_SEMI)
+			if (pack.token == T_SEMI)
 			{
-				if (line[i] && line[i] != '\n')
+				if (line[pack.i] && line[pack.i] != '\n')
 				{
 					j->next = (t_job*)ft_memalloc(sizeof(t_job));
 					p->next = NULL;
 					j = j->next;
-					argc = 0;
+					pack.argc = 0;
 					init_job(j);
 					p = j->first_process;
-					makepipe = 0;
+					pack.makepipe = 0;
 					continue;
 				}
 				else
 					return 1;
 			}
-			if (argc == 0 && (token != T_NLINE || j->in_fd /*> 1*/ != -1))
+			if (pack.argc == 0 && (pack.token != T_NLINE || j->in_fd /*> 1*/ != -1))
 			{
 				ft_printf("Missing command\n");
 				//	CLEAN ALL
 				return 0;
 			}
-			else if (argc == 0 && token == T_NLINE)
+			else if (pack.argc == 0 && pack.token == T_NLINE)
 				//	CLEAN ALL
 				return 0;
 			return 1;
 
 		}
 //----------------------------------
-		else if (token == T_EOF || token == T_ERROR)
+		else if (pack.token == T_EOF || pack.token == T_ERROR)
 			return 0;
 //----------------------------------
 	}

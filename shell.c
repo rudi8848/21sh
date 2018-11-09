@@ -18,6 +18,7 @@ void	free_job(t_job *j)
 	t_process *pprev;
 	if (j)
 	{
+		//ft_printf("> delete %s\n", j->first_process->argv[0]);
 		while (j->first_process)
 		{
 			pprev = j->first_process;
@@ -391,6 +392,7 @@ void	continue_job(t_job *j, int foreground)
 //-----------------------------------------------
 void	launch_job(t_job *j, int foreground)
 {
+	//ft_printf("> %s: %s\n", j->first_process->argv[0]);
 	t_process	*p;
 	pid_t		pid = 0;
 	int		mypipe[2] = {-1, -1};
@@ -509,7 +511,7 @@ void	launch_job(t_job *j, int foreground)
 	else
 		put_job_in_background(j, 0);
 }
-/*
+
 void 	print_jobs()
 {
 		int i;
@@ -541,7 +543,7 @@ void 	print_jobs()
 	}
 	printf("+++ DONE +++\n");
 }
-*/
+
 void	init_shell(void)
 {
 	shell_terminal = STDIN_FILENO;
@@ -680,6 +682,7 @@ int	main(int argc, char **argv)
 				g_hstr_nb++;
 			}
 			ptr = first_job;
+			//print_jobs();
 			while (ptr)
 			{
 				if (!ptr->foreground && ptr->nbr)
@@ -689,6 +692,7 @@ int	main(int argc, char **argv)
 				ptr = ptr->next;
 
 			}
+
 			do_job_notification();
 			if (shell_is_interactive)
 			{
@@ -696,6 +700,8 @@ int	main(int argc, char **argv)
 				g_hstr_fd = -1;
 			}
 		}
+		//else
+			//free_job(j);
 	}
 	return 0;
 }

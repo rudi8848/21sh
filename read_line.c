@@ -589,7 +589,7 @@ void print(char *line, t_cpos *pos, uint64_t rb, int rr)
     	tputs(tgetstr("sc", NULL), 0, ft_iputchar);      // save cursor position
         tputs(tgoto(tgetstr("cm", NULL), 0, (*pos).cury + 1), 0, ft_iputchar);
         tputs(tgetstr("cd", NULL), 0, ft_iputchar);      // delete end of screen       
-        write(STDOUT_FILENO, line + pos->width - pos->start + pos->width*pos->curln, pos->len);//write the rest
+        write(STDOUT_FILENO, line + pos->width - pos->start + pos->width * pos->curln, pos->len);//write the rest
         tputs(tgetstr("rc", NULL), 0, ft_iputchar);      // restore cursor position
     }
     if (line[pos->i])   //if it's at the middle of line
@@ -637,7 +637,6 @@ void    read_line(char *line, int start)
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
-		//printf("> %llu\n", rb);
 		if (ft_isprint(rb))
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)
@@ -654,19 +653,3 @@ void    read_line(char *line, int start)
 	//line[pos.i] = '\n';
     return;
 }
-
-
-/*
- 		
-		* copy/paste/cut
-   		* shift->, shift<-	
-		* history (cursor at the last symbol) + segfault
-		* ctrl + left, ctrl + right
-		* ctrl + up, ctrl + down
-		* HOME, END 					OK
-		* cmd_height, strlen(prompt)	OK
-		* print - last symbol in first line is empty
-		* deleting 1st symbol removes 2 from screen
-		* left after END jumps through 2 symbols
-		* calculate end of line and positions as strlen and width
-*/

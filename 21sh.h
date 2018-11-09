@@ -194,14 +194,6 @@ typedef enum {
 	BUILT
 }	t_built;
 
-/*
-t_state state;
-size_t wordn;
-t_token ret_token;
-int ret;
-*/
-
-
 typedef struct s_lex
 {
 	t_state state;
@@ -210,6 +202,16 @@ typedef struct s_lex
 	char *word;
 	size_t maxword;
 } t_lex;
+
+typedef struct s_pack
+{
+	t_token	token;
+	t_token	tkn;
+	char word[MAXWORD];
+	int argc;
+	int makepipe;
+	int i;
+} t_pack;
 
 t_job	*first_job;
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
@@ -269,6 +271,8 @@ void	ft_built_exe(char **args, t_built cmd, int infile, int outfile);
 int		ft_jobs(char **args, int infile, int outfile);
 int		ft_bg(char **args, int infile, int outfile);
 int		ft_fg(char **args, int infile, int outfile);
+
+void	free_job(t_job *j);
 //------------------------------
 
 #endif
