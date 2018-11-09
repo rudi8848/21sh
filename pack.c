@@ -121,14 +121,8 @@ int pack_heredoc(t_job *j, t_process *p, char *line, t_pack *pack)
 	return CONTINUE;
 }
 
-int close_output(t_job *j, t_process *p, t_pack *pack)
+int close_output_nbr(t_job *j, t_process *p, t_pack *pack, int nbr)
 {
-	int nbr;
-
-	if (ft_isdigit(p->argv[pack->argc - 1][0]))
-		nbr = ft_atoi(p->argv[pack->argc - 1]);
-	else
-		nbr = 1;
 	if (nbr == j->in_fd)
 	{
 		j->in_fd = -1;
@@ -152,6 +146,20 @@ int close_output(t_job *j, t_process *p, t_pack *pack)
 		ft_printf("Bad file descriptor: %d\n", nbr);
 		return remove_invalid_job(j, p, pack);
 	}
+	return CONTINUE;
+}
+
+int close_output(t_job *j, t_process *p, t_pack *pack)
+{
+	int nbr;
+	int ret;
+
+	if (ft_isdigit(p->argv[pack->argc - 1][0]))
+		nbr = ft_atoi(p->argv[pack->argc - 1]);
+	else
+		nbr = 1;
+	if ((ret = close_output_nbr(j, p, pack, nbr)) != CONTINUE)
+		return ret;
 	if (ft_isdigit(p->argv[pack->argc - 1][0]))
 	{
 		--pack->argc;
@@ -177,7 +185,6 @@ int check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 	}
 	else if (ft_isdigit(j->dstfile[0]))
 	{
-		//j->out_fd = ft_atoi(j->dstfile);
 		if (ft_isdigit(p->argv[pack->argc - 1][0]))
 		{
 			int nbr = ft_atoi(p->argv[pack->argc - 1]);
@@ -196,17 +203,8 @@ int check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 			free(p->argv[pack->argc]);
 			p->argv[pack->argc] = NULL;
 		}
-//		else	//	p->argv[argc]	not digit
-//		{
-			j->out_fd = ft_atoi(j->dstfile);
-//		}
-				//	compare atoi(p->argv[argc-1]) with j->in_fd, out, err, if fits - 
-				// change it to atoi(j->dstfile), remove p->argv[argc -1] and argc--
-				// if p->argv[argc -1] is not number need to redirect STDOUT_FILENO
-				// and don't touch argv[argc -1 ] and argc
-				//int nbr = ft_atoi(p->argv)
-				//ft_printf("<<< %s is redirected to %s >>>\n", p->argv[argc - 1], j->dstfile);
-		}
+		j->out_fd = ft_atoi(j->dstfile);
+	}
 	else
 	{
 		ft_printf("ERROR\n");
@@ -215,55 +213,52 @@ int check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 	return CONTINUE;
 }
 
+int remove_last_arg(t_job *j, t_process *p, t_pack *pack)
+{
+	int nbr = ft_atoi(p->argv[pack->argc - 1]);
+	
+	if (nbr == j->in_fd)
+		j->in_fd = open(j->dstfile, j->flags, FILE_PERM);
+	else if (nbr == j->out_fd)
+		j->out_fd = -1;
+	else if (nbr == j->err_fd)
+		j->err_fd = open(j->dstfile, j->flags, FILE_PERM);
+	else
+	{
+		ft_printf("Bad file descriptor: %d\n", nbr);
+		return (remove_invalid_job(j, p, pack));
+	}
+	--pack->argc;
+	free(p->argv[pack->argc]);
+	p->argv[pack->argc] = NULL;
+	return CONTINUE;
+}
+
 int check_redirection(t_job *j, t_process *p, char *line, t_pack *pack)
 {
 	int ret;
-
+	
+	j->out_fd = -1;
 	if ((pack->tkn = ft_gettoken(line, &pack->i, j->dstfile, sizeof(j->dstfile))) != T_WORD)
 	{
-		//	--- redirection fd to fd or close
 		if (pack->tkn == T_BG)
 		{
-
 			if ((ret = check_output_fd(j, p, line, pack)) != CONTINUE)
-				return ret;
-			ft_printf(">>>\t j->dstfile: %s\n", j->dstfile);
-			ft_printf(">>>\t j->srcfile: %s\n", j->srcfile);
-			ft_printf(">>>\t j->errfile: %s\n", j->errfile);
-			
+				return ret;		
 		}
 		else
 		{
 			ft_printf("\nIllegal > or >>\n");
 			return remove_invalid_job(j, p, pack);
 		}
-		
 	}
 	if (ft_isdigit(p->argv[pack->argc - 1][0]))
-	{
-		int nbr = ft_atoi(p->argv[pack->argc - 1]);
-		if (nbr == j->in_fd)
-			j->in_fd = open(j->dstfile, j->flags, FILE_PERM);
-		else if (nbr == j->out_fd)
-			j->out_fd = -1;
-		else if (nbr == j->err_fd)
-			j->err_fd = open(j->dstfile, j->flags, FILE_PERM);
-		else
-		{
-			ft_printf("Bad file descriptor: %d\n", nbr);
-			return (remove_invalid_job(j, p, pack));
-		}
-		--pack->argc;
-		free(p->argv[pack->argc]);
-		p->argv[pack->argc] = NULL;
-	}
+		return remove_last_arg(j, p, pack);		
 	return CONTINUE;
 }
 
 int pack_great(t_job *j, t_process *p, char *line, t_pack *pack)
 {
-	int ret;
-
 	if (j->out_fd != STDOUT_FILENO)
 	{
 		ft_printf("\nExtra > or >>\n");
@@ -274,15 +269,11 @@ int pack_great(t_job *j, t_process *p, char *line, t_pack *pack)
 		ft_printf("Error\n");
 		return remove_invalid_job(j, p, pack);
 	}
-	if ((ret = check_redirection(j, p, line, pack)) != CONTINUE)
-		return ret;	
-	j->out_fd = -1;
 	if ( pack->token == T_GGREAT)
 		j->flags |= O_APPEND;
 	else
 		j->flags |= O_TRUNC;
-	ft_printf(">>>\t j->dstfile: %s\n", j->dstfile);
-	return (CONTINUE);
+	return check_redirection(j, p, line, pack);
 }
 
 int pack_pipe(t_job **j, t_process **p, t_pack *pack)
