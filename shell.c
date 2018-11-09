@@ -682,7 +682,6 @@ int	main(int argc, char **argv)
 				g_hstr_nb++;
 			}
 			ptr = first_job;
-			//print_jobs();
 			while (ptr)
 			{
 				if (!ptr->foreground && ptr->nbr)
@@ -692,7 +691,6 @@ int	main(int argc, char **argv)
 				ptr = ptr->next;
 
 			}
-
 			do_job_notification();
 			if (shell_is_interactive)
 			{
@@ -700,8 +698,6 @@ int	main(int argc, char **argv)
 				g_hstr_fd = -1;
 			}
 		}
-		//else
-			//free_job(j);
 	}
 	return 0;
 }
