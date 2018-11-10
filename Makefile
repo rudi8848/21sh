@@ -1,7 +1,11 @@
 NAME = test
 SRCS = shell.c lexer.c pack.c \
 		builtin.c built_func.c environement.c find.c help_func.c heredoc.c job_builtin.c \
-		read_line.c
+		read_line.c read_line_copy_paste.c \
+		read_line_delete.c read_line_help.c \
+		read_line_highlight.c read_line_history.c \
+		read_line_jump.c read_line_move.c \
+		read_line_move_border.c read_line_print.c read_line_vertical.c
 HDRS = 21sh.h
 LIB = libft/libft.a
 OBJS = $(SRCS:.c=.o)

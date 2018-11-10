@@ -7,7 +7,7 @@ struct termios saved;
 extern char **environ;
 int	g_hstr_fd = -1;
 
-void    ft_restore()
+void    ft_restore(void)
 {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
 }
@@ -152,6 +152,7 @@ void	set_stopsignals(sig_t func)
 	//signal(SIGCHLD, func);
 }
 
+/*
 t_job	*find_job(pid_t pgid)
 {
 	t_job	*j;
@@ -162,6 +163,7 @@ t_job	*find_job(pid_t pgid)
 	}
 	return NULL;
 }
+*/
 
 int	job_is_stopped(t_job *j)
 {
@@ -566,21 +568,23 @@ void	init_shell(void)
 	}
 	copy_env();
 }
+
 /*
-static void fd_check(void)
-{
-     int fd;
-     bool ok = true;
- 
-     for (fd = 3; fd < 20; fd++)
-         if (fcntl(fd, F_GETFL) != -1 || errno != EBADF) {
-             ok = false;
-             fprintf(stderr, "*** fd %d is open ***\n", fd);
-         }
-     if (!ok)
-         _exit(EXIT_FAILURE);
-}
+** static void fd_check(void)
+** {
+**     int fd;
+**     bool ok = true;
+** 
+**     for (fd = 3; fd < 20; fd++)
+**         if (fcntl(fd, F_GETFL) != -1 || errno != EBADF) {
+**             ok = false;
+**             fprintf(stderr, "*** fd %d is open ***\n", fd);
+**         }
+**     if (!ok)
+**         _exit(EXIT_FAILURE);
+**}
 */
+
 void	init_history(void)
 {
 	int i = 0;

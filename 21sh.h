@@ -109,8 +109,8 @@ typedef enum {
 # define K_END			4610843
 # define K_SHFT_L		74982532143899
 # define K_SHFT_R		73883020516123
-# define K_ALT_C		42947		//for copy
-# define K_ALT_V		10127586	//for paste
+# define K_ALT_C		42947
+# define K_ALT_V		10127586
 # define K_ALT_X		8948194
 
 # define TERM_BELL	tputs(tgetstr("bl", NULL), 0, ft_iputchar);
@@ -274,5 +274,22 @@ int		ft_fg(char **args, int infile, int outfile);
 
 void	free_job(t_job *j);
 //------------------------------
+
+
+/*		read line 		*/
+void	print(char *line, t_cpos *pos, uint64_t rb, int rr);
+void	ft_highlight(uint64_t rb,char *line,t_cpos *pos);
+void	ft_copy_paste(uint64_t rb,char* line, t_cpos *pos);
+void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd);
+void	delete_char(uint64_t rb, char *line, t_cpos *pos);
+void	ft_jump_vertical(uint64_t rb, char *line,t_cpos *pos);
+void	ft_jump(uint64_t rb, char *line,t_cpos *pos);
+void	cursor_to_i(t_cpos *pos);
+void 	ft_move(uint64_t direction, char *line, t_cpos *pos);
+void	move_to_border(uint64_t direction, char *line, t_cpos *pos);
+int 	cmd_height(t_cpos *pos, char *line);
+void	init_position(t_cpos *pos, int start, char *line);
+void	reset_selection(t_cpos *pos, char *line);
+
 
 #endif
