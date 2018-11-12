@@ -31,8 +31,8 @@
 
 # define CHILD 			0
 # define PARENT 		1
-# define ERROR 			-1
 
+# define ERROR 			-1
 # define NORM 			0
 # define MUTE 			1
 
@@ -49,7 +49,7 @@
 
 # define MAXHSTR 		4096
 
-# define MAXLINE 		500
+# define MAXLINE 		1024
 
 # define K_LEFT  		4479771
 # define K_RIGHT		4414235

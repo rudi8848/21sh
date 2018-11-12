@@ -32,6 +32,8 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		ft_highlight(rb, line, pos);
 	else if (rb == K_ALT_C || rb == K_ALT_V || rb == K_ALT_X)
 		ft_copy_paste(rb, line, pos);
+	else if (rb == K_TAB)
+		ft_autocomplete(line, pos);
 }
 
 void	end_line(char *line, uint64_t rb, t_cpos *pos)
