@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "21sh.h"
+#include "shell.h"
 
 int		ft_get_width(void)
 {
 	struct winsize	argp;
 	int				ret;
 
-	ret = ioctl(shell_terminal, TIOCGWINSZ, &argp);
+	ret = ioctl(g_shell_terminal, TIOCGWINSZ, &argp);
 	if (ret != 0)
 	{
 		ft_putstr_fd("Cannot get window size\n", STDERR_FILENO);

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "21sh.h"
+#include "shell.h"
 
 void	shift_letters(char *line, t_cpos *pos)
 {

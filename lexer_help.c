@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredoc.c                                          :+:      :+:    :+:   */
+/*   lexer_help.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/12 16:41:18 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/12 16:41:54 by gvynogra         ###   ########.fr       */
+/*   Created: 2018/11/12 14:17:02 by gvynogra          #+#    #+#             */
+/*   Updated: 2018/11/12 14:17:04 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shell.h"
 
-int		ft_heredoc(char **argv, int infile, int outfile)
+int		store_char(char *word, size_t maxword, int c, size_t *np)
 {
-	char	line[MAXLINE];
-	int		res;
-
-	ft_bzero(line, MAXLINE);
-	res = 0;
-	if (infile < -1)
-		ft_printf("Wrong input file");
-	while (!res)
+	if (*np < maxword)
 	{
-		read_more(line, 1, "heredoc> ");
-		res = ft_strequ(line, argv[1]);
-		if (!res)
-			ft_putstr_fd(line, outfile);
+		word[(*np)++] = c;
+		return (1);
 	}
-	return (0);
+	else
+		return (0);
+}
+
+void	read_more(char *line, int i, char *prompt)
+{
+	ft_printf("%s", prompt);
+	cbreak_settings();
+	read_line(line, i);
+	ft_restore();
 }

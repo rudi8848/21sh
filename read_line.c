@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "21sh.h"
+#include "shell.h"
 
 void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 {

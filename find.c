@@ -1,23 +1,35 @@
-#include "21sh.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   find.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/11/12 16:38:58 by gvynogra          #+#    #+#             */
+/*   Updated: 2018/11/12 16:39:46 by gvynogra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int			check_access(t_process *cmd, char *tmp, char **p_arr)
+#include "shell.h"
+
+static int	check_access(t_process *cmd, char *tmp, char **p_arr)
 {
 	if (access(tmp, X_OK) != NORM)
-			{
-				ft_putstr_fd(tmp, STDERR_FILENO);
-				ft_putstr_fd(": permission denied\n", STDERR_FILENO);
-				free_arr(p_arr);
-				free(tmp);
-				return (0);
-			}
-			free(cmd->argv[0]);
-			cmd->argv[0] = ft_strdup(tmp);
-			free_arr(p_arr);
-			free(tmp);
-			return (1);
+	{
+		ft_putstr_fd(tmp, STDERR_FILENO);
+		ft_putstr_fd(": permission denied\n", STDERR_FILENO);
+		free_arr(p_arr);
+		free(tmp);
+		return (0);
+	}
+	free(cmd->argv[0]);
+	cmd->argv[0] = ft_strdup(tmp);
+	free_arr(p_arr);
+	free(tmp);
+	return (1);
 }
 
-int			ft_path_fitting(t_process *cmd, char **p_arr)
+static int	ft_path_fitting(t_process *cmd, char **p_arr)
 {
 	char	*tmp;
 	char	*tmp1;
@@ -30,7 +42,7 @@ int			ft_path_fitting(t_process *cmd, char **p_arr)
 		tmp = ft_strjoin(tmp1, cmd->argv[0]);
 		free(tmp1);
 		if (access(tmp, F_OK) == NORM)
-			return check_access(cmd, tmp, p_arr);
+			return (check_access(cmd, tmp, p_arr));
 		if (tmp)
 			free(tmp);
 		++i;

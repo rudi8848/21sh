@@ -1,21 +1,16 @@
-#include "21sh.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   help_func.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/11/12 16:20:20 by gvynogra          #+#    #+#             */
+/*   Updated: 2018/11/12 16:20:29 by gvynogra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-char	*ft_set_new_path(char **args)
-{
-	char	*new;
-
-	if (!args[1] || args[1][0] == '~' || ft_strequ(args[1], "--"))
-		new = ft_path_substitute(args[1]);
-	else if (args[1][0] == '-')
-	{
-		if (!get_copy_env("OLDPWD", OK))
-			return (NULL);
-		new = ft_strdup(get_copy_env("OLDPWD", MUTE));
-	}
-	else
-		new = ft_strdup(args[1]);
-	return (new);
-}
+#include "shell.h"
 
 char	**ft_cp_array(char **src)
 {
@@ -39,37 +34,7 @@ char	**ft_cp_array(char **src)
 	return (dest);
 }
 
-int		ft_print_env(int outfile)
-{
-	int i;
-
-	i = 0;
-	while (g_envp[i] != NULL)
-	{
-		ft_putstr_fd(g_envp[i], outfile);
-		ft_putstr_fd("\n", outfile);
-		i++;
-	}
-	return (0);
-}
-
-int		ft_check_dir(char *name)
-{
-	int				ret;
-	struct stat		buf;
-
-	ret = lstat(name, &buf);
-	if (ret >= 0)
-	{
-		if (S_ISDIR(buf.st_mode))
-			return (1);
-	}
-	else
-		ft_printf("cannot access %s\n", name);
-	return (0);
-}
-
-void		free_arr(char **array)
+void	free_arr(char **array)
 {
 	int	i;
 
@@ -82,4 +47,13 @@ void		free_arr(char **array)
 	}
 	free(array);
 	array = NULL;
+}
+
+char	*get_current_wd(void)
+{
+	char	buf[2048 + 1];
+	char	*dest;
+
+	dest = getcwd(buf, 2048);
+	return (dest);
 }

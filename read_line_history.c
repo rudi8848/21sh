@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "21sh.h"
+#include "shell.h"
 
 void	history_next(char *line, t_cpos *pos, int *cmd)
 {
