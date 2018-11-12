@@ -61,6 +61,8 @@ int		shell_terminal;
 int		shell_is_interactive;
 int		g_hstr_nb;
 char	*g_history[MAXHSTR];
+struct termios saved;
+extern char **environ;
 	
 
 typedef int t_bool;
@@ -212,6 +214,15 @@ typedef struct s_pack
 	int makepipe;
 	int i;
 } t_pack;
+
+typedef struct s_launch
+{
+	t_process *p;
+	int infile;
+	int outfile;
+	pid_t pid;
+	int ret;
+} t_launch;
 
 t_job	*first_job;
 t_token ft_gettoken(char *line, int *i,char *word, size_t maxword);
