@@ -21,6 +21,7 @@ SRCS 	= 	builtin.c \
 			pack_redirection.c \
 			pack_redirection_help.c \
 			read_line.c \
+			read_line_autocomplete.c \
 			read_line_copy_paste.c \
 			read_line_delete.c \
 			read_line_help.c \

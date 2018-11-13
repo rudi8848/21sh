@@ -105,6 +105,8 @@ void		move_to_border(uint64_t direction, char *line, t_cpos *pos);
 int			cmd_height(t_cpos *pos, char *line);
 void		init_position(t_cpos *pos, int start, char *line);
 void		reset_selection(t_cpos *pos, char *line);
+void		ft_autocomplete(char *line, t_cpos *pos);
+
 /*
 **	shell
 */
