@@ -70,17 +70,15 @@ int		is_directory(char *name)
 	return (0);
 }
 
-void	ft_read_dir(t_compl **head, char *name, char *begin, char dironly)
+int	ft_read_dir(t_compl **head, char *name, char *begin, char dironly)
 {
 	struct dirent	*info;
 	DIR		*dirp;
 	size_t	len = ft_strlen(begin);
-
+	int ret = 0;
 	dirp = opendir(name);
 	if (dirp == NULL)
-	{
-		return;
-	}
+		return 0;
 	while ((info = readdir(dirp)))
 	{
 		if (info->d_name[0] == '.')
@@ -90,34 +88,43 @@ void	ft_read_dir(t_compl **head, char *name, char *begin, char dironly)
 		{
 
 			if (!dironly)
+			{
 				push_compl(head, info->d_name);
+				++ret;
+			}
 			else
 			{
 				if (is_directory(info->d_name))
+				{
 					push_compl(head, info->d_name);
+					ret++;
+				}
 			}
 		}
 	}
 	closedir(dirp);
+	return ret;
 }
 
-void	read_path(t_compl **head, char *begin)
+int	read_path(t_compl **head, char *begin)
 {
 //--------------------------------------------------- copy PATH
 	char **path_arr;
 	char *env_path;
 	int i = 0;
+	int ret = 0;
 
 	if (!(env_path = get_copy_env("PATH", NORM)))
-		return ;
+		return 0;
 	if (!(path_arr = ft_strsplit(env_path, ':')))
-		return ;
+		return 0;
 //--------------------------------------------------- read PATH
 	while(path_arr[i])
 	{
-		ft_read_dir(head, path_arr[i], begin, 0);
+		ret += ft_read_dir(head, path_arr[i], begin, 0);
 		++i;
 	}
+	return ret;
 }
 
 int		is_first_word(char *line, t_cpos *pos, char **begin)
@@ -219,6 +226,7 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 {
 	t_compl *head = NULL;
 	char *begin = NULL;
+	int ret = 0;
 
 	if (!pos->autocompl)
 	{
@@ -230,27 +238,29 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 		if (pos->len == 0)
 		{
 			//	show PATH
-			read_path(&head, "");
+			ret = read_path(&head, "");
 		}
 		else
 		{
 			if (is_first_word(line, pos, &begin))
 			{
 				//show PATH and directories in current dir that fit to begin
-				read_path(&head, begin);
-				ft_read_dir(&head, get_current_wd(), begin, 1);
+				ret = read_path(&head, begin);
+				ret += ft_read_dir(&head, get_current_wd(), begin, 1);
 			}
 			else
 			{
 				//show all current dir	
-				ft_read_dir(&head, get_current_wd(), begin, 0);
+				ret = ft_read_dir(&head, get_current_wd(), begin, 0);
 			}
 		}
 		pos->autocompl = head;
-		pos->bgn = ft_strdup(begin);
+		if (ret)
+			pos->bgn = ft_strdup(begin);
 	}
 	//ft_printf("> BEGIN: %s\n", pos->bgn);
-	complete(line, pos, pos->bgn);
+	if (pos->bgn)
+		complete(line, pos, pos->bgn);
 	//print_list(head);
 	//clear_compl(head);
 }
