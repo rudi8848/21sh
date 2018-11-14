@@ -30,6 +30,7 @@ void	push_compl(t_compl **head, char *name)
 
 void	clear_compl(t_compl *head)
 {
+	//ft_printf(">>>\t%s\n", __FUNCTION__);
 	t_compl *prev;
 	
 	while (head)
@@ -39,6 +40,7 @@ void	clear_compl(t_compl *head)
 		free(prev);
 		prev = NULL;
 	}
+
 }
 
 void	print_list(t_compl *head)
@@ -128,13 +130,13 @@ int		is_first_word(char *line, t_cpos *pos, char **begin)
 		j = pos->i;
 		if (!line[j])
 			--j;
-		while (j)
-			if (line[j] != ' ' && line[j] != '\n'
+		while (j && line[j] != ' ' && line[j] != '\n'
 			&& line[j] != '\\' && line[j] != '|'  && line[j] != '/'
 			&& line[j] != '&'  && line[j] != '$'  && line[j] != '>'
 			&& line[j] != '<'  && line[j] != ',')
-				break ;
-			--j;
+			{
+				--j;
+			}
 		*begin = ft_strsub(line, j, pos->i);
 	}
 	b = 0;
@@ -247,6 +249,7 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 		pos->autocompl = head;
 		pos->bgn = ft_strdup(begin);
 	}
+	//ft_printf("> BEGIN: %s\n", pos->bgn);
 	complete(line, pos, pos->bgn);
 	//print_list(head);
 	//clear_compl(head);

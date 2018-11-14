@@ -56,7 +56,12 @@ void	reset_selection(t_cpos *pos, char *line)
 	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 	if (pos->autocompl)
 		clear_compl(pos->autocompl);
-	ft_strdel(&pos->bgn);
+	//ft_printf(">>>\t%s\n", __FUNCTION__);
+	if (pos->bgn)
+	{
+		free(pos->bgn);
+		pos->bgn = NULL;
+	}
 }
 
 void	init_position(t_cpos *pos, int start, char *line)
