@@ -65,6 +65,7 @@ void	init_position(t_cpos *pos, int start, char *line)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
+	pos->autocompl = NULL;
 	reset_selection(pos, line);
 	if (start)
 		pos->start = pos->curx;

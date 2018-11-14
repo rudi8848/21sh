@@ -68,6 +68,13 @@ typedef struct			s_job
 	int					foreground;
 }						t_job;
 
+typedef struct 			s_compl
+{
+	char				*name;
+	char				active;
+	struct s_compl		*next;
+} 						t_compl;
+
 typedef struct			s_cpos
 {
 	int					start;
@@ -82,6 +89,7 @@ typedef struct			s_cpos
 	int					selection;
 	int					first;
 	int					last;
+	t_compl				*autocompl;
 }						t_cpos;
 
 typedef	int	(*t_pfb) (char**, int, int);
