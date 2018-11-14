@@ -76,6 +76,7 @@ int	ft_read_dir(t_compl **head, char *name, char *begin, char dironly)
 	DIR		*dirp;
 	size_t	len = ft_strlen(begin);
 	int ret = 0;
+
 	dirp = opendir(name);
 	if (dirp == NULL)
 		return 0;
@@ -83,10 +84,10 @@ int	ft_read_dir(t_compl **head, char *name, char *begin, char dironly)
 	{
 		if (info->d_name[0] == '.')
 			continue;
-		//ft_printf("> begin: %s, file: %s, len: %d\n", begin, info->d_name, len);
+		//ft_printf("> begin: [%s], file: %s, len: %d\n", begin, info->d_name, len);
 		if (len == 0 || ft_strnequ(info->d_name, begin, len))
 		{
-
+		
 			if (!dironly)
 			{
 				push_compl(head, info->d_name);
@@ -124,6 +125,7 @@ int	read_path(t_compl **head, char *begin)
 		ret += ft_read_dir(head, path_arr[i], begin, 0);
 		++i;
 	}
+	free_arr(path_arr);
 	return ret;
 }
 
@@ -137,15 +139,21 @@ int		is_first_word(char *line, t_cpos *pos, char **begin)
 		j = pos->i;
 		if (!line[j])
 			--j;
-		while (j && line[j] != ' ' && line[j] != '\n'
-			&& line[j] != '\\' && line[j] != '|'  && line[j] != '/'
-			&& line[j] != '&'  && line[j] != '$'  && line[j] != '>'
-			&& line[j] != '<'  && line[j] != ',')
+		while (j > 0)
+		{
+			if (line[j] == ' ' || line[j] == '\n'
+			|| line[j] == '\\' || line[j] == '|'  || line[j] == '/'
+			|| line[j] == '&'  || line[j] == '$'  || line[j] == '>'
+			|| line[j] == '<'  || line[j] == ',')
 			{
-				--j;
+				++j;
+				break;
 			}
+			--j;
+		}
 		if (!(*begin = ft_strsub(line, j, pos->i)) || !ft_strlen(*begin))
 			return ERROR;
+		//ft_printf(">\t BEGIN: [%s]\n", *begin);
 	}
 	b = 0;
 	while (line[b] && b < j)
@@ -228,6 +236,7 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 	t_compl *head = NULL;
 	char *begin = NULL;
 	int ret = 0;
+	int first;
 
 	if (!pos->autocompl)
 	{
@@ -243,24 +252,31 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 		}
 		else
 		{
-			if ((ret = is_first_word(line, pos, &begin) == 1))
+			if ((first = is_first_word(line, pos, &begin) == 1))
 			{
 				//show PATH and directories in current dir that fit to begin
 				ret = read_path(&head, begin);
 				ret += ft_read_dir(&head, get_current_wd(), begin, 1);
 			}
-			else if (ret == ERROR)
+			else if (first == ERROR)
 				ret = 0;
 			else
 			{
 				//show all current dir	
+				//ft_printf("> BEGIN: %s\n", begin);
 				ret = ft_read_dir(&head, get_current_wd(), begin, 0);
+				//ft_printf(">\t RET: %d\n", ret);
 			}
 		}
 		if (!ret)
 		{
 			free(head);
 			head = NULL;
+			if (begin && ft_strlen(begin))
+			{
+				free(begin);
+				begin = NULL;
+			}
 			return ;
 		}
 		else
@@ -269,7 +285,7 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 			pos->bgn = ft_strdup(begin);
 		}
 	}
-	//ft_printf("> BEGIN: %s\n", pos->bgn);
+	
 	if (pos->bgn)
 		complete(line, pos, pos->bgn);
 	//print_list(head);
