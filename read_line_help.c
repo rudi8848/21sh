@@ -42,6 +42,7 @@ void	get_curpos(t_cpos *pos)
 
 void	reset_selection(t_cpos *pos, char *line)
 {
+	//ft_printf(">>>\t%s\n", __FUNCTION__);
 	t_cpos tmp;
 
 	tmp = *pos;
@@ -55,13 +56,14 @@ void	reset_selection(t_cpos *pos, char *line)
 	pos->last = -1;
 	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 	if (pos->autocompl)
-		clear_compl(pos->autocompl);
-	//ft_printf(">>>\t%s\n", __FUNCTION__);
+		clear_compl(&pos->autocompl);
+	//ft_printf(">>>\t%s: autocompl cleared\n", __FUNCTION__);
 	if (pos->bgn)
 	{
 		free(pos->bgn);
 		pos->bgn = NULL;
 	}
+	//ft_printf(">>>\t%s: bgn cleared\n", __FUNCTION__);
 }
 
 void	init_position(t_cpos *pos, int start, char *line)

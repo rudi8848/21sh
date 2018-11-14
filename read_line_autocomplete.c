@@ -28,19 +28,20 @@ void	push_compl(t_compl **head, char *name)
 	*head = tmp;
 }
 
-void	clear_compl(t_compl *head)
+void	clear_compl(t_compl **head)
 {
 	//ft_printf(">>>\t%s\n", __FUNCTION__);
 	t_compl *prev;
 	
-	while (head)
+	while (*head)
 	{
-		prev = head;
-		head = head->next;
+		prev = *head;
+		*head = (*head)->next;
 		free(prev);
 		prev = NULL;
 	}
-
+	//free(head);
+	//head = NULL;
 }
 
 void	print_list(t_compl *head)
@@ -245,33 +246,26 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 			ft_putstr_fd("Out of memory\n", STDERR_FILENO);
 			return ;
 		}
+		head->next = NULL;
 		if (pos->len == 0)
-		{
-			//	show PATH
 			ret = read_path(&head, "");
-		}
 		else
 		{
 			if ((first = is_first_word(line, pos, &begin) == 1))
 			{
-				//show PATH and directories in current dir that fit to begin
 				ret = read_path(&head, begin);
 				ret += ft_read_dir(&head, get_current_wd(), begin, 1);
 			}
 			else if (first == ERROR)
 				ret = 0;
 			else
-			{
-				//show all current dir	
-				//ft_printf("> BEGIN: %s\n", begin);
 				ret = ft_read_dir(&head, get_current_wd(), begin, 0);
-				//ft_printf(">\t RET: %d\n", ret);
-			}
 		}
 		if (!ret)
 		{
 			free(head);
 			head = NULL;
+			pos->autocompl = NULL;
 			if (begin && ft_strlen(begin))
 			{
 				free(begin);
@@ -290,4 +284,6 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 		complete(line, pos, pos->bgn);
 	//print_list(head);
 	//clear_compl(head);
+//	ft_printf("pos->autocompl address: %p\n", pos->autocompl);	<-
+//	ft_printf("pos->bgn address: %p\n", pos->bgn);
 }

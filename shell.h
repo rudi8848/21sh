@@ -106,7 +106,7 @@ int			cmd_height(t_cpos *pos, char *line);
 void		init_position(t_cpos *pos, int start, char *line);
 void		reset_selection(t_cpos *pos, char *line);
 void		ft_autocomplete(char *line, t_cpos *pos);
-void		clear_compl(t_compl *head);
+void		clear_compl(t_compl **head);
 /*
 **	shell
 */
