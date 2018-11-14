@@ -219,17 +219,16 @@ void	complete(char *line, t_cpos *pos, char *begin)
 		//	cursor to line[start + len]
 		pos->i = start + len;
 		cursor_to_i(pos);
+		
 		ft_strclr(&line[start]);
 		ft_strcpy(&line[start], str);
 		tputs(tgetstr("sc", NULL), 0, ft_iputchar);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		write(STDOUT_FILENO, &line[start + len], ft_strlen(line) + ft_strlen(str));
 		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
-
-		
-		/*ft_printf("> %s\n", str);*/
-		pos->i += ft_strlen(str) - len;
+		//pos->i += ft_strlen(str) - len;
 		pos->len += ft_strlen(str) - len;
+
 		// cursor to end
 		move_to_border(K_END, line, pos);
 	}
