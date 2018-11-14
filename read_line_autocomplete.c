@@ -144,7 +144,8 @@ int		is_first_word(char *line, t_cpos *pos, char **begin)
 			{
 				--j;
 			}
-		*begin = ft_strsub(line, j, pos->i);
+		if (!(*begin = ft_strsub(line, j, pos->i)) || !ft_strlen(*begin))
+			return ERROR;
 	}
 	b = 0;
 	while (line[b] && b < j)
@@ -242,21 +243,31 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 		}
 		else
 		{
-			if (is_first_word(line, pos, &begin))
+			if ((ret = is_first_word(line, pos, &begin) == 1))
 			{
 				//show PATH and directories in current dir that fit to begin
 				ret = read_path(&head, begin);
 				ret += ft_read_dir(&head, get_current_wd(), begin, 1);
 			}
+			else if (ret == ERROR)
+				ret = 0;
 			else
 			{
 				//show all current dir	
 				ret = ft_read_dir(&head, get_current_wd(), begin, 0);
 			}
 		}
-		pos->autocompl = head;
-		if (ret)
+		if (!ret)
+		{
+			free(head);
+			head = NULL;
+			return ;
+		}
+		else
+		{
+			pos->autocompl = head;
 			pos->bgn = ft_strdup(begin);
+		}
 	}
 	//ft_printf("> BEGIN: %s\n", pos->bgn);
 	if (pos->bgn)
