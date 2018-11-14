@@ -184,20 +184,37 @@ char	*find_active(t_compl *head)
 	return (str);
 }
 
-void	complete(char *line, t_cpos *pos)
+void	complete(char *line, t_cpos *pos, char *begin)
 {
-	char *str;
+	char	*str;
+	int		len;
+	int		start;
 
-	if (!line)
+	if (!line || !begin)
 		ft_printf("Error\n");
+	len = ft_strlen(begin);
+	start = pos->i - len;
+	
 	str = find_active(pos->autocompl);
-	ft_printf("> %s\n", str);
-
+	if (str)
+	{
+		
+		ft_strclr(&line[start]);
+		ft_strcpy(&line[start], str);
+		tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
+		write(STDOUT_FILENO, &line[start + len], ft_strlen(line) + ft_strlen(str));
+		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+		
+		/*ft_printf("> %s\n", str);*/
+		pos->i += ft_strlen(str) - len;
+		pos->len += ft_strlen(str) - len;
+	}
+	//ft_printf(">line: %s\n", line);
 }
 
 void	ft_autocomplete(char *line, t_cpos *pos)
 {
-//	static int is_pressed = 0;
 	t_compl *head = NULL;
 	char *begin = NULL;
 
@@ -228,8 +245,9 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 			}
 		}
 		pos->autocompl = head;
+		pos->bgn = ft_strdup(begin);
 	}
-	complete(line, pos);
+	complete(line, pos, pos->bgn);
 	//print_list(head);
 	//clear_compl(head);
 }

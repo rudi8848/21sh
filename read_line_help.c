@@ -54,6 +54,9 @@ void	reset_selection(t_cpos *pos, char *line)
 	pos->first = -1;
 	pos->last = -1;
 	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+	if (pos->autocompl)
+		clear_compl(pos->autocompl);
+	ft_strdel(&pos->bgn);
 }
 
 void	init_position(t_cpos *pos, int start, char *line)
@@ -66,6 +69,7 @@ void	init_position(t_cpos *pos, int start, char *line)
 	pos->len = 0;
 	pos->i = 0;
 	pos->autocompl = NULL;
+	pos->bgn = NULL;
 	reset_selection(pos, line);
 	if (start)
 		pos->start = pos->curx;
