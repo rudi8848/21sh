@@ -63,6 +63,8 @@ void	reset_selection(t_cpos *pos, char *line)
 		free(pos->bgn);
 		pos->bgn = NULL;
 	}
+	pos->autostart = 0;
+	pos->autolen = 0;
 	//ft_printf(">>>\t%s: bgn cleared\n", __FUNCTION__);
 }
 

@@ -209,25 +209,29 @@ void	complete(char *line, t_cpos *pos, char *begin)
 	int		len;
 	int		start;
 
-	if (!line || !begin)
-		ft_printf("Error\n");
 	len = ft_strlen(begin);
 	start = pos->i - len;
-	
+	pos->autostart = start;
+	pos->autolen = len;
 	str = find_active(pos->autocompl);
 	if (str)
 	{
-		
+		//	cursor to line[start + len]
+		pos->i = start + len;
+		cursor_to_i(pos);
 		ft_strclr(&line[start]);
 		ft_strcpy(&line[start], str);
 		tputs(tgetstr("sc", NULL), 0, ft_iputchar);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		write(STDOUT_FILENO, &line[start + len], ft_strlen(line) + ft_strlen(str));
 		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+
 		
 		/*ft_printf("> %s\n", str);*/
 		pos->i += ft_strlen(str) - len;
 		pos->len += ft_strlen(str) - len;
+		// cursor to end
+		move_to_border(K_END, line, pos);
 	}
 	//ft_printf(">line: %s\n", line);
 }
@@ -279,7 +283,6 @@ void	ft_autocomplete(char *line, t_cpos *pos)
 			pos->bgn = ft_strdup(begin);
 		}
 	}
-	
 	if (pos->bgn)
 		complete(line, pos, pos->bgn);
 	//print_list(head);

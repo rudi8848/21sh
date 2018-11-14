@@ -91,6 +91,8 @@ typedef struct			s_cpos
 	int					last;
 	t_compl				*autocompl;
 	char				*bgn;
+	int 				autostart;
+	int 				autolen;
 }						t_cpos;
 
 typedef	int	(*t_pfb) (char**, int, int);
