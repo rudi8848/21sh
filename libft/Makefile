@@ -26,11 +26,11 @@ SRCS = ft_atoi.c ft_bzero.c ft_isalnum.c ft_isalpha.c ft_isascii.c ft_isdigit.c 
 	   ft_printf_unsigned.c ft_printf_signed.c ft_printf_num_help.c ft_printf_putstr_help.c \
 	   ft_printf_wstr_help.c get_next_line.c
 OBJS = $(SRCS:.c=.o)
-
+CC	 = gcc
 
 all: $(NAME)
 $(NAME): $(SRCS) $(OBJS)
-	gcc -Wall -Wextra -Werror -c $(SRCS)
+	$(CC) -Wall -Wextra -Werror -c $(SRCS)
 	ar rc $(NAME) $(OBJS)
 	ranlib $(NAME)
 

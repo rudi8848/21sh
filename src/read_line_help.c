@@ -32,12 +32,12 @@ void	get_curpos(t_cpos *pos)
 	int		ret;
 
 	ret = 0;
-	memset(buf, 0, 21);
+	ft_memset(buf, 0, 21);
 	write(0, "\033[6n", 4);
 	if ((ret = read(0, buf, 20)) < 0)
 		ft_printf("Cannot get current position\n");
-	pos->curx = atoi(strrchr(buf, ';') + 1);
-	pos->cury = atoi(&buf[2]) - 1;
+	pos->curx = ft_atoi(ft_strrchr(buf, ';') + 1);
+	pos->cury = ft_atoi(&buf[2]) - 1;
 }
 
 void	reset_selection(t_cpos *pos, char *line)

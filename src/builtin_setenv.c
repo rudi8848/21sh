@@ -55,7 +55,7 @@ static int	ft_env_rewrite(char *str, int size)
 	new_envp[size] = ft_strdup(str);
 	free(str);
 	if (new_envp[size] == NULL)
-		return (printf("Cannot set env\n"));
+		return (ft_printf("Cannot set env\n"));
 	new_envp[size + 1] = NULL;
 	free_arr(g_envp);
 	g_envp = new_envp;

@@ -48,18 +48,20 @@ SRCS 	= 	src/builtin.c \
 HDRS	= 	includes/shell.h includes/shell_structures.h
 LIB 	= 	libft/libft.a
 OBJS 	= 	$(SRCS:.c=.o)
+CC		=	gcc
 FLAGS 	= 	-Wall -Wextra -Werror
+DIR_SRC = 	srcs
 
 all:	$(NAME)
 
-$(NAME): $(OBJS) $(LIB) $(HDRS)
-	gcc -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -lncurses -ltermcap
+$(NAME): $(LIB) $(OBJS) $(HDRS)
+	$(CC) -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -lncurses -ltermcap
 
-$(OBJS):	$(SRCS) $(LIB)
-	gcc -g3 -c $(SRCS) $(FLAGS)
+$(DIR_SRC)/%.o: $(DIR_SRC)/%.c
+	$(CC) $(FLAGS) -o $@ -c $<
 
 $(LIB):
-	make -C libft
+	@make -C libft
 
 clean:
 	/bin/rm -f $(OBJS)

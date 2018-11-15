@@ -87,7 +87,7 @@ void	init_shell(void)
 	{
 		while (tcgetpgrp(g_shell_terminal) != (g_shell_pgid = getpgid(0)))
 		{
-			fprintf(stderr, "shell is not interactive\n");
+			ft_putstr_fd("shell is not interactive\n", STDERR_FILENO);
 			kill(-g_shell_pgid, SIGTTIN);
 		}
 		set_stopsignals(SIG_IGN);
