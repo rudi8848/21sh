@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 15:52:20 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/15 12:13:32 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/11/15 14:35:36 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ typedef struct			s_cpos
 	char				*bgn;
 	int					autostart;
 	int					autolen;
+	int					is_auto;
 }						t_cpos;
 
 typedef	int	(*t_pfb) (char**, int, int);

@@ -63,6 +63,7 @@ void	reset_selection(t_cpos *pos, char *line)
 	}
 	pos->autostart = 0;
 	pos->autolen = 0;
+	pos->is_auto = 0;
 }
 
 void	init_position(t_cpos *pos, int start, char *line)

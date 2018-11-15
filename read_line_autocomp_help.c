@@ -85,12 +85,11 @@ void		complete(char *line, t_cpos *pos, char *begin)
 {
 	char	*str;
 
-	if (!pos->autolen)
+	if (!pos->is_auto)
 	{
 		pos->autolen = ft_strlen(begin);
-		pos->autostart = 0;
-		if (pos->autolen)
-			pos->autostart = pos->i - pos->autolen;
+		pos->autostart = pos->i - pos->autolen;
+		pos->is_auto = 1;
 	}
 	str = find_active(pos->autocompl);
 	if (str)
