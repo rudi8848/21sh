@@ -21,6 +21,7 @@
 # include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <termios.h>
+#include <dirent.h>
 # include <curses.h>
 # include <term.h>
 # include <errno.h>
@@ -106,7 +107,11 @@ int			cmd_height(t_cpos *pos, char *line);
 void		init_position(t_cpos *pos, int start, char *line);
 void		reset_selection(t_cpos *pos, char *line);
 void		ft_autocomplete(char *line, t_cpos *pos);
+void		complete(char *line, t_cpos *pos, char *begin);
+void		push_compl(t_compl **head, char *name);
 void		clear_compl(t_compl **head);
+int			is_directory(char *name);
+
 /*
 **	shell
 */
