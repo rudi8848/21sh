@@ -21,7 +21,7 @@
 # include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <termios.h>
-#include <dirent.h>
+# include <dirent.h>
 # include <curses.h>
 # include <term.h>
 # include <errno.h>
@@ -110,8 +110,8 @@ void		ft_autocomplete(char *line, t_cpos *pos);
 void		complete(char *line, t_cpos *pos, char *begin);
 void		push_compl(t_compl **head, char *name);
 void		clear_compl(t_compl **head);
-int			is_directory(char *name);
-
+int			ft_read_dir(t_compl **head, char *name, char *begin, char dironly);
+int			read_path(t_compl **head, char *begin);
 /*
 **	shell
 */

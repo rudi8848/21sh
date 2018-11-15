@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read_line_autocomp_help.c                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/11/15 10:45:36 by gvynogra          #+#    #+#             */
+/*   Updated: 2018/11/15 10:47:24 by gvynogra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shell.h"
 
-void	push_compl(t_compl **head, char *name)
+void		push_compl(t_compl **head, char *name)
 {
 	t_compl	*tmp;
 
@@ -17,10 +29,10 @@ void	push_compl(t_compl **head, char *name)
 	*head = tmp;
 }
 
-void	clear_compl(t_compl **head)
+void		clear_compl(t_compl **head)
 {
 	t_compl *prev;
-	
+
 	while (*head)
 	{
 		prev = *head;
@@ -30,18 +42,15 @@ void	clear_compl(t_compl **head)
 	}
 }
 
-int		is_directory(char *name)
+static void	set_active(t_compl *head, t_compl *ptr, char **str)
 {
-	int				ret;
-	struct stat		buf;
-
-	ret = lstat(name, &buf);
-	if (ret >= 0)
-	{
-		if (S_ISDIR(buf.st_mode))
-			return (1);
-	}
-	return (0);
+	if (ptr->name)
+		*str = ptr->name;
+	ptr->active = 0;
+	if (ptr->next)
+		ptr->next->active = 1;
+	else
+		head->active = 1;
 }
 
 static char	*find_active(t_compl *head)
@@ -58,13 +67,7 @@ static char	*find_active(t_compl *head)
 		if (ptr->active)
 		{
 			find = 1;
-			if (ptr->name)
-				str = ptr->name;
-			ptr->active = 0;
-			if (ptr->next)
-				ptr->next->active = 1;
-			else
-				head->active = 1;
+			set_active(head, ptr, &str);
 			if (str)
 				return (str);
 		}
@@ -78,14 +81,16 @@ static char	*find_active(t_compl *head)
 	return (str);
 }
 
-void	complete(char *line, t_cpos *pos, char *begin)
+void		complete(char *line, t_cpos *pos, char *begin)
 {
 	char	*str;
 
 	if (!pos->autolen)
 	{
 		pos->autolen = ft_strlen(begin);
-		pos->autostart = pos->i - pos->autolen;
+		pos->autostart = 0;
+		if (pos->autolen)
+			pos->autostart = pos->i - pos->autolen;
 	}
 	str = find_active(pos->autocompl);
 	if (str)
@@ -93,12 +98,12 @@ void	complete(char *line, t_cpos *pos, char *begin)
 		pos->i = pos->autostart + pos->autolen;
 		pos->len = pos->autostart + pos->autolen;
 		cursor_to_i(pos);
-		
 		ft_strclr(&line[pos->autostart]);
 		ft_strcpy(&line[pos->autostart], str);
 		tputs(tgetstr("sc", NULL), 0, ft_iputchar);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
-		write(STDOUT_FILENO, &line[pos->autostart + pos->autolen], ft_strlen(line) + ft_strlen(str));
+		write(STDOUT_FILENO, &line[pos->autostart + pos->autolen],
+			ft_strlen(line) + ft_strlen(str));
 		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 		pos->len += ft_strlen(str) - pos->autolen;
 		move_to_border(K_END, line, pos);

@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 15:52:20 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/12 15:52:23 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/11/15 12:13:32 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,12 @@ typedef struct			s_job
 	int					foreground;
 }						t_job;
 
-typedef struct 			s_compl
+typedef struct			s_compl
 {
 	char				*name;
 	char				active;
 	struct s_compl		*next;
-} 						t_compl;
+}						t_compl;
 
 typedef struct			s_cpos
 {
@@ -91,8 +91,8 @@ typedef struct			s_cpos
 	int					last;
 	t_compl				*autocompl;
 	char				*bgn;
-	int 				autostart;
-	int 				autolen;
+	int					autostart;
+	int					autolen;
 }						t_cpos;
 
 typedef	int	(*t_pfb) (char**, int, int);
