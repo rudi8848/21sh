@@ -55,10 +55,10 @@ DIR_SRC = 	srcs
 all:	$(NAME)
 
 $(NAME): $(LIB) $(OBJS) $(HDRS)
-	$(CC) -g3 -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -lncurses -ltermcap
+	$(CC) -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -lncurses -ltermcap
 
-$(OBJS): $(SRCS)
-	$(CC) -g3 $(FLAGS) $(SRCS)
+$(DIR_SRC)/%.o: $(DIR_SRC)/%.c
+	$(CC) $(FLAGS) -o $@ -c $<
 
 $(LIB):
 	@make -C libft

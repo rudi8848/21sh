@@ -90,9 +90,6 @@ static int	check_result(t_compl *head, char *begin, t_cpos *pos, int ret)
 	{
 		pos->autocompl = head;
 		pos->bgn = ft_strdup(begin);
-		if (begin)
-		 free(begin);
-		begin = NULL;
 	}
 	return (0);
 }

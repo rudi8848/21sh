@@ -41,7 +41,7 @@ void		clear_compl(t_compl **head)
 		prev = NULL;
 	}
 	free(head);
-	head = NULL
+	head = NULL;
 }
 
 static void	set_active(t_compl *head, t_compl *ptr, char **str)
