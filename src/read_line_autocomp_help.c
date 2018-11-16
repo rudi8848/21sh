@@ -40,6 +40,8 @@ void		clear_compl(t_compl **head)
 		free(prev);
 		prev = NULL;
 	}
+	free(head);
+	head = NULL
 }
 
 static void	set_active(t_compl *head, t_compl *ptr, char **str)

@@ -74,7 +74,7 @@ static int	search_vars(char *line, t_cpos *pos, t_compl **head, char **begin)
 
 static int	check_result(t_compl *head, char *begin, t_cpos *pos, int ret)
 {
-	if (!ret)
+	if (ret < 1)
 	{
 		free(head);
 		head = NULL;
@@ -90,6 +90,9 @@ static int	check_result(t_compl *head, char *begin, t_cpos *pos, int ret)
 	{
 		pos->autocompl = head;
 		pos->bgn = ft_strdup(begin);
+		if (begin)
+		 free(begin);
+		begin = NULL;
 	}
 	return (0);
 }
