@@ -33,9 +33,14 @@ void	get_curpos(t_cpos *pos)
 
 	ret = 0;
 	ft_memset(buf, 0, 21);
-	write(0, "\033[6n", 4);
-	if ((ret = read(0, buf, 20)) < 0)
+	write(STDERR_FILENO, "\033[6n", 4);
+	if ((ret = read(STDERR_FILENO, buf, 20)) < 0)
+	{
 		ft_printf("Cannot get current position\n");
+		pos->curx = 0;
+		pos->cury = 0;
+		return ;
+	}
 	pos->curx = ft_atoi(ft_strrchr(buf, ';') + 1);
 	pos->cury = ft_atoi(&buf[2]) - 1;
 }
@@ -57,7 +62,10 @@ void	reset_selection(t_cpos *pos, char *line)
 	if (pos->is_auto)
 	{
 	if (pos->autocompl)
+	{
 		clear_compl(&pos->autocompl);
+		pos->autocompl = NULL;
+	}
 	if (pos->bgn)
 	{
 		free(pos->bgn);
@@ -78,6 +86,7 @@ void	init_position(t_cpos *pos, int start, char *line)
 	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
+	pos->is_auto = 0;
 	pos->autocompl = NULL;
 	pos->bgn = NULL;
 	reset_selection(pos, line);
