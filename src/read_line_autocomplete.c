@@ -79,7 +79,7 @@ static int	check_result(t_compl **head, char **begin, t_cpos *pos, int ret)
 		free(*head);
 		*head = NULL;
 		pos->autocompl = NULL;
-		if (*begin && ft_strlen(*begin))
+		if (*begin)
 		{
 			free(*begin);
 			*begin = NULL;
@@ -89,7 +89,16 @@ static int	check_result(t_compl **head, char **begin, t_cpos *pos, int ret)
 	else
 	{
 		pos->autocompl = *head;
-		pos->bgn = ft_strdup(*begin);
+		if (pos->bgn)
+			free(pos->bgn);
+		if (*begin)
+		{
+			pos->bgn = ft_strdup(*begin);
+		//if (*begin)	
+		
+			free(*begin);
+			*begin = NULL;	
+		}
 	}
 	return (0);
 }

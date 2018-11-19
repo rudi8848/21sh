@@ -68,7 +68,8 @@ void	reset_selection(t_cpos *pos, char *line)
 	}
 	if (pos->bgn)
 	{
-		free(pos->bgn);
+		ft_strdel(&pos->bgn);
+		//free(pos->bgn);
 		pos->bgn = NULL;
 	}
 	pos->autostart = 0;
