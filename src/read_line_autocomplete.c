@@ -72,24 +72,24 @@ static int	search_vars(char *line, t_cpos *pos, t_compl **head, char **begin)
 	return (ret);
 }
 
-static int	check_result(t_compl *head, char *begin, t_cpos *pos, int ret)
+static int	check_result(t_compl **head, char **begin, t_cpos *pos, int ret)
 {
 	if (ret < 1)
 	{
-		free(head);
-		head = NULL;
+		free(*head);
+		*head = NULL;
 		pos->autocompl = NULL;
-		if (begin && ft_strlen(begin))
+		if (*begin && ft_strlen(*begin))
 		{
-			free(begin);
-			begin = NULL;
+			free(*begin);
+			*begin = NULL;
 		}
 		return (RETURN);
 	}
 	else
 	{
-		pos->autocompl = head;
-		pos->bgn = ft_strdup(begin);
+		pos->autocompl = *head;
+		pos->bgn = ft_strdup(*begin);
 	}
 	return (0);
 }
@@ -103,7 +103,7 @@ void		ft_autocomplete(char *line, t_cpos *pos)
 	head = NULL;
 	begin = NULL;
 	ret = 0;
-	if (!pos->autocompl)
+	if (!pos->is_auto)
 	{
 		if (!(head = (t_compl*)ft_memalloc(sizeof(t_compl))))
 		{
@@ -115,7 +115,7 @@ void		ft_autocomplete(char *line, t_cpos *pos)
 			ret = read_path(&head, "");
 		else
 			ret = search_vars(line, pos, &head, &begin);
-		if (check_result(head, begin, pos, ret) == RETURN)
+		if (check_result(&head, &begin, pos, ret) == RETURN)
 			return ;
 	}
 	complete(line, pos, pos->bgn);

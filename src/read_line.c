@@ -38,6 +38,7 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 
 void	end_line(char *line, uint64_t rb, t_cpos *pos)
 {
+	reset_selection(pos, line);
 	move_to_border(K_END, line, pos);
 	ft_printf("\n");
 	if (rb == K_CTRL_C)

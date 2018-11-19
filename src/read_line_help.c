@@ -54,6 +54,8 @@ void	reset_selection(t_cpos *pos, char *line)
 	pos->first = -1;
 	pos->last = -1;
 	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+	if (pos->is_auto)
+	{
 	if (pos->autocompl)
 		clear_compl(&pos->autocompl);
 	if (pos->bgn)
@@ -64,6 +66,7 @@ void	reset_selection(t_cpos *pos, char *line)
 	pos->autostart = 0;
 	pos->autolen = 0;
 	pos->is_auto = 0;
+	}
 }
 
 void	init_position(t_cpos *pos, int start, char *line)

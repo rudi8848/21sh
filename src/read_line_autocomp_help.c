@@ -37,11 +37,18 @@ void		clear_compl(t_compl **head)
 	{
 		prev = *head;
 		*head = (*head)->next;
+		if (prev->name)
+		{
+			//ft_printf(">\tclear: %s\n", prev->name);
+			free(prev->name);
+			prev->name = NULL;
+		}
 		free(prev);
 		prev = NULL;
 	}
-	free(head);
-	head = NULL;
+	if (*head)
+		free(*head);
+	*head = NULL;
 }
 
 static void	set_active(t_compl *head, t_compl *ptr, char **str)
