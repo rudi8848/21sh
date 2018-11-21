@@ -61,20 +61,16 @@ void	reset_selection(t_cpos *pos, char *line)
 	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 	if (pos->is_auto)
 	{
-	if (pos->autocompl)
-	{
-		clear_compl(&pos->autocompl);
-		pos->autocompl = NULL;
-	}
-	if (pos->bgn)
-	{
-		ft_strdel(&pos->bgn);
-		//free(pos->bgn);
-		pos->bgn = NULL;
-	}
-	pos->autostart = 0;
-	pos->autolen = 0;
-	pos->is_auto = 0;
+		if (pos->autocompl)
+		{
+			clear_compl(&pos->autocompl);
+			pos->autocompl = NULL;
+		}
+		if (pos->bgn)
+			ft_strdel(&pos->bgn);
+		pos->autostart = 0;
+		pos->autolen = 0;
+		pos->is_auto = 0;
 	}
 }
 

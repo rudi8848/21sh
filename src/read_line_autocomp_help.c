@@ -39,7 +39,6 @@ void		clear_compl(t_compl **head)
 		*head = (*head)->next;
 		if (prev->name)
 		{
-			//ft_printf(">\tclear: %s\n", prev->name);
 			free(prev->name);
 			prev->name = NULL;
 		}

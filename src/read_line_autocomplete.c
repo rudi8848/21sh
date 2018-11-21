@@ -94,10 +94,8 @@ static int	check_result(t_compl **head, char **begin, t_cpos *pos, int ret)
 		if (*begin)
 		{
 			pos->bgn = ft_strdup(*begin);
-		//if (*begin)	
-		
 			free(*begin);
-			*begin = NULL;	
+			*begin = NULL;
 		}
 	}
 	return (0);
@@ -126,6 +124,8 @@ void		ft_autocomplete(char *line, t_cpos *pos)
 			ret = search_vars(line, pos, &head, &begin);
 		if (check_result(&head, &begin, pos, ret) == RETURN)
 			return ;
+		head = NULL;
+		pos->autocompl = sort_list(head, pos->autocompl);
 	}
 	complete(line, pos, pos->bgn);
 }

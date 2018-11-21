@@ -107,6 +107,7 @@ int			cmd_height(t_cpos *pos, char *line);
 void		init_position(t_cpos *pos, int start, char *line);
 void		reset_selection(t_cpos *pos, char *line);
 void		ft_autocomplete(char *line, t_cpos *pos);
+t_compl		*sort_list(t_compl *a, t_compl *head);
 void		complete(char *line, t_cpos *pos, char *begin);
 void		push_compl(t_compl **head, char *name);
 void		clear_compl(t_compl **head);
