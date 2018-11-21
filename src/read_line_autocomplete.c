@@ -86,17 +86,15 @@ static int	check_result(t_compl **head, char **begin, t_cpos *pos, int ret)
 		}
 		return (RETURN);
 	}
-	else
+	pos->autocompl = *head;
+	*head = NULL;
+	if (pos->bgn)
+		free(pos->bgn);
+	if (*begin)
 	{
-		pos->autocompl = *head;
-		if (pos->bgn)
-			free(pos->bgn);
-		if (*begin)
-		{
-			pos->bgn = ft_strdup(*begin);
-			free(*begin);
-			*begin = NULL;
-		}
+		pos->bgn = ft_strdup(*begin);
+		free(*begin);
+		*begin = NULL;
 	}
 	return (0);
 }
@@ -104,12 +102,11 @@ static int	check_result(t_compl **head, char **begin, t_cpos *pos, int ret)
 void		ft_autocomplete(char *line, t_cpos *pos)
 {
 	t_compl	*head;
+	t_compl	*ptr;
 	char	*begin;
 	int		ret;
 
-	head = NULL;
 	begin = NULL;
-	ret = 0;
 	if (!pos->is_auto)
 	{
 		if (!(head = (t_compl*)ft_memalloc(sizeof(t_compl))))
@@ -117,6 +114,7 @@ void		ft_autocomplete(char *line, t_cpos *pos)
 			ft_putstr_fd("Out of memory\n", STDERR_FILENO);
 			return ;
 		}
+		ptr = head;
 		head->next = NULL;
 		if (pos->len == 0)
 			ret = read_path(&head, "");
@@ -124,8 +122,8 @@ void		ft_autocomplete(char *line, t_cpos *pos)
 			ret = search_vars(line, pos, &head, &begin);
 		if (check_result(&head, &begin, pos, ret) == RETURN)
 			return ;
-		head = NULL;
 		pos->autocompl = sort_list(head, pos->autocompl);
+		free(ptr);
 	}
 	complete(line, pos, pos->bgn);
 }
