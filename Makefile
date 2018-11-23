@@ -62,16 +62,17 @@ HDRS	= 	includes/shell.h includes/shell_structures.h
 LIB 	= 	libft/libft.a
 OBJS 	= 	$(SRCS:.c=.o)
 CC		=	gcc
-FLAGS 	= 	-Wall -Wextra -Werror
+CFLAGS 	= 	-Wall -Wextra -Werror
 DIR_SRC = 	srcs
+INCL = -I./includes
 
 all:	$(NAME)
 
 $(NAME): $(LIB) $(OBJS) $(HDRS)
-	$(CC) -g3 -o $(NAME) $(OBJS) -L. $(LIB) $(FLAGS) -lncurses -ltermcap
+	$(CC) -g3 -o $(NAME) $(OBJS) $(INCL) -L. $(LIB) $(CFLAGS) -lncurses -ltermcap
 
 $(DIR_SRC)/%.o: $(DIR_SRC)/%.c
-	$(CC) $(FLAGS) -g3 -o $@ -c $<
+	$(CC) $(CFLAGS) $(INCL) -g3 -o $@ -c $<
 
 $(LIB):
 	@make -C libft
