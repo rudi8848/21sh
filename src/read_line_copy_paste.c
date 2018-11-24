@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 void	ft_copy(char *line, t_cpos *pos, char **buf)
 {

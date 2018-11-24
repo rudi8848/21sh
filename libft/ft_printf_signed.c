@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_printf.h"
+#include "ft_printf.h"
 
 int		ft_s_right_precision(t_propt *opt, int len, intmax_t nbr)
 {

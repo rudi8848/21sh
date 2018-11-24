@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 static int	plane_inword_backslash(char *line, int *i, t_lex *lex)
 {

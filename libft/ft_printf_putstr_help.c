@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_printf.h"
+#include "ft_printf.h"
 
 int		ft_printf_putchar_arg(char *ptr, int symb, t_propt *options)
 {

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 static int	set_outfile(t_job *j, t_launch *launch, int *mypipe)
 {

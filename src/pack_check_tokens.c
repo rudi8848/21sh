@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 static int	pack_less(t_job *j, t_process *p, char *line, t_pack *pack)
 {

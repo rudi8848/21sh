@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 static int	close_output_nbr(t_job *j, t_process *p, t_pack *pack, int nbr)
 {

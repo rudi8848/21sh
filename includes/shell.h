@@ -25,10 +25,10 @@
 # include <curses.h>
 # include <term.h>
 # include <errno.h>
-# include "../libft/includes/libft.h"
+# include "libft.h"
 # include "shell_structures.h"
-# include "../libft/includes/ft_printf.h"
-# include "../libft/includes/get_next_line.h"
+# include "ft_printf.h"
+# include "get_next_line.h"
 
 # define CHILD 			0
 # define PARENT 		1

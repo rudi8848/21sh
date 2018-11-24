@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 static int	fd_to_file(t_job *j, t_process *p, t_pack *pack)
 {

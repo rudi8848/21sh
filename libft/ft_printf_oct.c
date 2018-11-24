@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_printf.h"
+#include "ft_printf.h"
 
 int		ft_o_width_right(uintmax_t nbr, t_propt *opt, int len)
 {

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_printf.h"
+#include "ft_printf.h"
 
 uintmax_t		ft_cut_unsigned(va_list *args, t_propt *options)
 {
