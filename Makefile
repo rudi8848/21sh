@@ -64,7 +64,7 @@ OBJS 	= 	$(SRCS:.c=.o)
 CC		=	gcc
 CFLAGS 	= 	-Wall -Wextra -Werror
 DIR_SRC = 	src
-INCL = -I./includes
+INCL = -I./includes -I./libft/includes
 
 all:	$(NAME)
 
