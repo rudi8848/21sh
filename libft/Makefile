@@ -27,12 +27,16 @@ SRCS = ft_atoi.c ft_bzero.c ft_isalnum.c ft_isalpha.c ft_isascii.c ft_isdigit.c 
 	   ft_printf_wstr_help.c get_next_line.c
 OBJS = $(SRCS:.c=.o)
 CC	 = gcc
+CFLAGS = -Wall -Wextra -Werror
+INCL = -I./includes
 
 all: $(NAME)
-$(NAME): $(SRCS) $(OBJS)
-	$(CC) -Wall -Wextra -Werror -c $(SRCS)
+$(NAME): $(OBJS)
 	ar rc $(NAME) $(OBJS)
 	ranlib $(NAME)
+
+$(OBJS): $(SRCS)
+	$(CC) $(CFLAGS) $(INCL) -c $(SRCS)
 
 clean:
 	@/bin/rm -f $(OBJS)

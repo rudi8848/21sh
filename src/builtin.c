@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "shell.h"
 
 int		ft_echo(char **argv, int infile, int outfile)
 {

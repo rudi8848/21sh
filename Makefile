@@ -63,7 +63,7 @@ LIB 	= 	libft/libft.a
 OBJS 	= 	$(SRCS:.c=.o)
 CC		=	gcc
 CFLAGS 	= 	-Wall -Wextra -Werror
-DIR_SRC = 	srcs
+DIR_SRC = 	src
 INCL = -I./includes
 
 all:	$(NAME)
