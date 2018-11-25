@@ -62,7 +62,8 @@ void	init_history(void)
 
 	i = 0;
 	str = NULL;
-	g_hstr_fd = open(".history", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+	g_history_file = ft_strjoin(get_current_wd(), "/.history");
+	g_hstr_fd = open(g_history_file, O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 	if (g_hstr_fd < 0)
 	{
 		ft_printf("Error: Cannot open/create history file\n");

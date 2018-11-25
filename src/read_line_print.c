@@ -83,3 +83,4 @@ void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		++(*pos).i;
 	tputs(tgetstr("ei", NULL), 0, ft_iputchar);
 }
+

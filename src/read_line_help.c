@@ -25,7 +25,7 @@ int		ft_get_width(void)
 	}
 	return (argp.ws_col);
 }
-
+/*
 void	get_curpos(t_cpos *pos)
 {
 	char	buf[21];
@@ -44,7 +44,7 @@ void	get_curpos(t_cpos *pos)
 	pos->curx = ft_atoi(ft_strrchr(buf, ';') + 1);
 	pos->cury = ft_atoi(&buf[2]) - 1;
 }
-
+*/
 void	reset_selection(t_cpos *pos, char *line)
 {
 	t_cpos tmp;
@@ -76,7 +76,7 @@ void	reset_selection(t_cpos *pos, char *line)
 
 void	init_position(t_cpos *pos, int start, char *line)
 {
-	get_curpos(pos);
+	//get_curpos(pos);
 	pos->startline = start;
 	pos->width = ft_get_width();
 	pos->curln = 0;

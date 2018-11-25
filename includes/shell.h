@@ -84,6 +84,7 @@ pid_t					g_shell_pgid;
 int						g_shell_terminal;
 int						g_shell_is_interactive;
 int						g_hstr_nb;
+char 					*g_history_file;
 char					*g_history[MAXHSTR];
 struct termios			g_saved;
 int						g_hstr_fd;

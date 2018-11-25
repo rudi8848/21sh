@@ -41,13 +41,16 @@ int			type_prompt(void)
 	char	*pwd;
 	char	*home;
 	int		totallen;
+	char	*tmp;
 
 	user = get_copy_env("LOGNAME", MUTE);
 	if (!user)
 		user = "";
-	pwd = get_current_wd();
+	pwd = ft_strdup(get_current_wd());
+	tmp = pwd;
 	get_data(&pwd, &home);
 	totallen = ft_strlen(user) + ft_strlen(home) + ft_strlen(pwd) ;
 	ft_printf("%s%s: %s%s%s>%s ", RED, user, BLUE, home, pwd, RESET);
+	free(tmp);
 	return (totallen);
 }
