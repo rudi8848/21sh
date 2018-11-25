@@ -103,6 +103,20 @@ static void	check_args(int argc, char **argv, int *infile)
 	}
 }
 
+int 		is_empty(char *line)
+{
+	size_t i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] != ' ' && line[i] != '\n' && line[i] != '\t')
+			return (0);
+		++i;
+	}
+	return (1);
+}
+
 int			main(int argc, char **argv)
 {
 	char	line[MAXLINE];
@@ -124,8 +138,10 @@ int			main(int argc, char **argv)
 			return (1);
 		}
 		get_line(line, infile);
-		if (line[0] != '\n' && pack_args(line, j))
-			run_comand(line);
+		if (is_empty(line))
+			free(j);
+		else if (pack_args(line, j))
+				run_comand(line);
 	}
 	return (0);
 }

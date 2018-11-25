@@ -145,6 +145,7 @@ void		update_status(void);
 int			type_prompt(void);
 void		set_stopsignals(sig_t func);
 void		sig_tstp_handler(int signum);
+int 		is_empty(char *line);
 /*
 **	pack
 */

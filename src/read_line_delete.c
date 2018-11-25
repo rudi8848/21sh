@@ -73,6 +73,8 @@ void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
 	reset_selection(pos, line);
 	pos->height = cmd_height(pos, line);
+	if (rb == K_CTRL_D && is_empty(line))
+		ft_exit();
 	if (rb == K_DELETE || rb == K_CTRL_D)
 		delete_front(line, pos);
 	else if (rb == K_BSPACE)

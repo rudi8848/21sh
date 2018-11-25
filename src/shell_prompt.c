@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-static void	find_home(char **home, char **pwd, char **tmp)
+static void	find_home(char **home, char **pwd)
 {
 	int		len;
 
@@ -20,8 +20,19 @@ static void	find_home(char **home, char **pwd, char **tmp)
 	if (ft_strnequ(*home, *pwd, len))
 	{
 		*home = "~";
-		*tmp = ft_strsub(*pwd, len, ft_strlen(*pwd) - len);
+		*pwd += len; 
 	}
+	else
+		*home = "";
+}
+
+static void	get_data(char **pwd, char **home)
+{
+	*home = get_copy_env("HOME", MUTE);
+	if (home)
+		find_home(home, pwd);
+	else
+		*home = "";
 }
 
 int			type_prompt(void)
@@ -29,23 +40,14 @@ int			type_prompt(void)
 	char	*user;
 	char	*pwd;
 	char	*home;
-	char	*tmp;
 	int		totallen;
 
-	tmp = NULL;
 	user = get_copy_env("LOGNAME", MUTE);
+	if (!user)
+		user = "";
 	pwd = get_current_wd();
-	home = get_copy_env("HOME", MUTE);
-	if (home)
-		find_home(&home, &pwd, &tmp);
-	else
-	{
-		home = "";
-		tmp = pwd;
-	}
-	totallen = ft_strlen(user) + ft_strlen(home) + ft_strlen(tmp) + 5;
-	ft_printf("%s%s: %s%s%s>%s ", RED, user, BLUE, home, tmp, RESET);
-	if (tmp != pwd)
-		ft_strdel(&tmp);
+	get_data(&pwd, &home);
+	totallen = ft_strlen(user) + ft_strlen(home) + ft_strlen(pwd) ;
+	ft_printf("%s%s: %s%s%s>%s ", RED, user, BLUE, home, pwd, RESET);
 	return (totallen);
 }
