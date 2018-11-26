@@ -49,7 +49,7 @@ int			type_prompt(void)
 	pwd = ft_strdup(get_current_wd());
 	tmp = pwd;
 	get_data(&pwd, &home);
-	totallen = ft_strlen(user) + ft_strlen(home) + ft_strlen(pwd) ;
+	totallen = ft_strlen(user) + ft_strlen(home) + ft_strlen(pwd) + 4;
 	ft_printf("%s%s: %s%s%s>%s ", RED, user, BLUE, home, pwd, RESET);
 	free(tmp);
 	return (totallen);

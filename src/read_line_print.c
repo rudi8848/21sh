@@ -1,7 +1,20 @@
 #include "shell.h"
 
+void	move_right(t_cpos *pos, int mode);
+void	move_left(t_cpos *pos, int mode);
 
 
+void	shift_letters(char *line, t_cpos *pos)
+{
+	int j;
+
+	j = pos->len + 1;
+	while (j > pos->i)
+	{
+		line[j] = line[j - 1];
+		--j;
+	}
+}
 /*void	go_right(t_cpos *pos, int mode)
 {
 	if (pos->i < pos->len)
@@ -35,13 +48,13 @@ void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		ft_printf("\nLine is too long\n");
 		return ;
 	}
-	if (pos->i == pos->len)	//end of line
+	if (!line[pos->i])	//end of line
 	{
 		line[pos->i] = (char)rb;
-		write(STDOUT_FILENO, &rb, rr);
 		//++pos->i;
 		++pos->len;
-		go_right(IN_MEMORY);
+		move_right(pos, IN_MEMORY);
+		write(STDOUT_FILENO, &rb, rr);
 	}
 	else
 	{
@@ -51,7 +64,15 @@ void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		tputs(tgetstr("im", NULL), 0, ft_iputchar);
 		write(STDOUT_FILENO, &rb, rr);
 		tputs(tgetstr("ei", NULL), 0, ft_iputchar);
-		go_right(IN_MEMORY);
+		move_right(pos, IN_MEMORY);
+		if (pos->len > pos->width - pos->prompt_len)
+		{
+			tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+			tputs(tgetstr("cd", NULL), 0, ft_iputchar);
+			write(STDOUT_FILENO, &line[pos->i], pos->len - pos->i);
+			tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+		}
+
 	}
 
 }

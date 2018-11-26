@@ -33,20 +33,9 @@ SRCS 	= 	src/builtin.c \
 			src/pack_redirection.c \
 			src/pack_redirection_help.c \
 			src/read_line.c \
-			#src/read_line_autocomplete.c \
-			#src/read_line_autocomp_help.c \
-			#src/read_line_autocomp_read.c \
-			#src/read_line_sort_list.c \
-			#src/read_line_copy_paste.c \
-			#src/read_line_delete.c \
 			src/read_line_help.c \
-			#src/read_line_highlight.c \
-			#src/read_line_history.c \
-			#src/read_line_jump.c \
 			src/read_line_move.c \
-			#src/read_line_move_border.c \
 			src/read_line_print.c \
-			#src/read_line_vertical.c \
 			src/shell_help.c \
 			src/shell_init.c \
 			src/shell_job_control.c \

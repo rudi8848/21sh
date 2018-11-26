@@ -21,13 +21,13 @@ void	move_right(t_cpos *pos, int mode)
 		{
 			pos->curx = 0;
 			++pos->cury;
-			if (mode == ON_SCREEN)
-			{
+		//	if (mode == ON_SCREEN)
+		//	{
 				tputs(tgetstr("do", NULL), 1, ft_iputchar);
 				tputs(tgetstr("cr", NULL), 1, ft_iputchar);
-			}
+		//	}
 		}
-		else if (pos->cury >= 0)
+		else if (pos->cury >= 0) 
 		{
 			++pos->curx;
 			if (mode == ON_SCREEN)
@@ -51,12 +51,12 @@ void	move_right(t_cpos *pos, int mode)
 	*/
 }
 
-void	move_left(t_cpos *pos)
+void	move_left(t_cpos *pos, int mode)
 {
 	if (pos->i > 0)
 	{
 		--pos->i;
-		if (pos->curx == 0 && pos->cury >= 0)
+		if (pos->curx == 0 && pos->cury > 0)
 		{
 			pos->curx = pos->width - 1;
 			--pos->cury;
@@ -66,7 +66,7 @@ void	move_left(t_cpos *pos)
 				tputs(tgoto(tgetstr("ch", NULL), 1, pos->width -1),1, ft_iputchar);
 			}
 		}
-		else if (pos->curx >= 0)
+		else if (pos->curx > 0)
 		{
 			--pos->curx;
 			if (mode == ON_SCREEN)
@@ -93,7 +93,9 @@ void	move_left(t_cpos *pos)
 
 void	ft_move(uint64_t direction, char *line, t_cpos *pos)
 {
-	reset_selection(pos, line);
+//	reset_selection(pos, line);
+	if (!line)
+		return;
 	if (direction == K_RIGHT)
 		move_right(pos, ON_SCREEN);
 	else if (direction == K_LEFT)

@@ -44,7 +44,6 @@ void	get_curpos(t_cpos *pos)
 	pos->curx = ft_atoi(ft_strrchr(buf, ';') + 1);
 	pos->cury = ft_atoi(&buf[2]) - 1;
 }
-*/
 void	reset_selection(t_cpos *pos, char *line)
 {
 	t_cpos tmp;
@@ -73,14 +72,14 @@ void	reset_selection(t_cpos *pos, char *line)
 		pos->is_auto = 0;
 	}
 }
-
+*/
 void	init_position(t_cpos *pos, int start, char *line)
 {
 	//get_curpos(pos);
 	pos->cury = 0;
-	pos->curx = pos->prompt_len;
 	pos->startline = start;
 	pos->width = ft_get_width();
+	pos->curx = pos->prompt_len % pos->width;
 	pos->curln = 0;
 	pos->height = 1;
 	pos->len = 0;
@@ -88,11 +87,12 @@ void	init_position(t_cpos *pos, int start, char *line)
 	pos->is_auto = 0;
 	pos->autocompl = NULL;
 	pos->bgn = NULL;
-	reset_selection(pos, line);
-	if (start)
-		pos->start = pos->curx;
+	//reset_selection(pos, line);
+	if (start || !line)
+		return;
+//		pos->start = pos->prompt_len;
 }
-
+/*
 int		cmd_height(t_cpos *pos, char *line)
 {
 	int len;
@@ -109,4 +109,4 @@ int		cmd_height(t_cpos *pos, char *line)
 	if (len % width)
 		height++;
 	return (height);
-}
+}*/
