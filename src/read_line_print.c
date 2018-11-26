@@ -61,9 +61,9 @@ void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		shift_letters(line, pos);
 		line[pos->i] = (char)rb;
 		++pos->len;
-		tputs(tgetstr("im", NULL), 0, ft_iputchar);
+		//tputs(tgetstr("im", NULL), 0, ft_iputchar);
 		write(STDOUT_FILENO, &rb, rr);
-		tputs(tgetstr("ei", NULL), 0, ft_iputchar);
+		//tputs(tgetstr("ei", NULL), 0, ft_iputchar);
 		move_right(pos, IN_MEMORY);
 		if (pos->len > pos->width - pos->prompt_len)
 		{
