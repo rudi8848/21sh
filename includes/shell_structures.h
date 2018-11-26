@@ -77,7 +77,7 @@ typedef struct			s_compl
 
 typedef struct			s_cpos
 {
-	int					start;
+	int					prompt_len;
 	int					startline;
 	int					curx;
 	int					cury;

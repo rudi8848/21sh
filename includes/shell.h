@@ -77,6 +77,9 @@
 # define K_ALT_V		10127586
 # define K_ALT_X		8948194
 
+# define IN_MEMORY 0
+# define ON_SCREEN 1
+
 # define FILE_PERM S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH
 
 char					**g_envp;

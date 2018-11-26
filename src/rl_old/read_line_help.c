@@ -77,8 +77,8 @@ void	reset_selection(t_cpos *pos, char *line)
 void	init_position(t_cpos *pos, int start, char *line)
 {
 	//get_curpos(pos);
-	pos->cury = 0;
-	pos->curx = pos->prompt_len;
+	pos->cury = 1;
+	pos->curx = pos->start;
 	pos->startline = start;
 	pos->width = ft_get_width();
 	pos->curln = 0;

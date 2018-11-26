@@ -12,29 +12,9 @@
 
 #include "shell.h"
 
-void	move_right(t_cpos *pos, int mode)
+void	move_right(t_cpos *pos)
 {
 	if (pos->i < pos->len)
-	{
-		++pos->i;
-		if (pos->curx == pos->width - 1)
-		{
-			pos->curx = 0;
-			++pos->cury;
-			if (mode == ON_SCREEN)
-			{
-				tputs(tgetstr("do", NULL), 1, ft_iputchar);
-				tputs(tgetstr("cr", NULL), 1, ft_iputchar);
-			}
-		}
-		else if (pos->cury >= 0)
-		{
-			++pos->curx;
-			if (mode == ON_SCREEN)
-				tputs(tgetstr("nd", NULL), 1, ft_iputchar);
-		}
-}
-	/*if (pos->i < pos->len)
 	{
 		++(*pos).i;
 		if (pos->curx < pos->width)
@@ -48,32 +28,11 @@ void	move_right(t_cpos *pos, int mode)
 		tputs(tgoto(tgetstr("cm", NULL), (*pos).curx - 1,
 					(*pos).cury), 0, ft_iputchar);
 	}
-	*/
 }
 
 void	move_left(t_cpos *pos)
 {
 	if (pos->i > 0)
-	{
-		--pos->i;
-		if (pos->curx == 0 && pos->cury >= 0)
-		{
-			pos->curx = pos->width - 1;
-			--pos->cury;
-			if (mode == ON_SCREEN)
-			{
-				tputs(tgetstr("up", NULL), 1, ft_iputchar);
-				tputs(tgoto(tgetstr("ch", NULL), 1, pos->width -1),1, ft_iputchar);
-			}
-		}
-		else if (pos->curx >= 0)
-		{
-			--pos->curx;
-			if (mode == ON_SCREEN)
-				tputs(tgetstr("le", NULL), 1, ft_iputchar);
-		}
-	}
-	/*if (pos->i > 0)
 	{
 		--(*pos).i;
 		if (((*pos).curln == 0 && (*pos).curx > (*pos).start) ||
@@ -88,14 +47,13 @@ void	move_left(t_cpos *pos)
 		tputs(tgoto(tgetstr("cm", NULL), (*pos).curx - 1,
 					(*pos).cury), 0, ft_iputchar);
 	}
-	*/
 }
 
 void	ft_move(uint64_t direction, char *line, t_cpos *pos)
 {
 	reset_selection(pos, line);
 	if (direction == K_RIGHT)
-		move_right(pos, ON_SCREEN);
+		move_right(pos);
 	else if (direction == K_LEFT)
-		move_left(pos, ON_SCREEN);
+		move_left(pos);
 }

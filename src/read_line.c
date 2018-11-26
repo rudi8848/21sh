@@ -56,9 +56,9 @@ void	read_line(char *line, int start)
 
 	cmd = g_hstr_nb;
 	if (start == 0)
-		pos.start = type_prompt();
+		pos.prompt_len = type_prompt();
 	else
-		pos.start = 0;
+		pos.prompt_len = 0;
 	ft_bzero(line, MAXLINE - start);
 	init_position(&pos, start, line);
 	rb = 0;
