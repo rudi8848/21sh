@@ -18,12 +18,12 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		ft_move(rb, line, pos);
 	if (!cmd)
 		return;
-/*	else if (rb == K_DOWN || rb == K_UP)
-		move_history(rb, line, pos, cmd);
+	else if (rb == K_DOWN || rb == K_UP)
+		move_history(rb, line, pos, cmd);/*
 	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
-		delete_char(rb, line, pos);
+		delete_char(rb, line, pos);*/
 	else if (rb == K_HOME || rb == K_END)
-		move_to_border(rb, line, pos);*/
+		move_to_border(rb, line, pos);
 	else if (rb == K_ESC)
 		ft_exit();/*
 	else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)

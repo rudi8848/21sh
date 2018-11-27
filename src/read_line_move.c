@@ -38,7 +38,6 @@ void	move_left(t_cpos *pos, int mode)
 {
 		if (pos->curx == 0 && pos->cury > 0)
 		{
-			dprintf(4, "> !!! %s: x == 0, y >= 0\n", __FUNCTION__);
 			pos->curx = pos->width - 1;
 			--pos->cury;
 			if (mode == ON_SCREEN)
@@ -49,7 +48,6 @@ void	move_left(t_cpos *pos, int mode)
 		}
 		else if (pos->curx > 0)
 		{
-			dprintf(4, "> %s: else\n", __FUNCTION__);
 			--pos->curx;
 			if (mode == ON_SCREEN)
 				tputs(tgetstr("le", NULL), 1, ft_iputchar);

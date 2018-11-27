@@ -117,6 +117,10 @@ void		push_compl(t_compl **head, char *name);
 void		clear_compl(t_compl **head);
 int			ft_read_dir(t_compl **head, char *name, char *begin, char dironly);
 int			read_path(t_compl **head, char *begin);
+//---------------------
+void	move_right(t_cpos *pos, int mode);
+void	move_left(t_cpos *pos, int mode);
+
 /*
 **	shell
 */

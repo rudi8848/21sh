@@ -1,9 +1,5 @@
 #include "shell.h"
 
-void	move_right(t_cpos *pos, int mode);
-void	move_left(t_cpos *pos, int mode);
-
-
 void	shift_letters(char *line, t_cpos *pos)
 {
 	int j;
