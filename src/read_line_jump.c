@@ -128,7 +128,7 @@ void	ft_jump(uint64_t rb, char *line, t_cpos *pos)
 	int		j;
 
 	j = 0;
-	//reset_selection(pos, line);
+	reset_selection(pos, line);
 	if (rb == K_CTRL_RIGHT)
 		jump_right(line, pos, &j);
 	else if (rb == K_CTRL_LEFT)

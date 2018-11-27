@@ -71,7 +71,7 @@ static void	delete_back(char *line, t_cpos *pos)
 
 void	delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
-	//reset_selection(pos, line);
+	reset_selection(pos, line);
 	if (rb == K_CTRL_D && is_empty(line))
 		ft_exit();
 	if (rb == K_DELETE || rb == K_CTRL_D)

@@ -42,7 +42,7 @@ void	jump_down(t_cpos *pos)
 
 void	ft_jump_vertical(uint64_t rb, char *line, t_cpos *pos)
 {
-	//reset_selection(pos, line);
+	reset_selection(pos, line);
 	//pos->height = cmd_height(pos, line);
 	if (!line)
 		return;

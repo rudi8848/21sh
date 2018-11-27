@@ -41,6 +41,7 @@ SRCS 	= 	src/builtin.c \
 			src/read_line_delete.c \
 			src/read_line_jump.c \
 			src/read_line_vertical.c \
+			src/read_line_highlight.c \
 			src/read_line_autocomplete.c \
 			src/read_line_autocomp_read.c \
 			src/read_line_autocomp_help.c \

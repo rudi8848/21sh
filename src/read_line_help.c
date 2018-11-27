@@ -43,21 +43,28 @@ void	get_curpos(t_cpos *pos)
 	}
 	pos->curx = ft_atoi(ft_strrchr(buf, ';') + 1);
 	pos->cury = ft_atoi(&buf[2]) - 1;
-}
+}*/
 void	reset_selection(t_cpos *pos, char *line)
 {
 	t_cpos tmp;
 
 	tmp = *pos;
+	if (!line)
+		return;
 	tputs(tgetstr("me", NULL), 0, ft_iputchar);
-	tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+	//tputs(tgetstr("sc", NULL), 0, ft_iputchar);
 	move_to_border(K_HOME, line, &tmp);
 	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
-	write(STDOUT_FILENO, line, pos->len);
+	while (pos->i < pos->len)
+	{
+		write(STDOUT_FILENO, &line[pos->i], 1);
+		++pos->i;
+	}
+	//write(STDOUT_FILENO, line, pos->len);
 	pos->selection = 0;
 	pos->first = -1;
 	pos->last = -1;
-	tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+	//tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 	if (pos->is_auto)
 	{
 		if (pos->autocompl)
@@ -72,7 +79,7 @@ void	reset_selection(t_cpos *pos, char *line)
 		pos->is_auto = 0;
 	}
 }
-*/
+
 void	init_position(t_cpos *pos, int start, char *line)
 {
 	//get_curpos(pos);
@@ -87,9 +94,8 @@ void	init_position(t_cpos *pos, int start, char *line)
 	pos->is_auto = 0;
 	pos->autocompl = NULL;
 	pos->bgn = NULL;
-	//reset_selection(pos, line);
-	if (start || !line)
-		return;
+	reset_selection(pos, line);
+	
 //		pos->start = pos->prompt_len;
 }
 /*

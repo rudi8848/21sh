@@ -29,11 +29,11 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 	else if (rb == K_CTRL_UP || rb == K_CTRL_DOWN)
 		ft_jump_vertical(rb, line, pos);
 	else if (rb == K_CTRL_RIGHT || rb == K_CTRL_LEFT)
-		ft_jump(rb, line, pos);/*
+		ft_jump(rb, line, pos);
 	else if (rb == K_SHFT_L || rb == K_SHFT_R)
 		ft_highlight(rb, line, pos);
-	else if (rb == K_ALT_C || rb == K_ALT_V || rb == K_ALT_X)
-		ft_copy_paste(rb, line, pos);*/
+	//else if (rb == K_ALT_C || rb == K_ALT_V || rb == K_ALT_X)
+		//ft_copy_paste(rb, line, pos);
 	else if (rb == K_TAB)
 		ft_autocomplete(line, pos);
 		
@@ -41,7 +41,7 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 
 void	end_line(char *line, uint64_t rb, t_cpos *pos)
 {
-	//reset_selection(pos, line);
+	reset_selection(pos, line);
 	move_to_border(K_END, line, pos);
 	ft_printf("\n");
 	if (rb == K_CTRL_C)
