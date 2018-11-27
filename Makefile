@@ -39,6 +39,12 @@ SRCS 	= 	src/builtin.c \
 			src/read_line_history.c \
 			src/read_line_print.c \
 			src/read_line_delete.c \
+			src/read_line_jump.c \
+			src/read_line_vertical.c \
+			src/read_line_autocomplete.c \
+			src/read_line_autocomp_read.c \
+			src/read_line_autocomp_help.c \
+			src/read_line_sort_list.c \
 			src/shell_help.c \
 			src/shell_init.c \
 			src/shell_job_control.c \
