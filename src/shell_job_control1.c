@@ -40,33 +40,39 @@ void		wait_for_job(t_job *j)
 {
 	int		status;
 	pid_t	pid;
-	int		res;
+	//int		res;
 	t_process	*last;
 
 	last = j->first_process;
 	while (last->next)
-		last = last->next;
-
-	if (last->state | COMPLETED && (!job_is_completed(j) || !job_is_stopped(j)))
 	{
+		last = last->next;
+	}
+	pid = waitpid(last->pid, &status, WUNTRACED);
+	mark_process_status(pid, status);
+
+	//if (last->state & COMPLETED && (!job_is_completed(j) || !job_is_stopped(j)))
+	//{
 		t_process *tmp = j->first_process;
 		while (tmp != last)
 		{
-			if (!(tmp->state | COMPLETED) || !(tmp->state | STOPPED))
-			kill(tmp->pid, SIGTERM);
-			tmp = tmp->next;
-		}	
-		pid = waitpid(last->pid, &status, WUNTRACED);
+		pid = waitpid(tmp->pid, &status, WUNTRACED | WNOHANG);
+		if (pid == 0)
+			tmp->state |= COMPLETED;
+			//kill(tmp->pid, SIGTERM);
+		tmp = tmp->next;
 		mark_process_status(pid, status);
+		}	
 		return;
-	}
-	status = 0;
+	//}
+	/*status = 0;
 	res = 0;
 	while (!job_is_stopped(j) && res == 0 && !job_is_completed(j))
 	{
 		pid = waitpid(-j->pgid, &status, WUNTRACED);
 		res = mark_process_status(pid, status);
 	}
+	*/
 }
 
 static void	mark_job_as_running(t_job *j)
