@@ -49,22 +49,22 @@ void	reset_selection(t_cpos *pos, char *line)
 	t_cpos tmp;
 
 	tmp = *pos;
-	if (!line)
-		return;
-	tputs(tgetstr("me", NULL), 0, ft_iputchar);
-	//tputs(tgetstr("sc", NULL), 0, ft_iputchar);
-	move_to_border(K_HOME, line, &tmp);
-	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
-	while (pos->i < pos->len)
+	if (pos->selection)
 	{
-		write(STDOUT_FILENO, &line[pos->i], 1);
-		++pos->i;
-	}
-	//write(STDOUT_FILENO, line, pos->len);
+		tputs(tgetstr("sc", NULL), 0, ft_iputchar);
+		tputs(tgetstr("me", NULL), 0, ft_iputchar);
+		move_to_border(K_HOME, line, &tmp);
+		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
+		while (tmp.i < pos->len)
+		{
+			write(STDOUT_FILENO, &line[tmp.i], 1);
+			++tmp.i;
+		}
+		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
 	pos->selection = 0;
 	pos->first = -1;
 	pos->last = -1;
-	//tputs(tgetstr("rc", NULL), 0, ft_iputchar);
+	}
 	if (pos->is_auto)
 	{
 		if (pos->autocompl)
@@ -77,7 +77,7 @@ void	reset_selection(t_cpos *pos, char *line)
 		pos->autostart = 0;
 		pos->autolen = 0;
 		pos->is_auto = 0;
-	}
+	}	
 }
 
 void	init_position(t_cpos *pos, int start, char *line)

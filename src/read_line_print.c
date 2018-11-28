@@ -14,7 +14,7 @@ void	shift_letters(char *line, t_cpos *pos)
 
 void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 {
-	//reset_selection(pos, line);
+	reset_selection(pos, line);
 	if (pos->len + 1 + pos->startline == MAXLINE)
 	{
 		tputs(tgetstr("bl", NULL), 0, ft_iputchar);

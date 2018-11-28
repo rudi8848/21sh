@@ -79,6 +79,7 @@ void	select_right(char *line, t_cpos *pos)
 
 void	ft_highlight(uint64_t rb, char *line, t_cpos *pos)
 {
+	pos->selection = 1;
 	if (rb == K_SHFT_L)
 		select_left(line, pos);
 	else if (rb == K_SHFT_R)

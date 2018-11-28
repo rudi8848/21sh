@@ -56,7 +56,7 @@ void	move_left(t_cpos *pos, int mode)
 
 void	ft_move(uint64_t direction, char *line, t_cpos *pos)
 {
-//	reset_selection(pos, line);
+	reset_selection(pos, line);
 	if (!line)
 		return;
 	if (direction == K_RIGHT)
