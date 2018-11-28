@@ -70,6 +70,7 @@ void	ft_cut(char *line, t_cpos *pos, char **buf)
 
 void	ft_copy_paste(uint64_t rb, char *line, t_cpos *pos)
 {
+	dprintf(4, ">\t%s\n", __FUNCTION__);
 	static char *buf = NULL;
 
 	if (rb == K_ALT_C)
@@ -78,4 +79,5 @@ void	ft_copy_paste(uint64_t rb, char *line, t_cpos *pos)
 		ft_paste(line, pos, &buf);
 	else if (rb == K_ALT_X)
 		ft_cut(line, pos, &buf);
+	dprintf(4, ">\t%s\n", buf);
 }

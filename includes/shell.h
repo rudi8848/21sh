@@ -73,6 +73,7 @@
 # define K_END			4610843
 # define K_SHFT_L		74982532143899
 # define K_SHFT_R		73883020516123
+
 # define K_ALT_C		42947
 # define K_ALT_V		10127586
 # define K_ALT_X		8948194

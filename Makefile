@@ -45,6 +45,7 @@ SRCS 	= 	src/builtin.c \
 			src/read_line_autocomplete.c \
 			src/read_line_autocomp_read.c \
 			src/read_line_autocomp_help.c \
+			src/read_line_copy_paste.c \
 			src/read_line_sort_list.c \
 			src/shell_help.c \
 			src/shell_init.c \

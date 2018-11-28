@@ -32,8 +32,8 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		ft_jump(rb, line, pos);
 	else if (rb == K_SHFT_L || rb == K_SHFT_R)
 		ft_highlight(rb, line, pos);
-	//else if (rb == K_ALT_C || rb == K_ALT_V || rb == K_ALT_X)
-		//ft_copy_paste(rb, line, pos);
+	else if (rb == K_ALT_C || rb == K_ALT_V || rb == K_ALT_X)
+		ft_copy_paste(rb, line, pos);
 	else if (rb == K_TAB)
 		ft_autocomplete(line, pos);
 		
@@ -67,6 +67,7 @@ void	read_line(char *line, int start)
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
+	//dprintf(4, ">\t%s [%llu]\n", __FUNCTION__, rb);
 		if (ft_isprint(rb))
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)
