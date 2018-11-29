@@ -12,19 +12,19 @@
 
 #include "shell.h"
 
-const t_bset g_g_built_tab[BUILT] = {
+const t_bset g_built_tab[BUILT] = {
 	{ "echo", &ft_echo },
-	{ "cd", &ft_cd},
-	{ "setenv", &ft_setenv},
-	{ "unsetenv", &ft_unsetenv},
-	{ "env", &ft_env},
-	{ "heredoc", &ft_heredoc},
-	{ "exit", &b_exit},
-	{ "jobs", &ft_jobs},
-	{ "bg", &ft_bg},
-	{ "fg", &ft_fg},
-	{ "killj", &ft_killj},
-	{NULL, NULL}
+	{ "cd", &ft_cd },
+	{ "setenv", &ft_setenv },
+	{ "unsetenv", &ft_unsetenv },
+	{ "env", &ft_env },
+	{ "heredoc", &ft_heredoc },
+	{ "exit", &b_exit },
+	{ "jobs", &ft_jobs },
+	{ "bg", &ft_bg },
+	{ "fg", &ft_fg },
+	{ "killj", &ft_killj },
+	{ NULL, NULL }
 };
 
 int			check_built(char *cmd)
