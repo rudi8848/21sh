@@ -11,37 +11,8 @@
 /* ************************************************************************** */
 
 #include "shell.h"
-/*
-void	cursor_to_i(t_cpos *pos)
-{
-	int first_line;
-	int tail;
-	int lns;
-	int distance;
 
-	first_line = 0;
-	tail = 0;
-	lns = 0;
-	distance = pos->i;
-	pos->curx = pos->start;
-	if (!pos->curln && pos->start + distance < pos->width)
-		pos->curx += distance;
-	else
-	{
-		first_line = pos->width - pos->start + 1;
-		tail = (pos->len - first_line) % pos->width;
-		pos->curx = tail;
-		lns = (pos->len - first_line) / pos->width;
-		if (tail)
-			++lns;
-		pos->curln += lns;
-		pos->cury += lns;
-	}
-	tputs(tgoto(tgetstr("cm", NULL), (*pos).curx - 1,
-				(*pos).cury), 0, ft_iputchar);
-}
-*/
-void	jump_right(char *line, t_cpos *pos, int *j)
+static void	jump_right(char *line, t_cpos *pos, int *j)
 {
 	int		dif;
 
@@ -60,8 +31,6 @@ void	jump_right(char *line, t_cpos *pos, int *j)
 		}
 		if ((dif = *j - pos->i) >= 0)
 		{
-			/*pos->i = *j;
-			cursor_to_i(pos);*/
 			while (pos->i < *j)
 			{
 				move_right(pos, ON_SCREEN);
@@ -71,7 +40,7 @@ void	jump_right(char *line, t_cpos *pos, int *j)
 	}
 }
 
-void	prev_space(char *line, int *j)
+static void	prev_space(char *line, int *j)
 {
 	if ((*j) > 0 && (line[(*j)] == ' ' || line[(*j)] == '\t'))
 	{
@@ -92,7 +61,7 @@ void	prev_space(char *line, int *j)
 	}
 }
 
-void	jump_left(char *line, t_cpos *pos, int *j)
+static void	jump_left(char *line, t_cpos *pos, int *j)
 {
 	int		dif;
 
@@ -113,8 +82,6 @@ void	jump_left(char *line, t_cpos *pos, int *j)
 	prev_space(line, j);
 	if ((dif = pos->i - *j) >= 0)
 	{
-		//pos->i = *j;
-		//cursor_to_i(pos);
 		while (pos->i > *j)
 		{
 			move_left(pos, ON_SCREEN);

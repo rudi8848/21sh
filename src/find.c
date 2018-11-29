@@ -16,6 +16,7 @@ static int	check_access(t_process *cmd, char *tmp, char **p_arr)
 {
 	if (access(tmp, X_OK) != NORM)
 	{
+		ft_putstr_fd("21sh: ", STDERR_FILENO);
 		ft_putstr_fd(tmp, STDERR_FILENO);
 		ft_putstr_fd(": permission denied\n", STDERR_FILENO);
 		free_arr(p_arr);
@@ -47,6 +48,7 @@ static int	ft_path_fitting(t_process *cmd, char **p_arr)
 			free(tmp);
 		++i;
 	}
+	ft_putstr_fd("21sh: ", STDERR_FILENO);
 	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	free_arr(p_arr);
@@ -71,6 +73,7 @@ int			ft_find(t_process *commands)
 	}
 	else if (access(commands->argv[0], X_OK) != NORM)
 	{
+		ft_putstr_fd("21sh: ", STDERR_FILENO);
 		ft_putstr_fd(commands->argv[0], STDERR_FILENO);
 		ft_putstr_fd(": permission denied\n", STDERR_FILENO);
 		return (0);

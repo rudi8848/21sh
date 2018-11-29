@@ -78,8 +78,8 @@
 # define K_ALT_V		10127586
 # define K_ALT_X		8948194
 
-# define IN_MEMORY 0
-# define ON_SCREEN 1
+# define IN_MEMORY		0
+# define ON_SCREEN		1
 
 # define FILE_PERM S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH
 
@@ -98,18 +98,16 @@ t_job					*g_first_job;
 **		read_line
 */
 void		read_line(char *line, int start);
+void		init_position(t_cpos *pos, int start, char *line);
 void		print(char *line, t_cpos *pos, uint64_t rb, int rr);
 void		ft_highlight(uint64_t rb, char *line, t_cpos *pos);
 void		ft_copy_paste(uint64_t rb, char *line, t_cpos *pos);
 void		move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd);
 void		delete_char(uint64_t rb, char *line, t_cpos *pos);
-void		ft_jump_vertical(uint64_t rb, char *line, t_cpos *pos);
-void		ft_jump(uint64_t rb, char *line, t_cpos *pos);
-void		cursor_to_i(t_cpos *pos);
 void		ft_move(uint64_t direction, char *line, t_cpos *pos);
 void		move_to_border(uint64_t direction, char *line, t_cpos *pos);
-int			cmd_height(t_cpos *pos, char *line);
-void		init_position(t_cpos *pos, int start, char *line);
+void		ft_jump(uint64_t direction, char *line, t_cpos *pos);
+void		ft_jump_vertical(uint64_t direction, char *line, t_cpos *pos);
 void		reset_selection(t_cpos *pos, char *line);
 void		ft_autocomplete(char *line, t_cpos *pos);
 t_compl		*sort_list(t_compl *a, t_compl *head);
@@ -118,9 +116,8 @@ void		push_compl(t_compl **head, char *name);
 void		clear_compl(t_compl **head);
 int			ft_read_dir(t_compl **head, char *name, char *begin, char dironly);
 int			read_path(t_compl **head, char *begin);
-//---------------------
-void	move_right(t_cpos *pos, int mode);
-void	move_left(t_cpos *pos, int mode);
+void		move_right(t_cpos *pos, int mode);
+void		move_left(t_cpos *pos, int mode);
 
 /*
 **	shell

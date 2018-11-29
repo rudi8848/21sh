@@ -33,7 +33,7 @@ char		*get_copy_env(char *needle, int warning)
 	if (!res)
 	{
 		if (!warning)
-			ft_printf("Environement element %s not found\n", needle);
+			ft_printf("21sh: Environement element %s not found\n", needle);
 		return (NULL);
 	}
 	return (res);
@@ -67,7 +67,7 @@ void		copy_env(void)
 	copy = (char**)ft_memalloc(sizeof(char*) * (size + 1));
 	if (!copy)
 	{
-		ft_printf("Error: cannot copy environement\n");
+		ft_printf("21sh: Out of memory\n");
 		exit(0);
 	}
 	while (environ[i])

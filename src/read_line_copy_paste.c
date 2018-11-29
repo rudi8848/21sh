@@ -27,6 +27,8 @@ static void	reprint(char *line, t_cpos *pos, int dif)
 	int cursor;
 
 	cursor = pos->i + dif;
+	if (cursor < 0)
+		cursor = 0;
 	while (pos->i > 0)
 	{
 		move_left(pos, ON_SCREEN);
@@ -56,7 +58,7 @@ static void	ft_paste(char *line, t_cpos *pos, char **buf)
 		return ;
 	if (pos->len + ft_strlen(*buf) >= MAXLINE)
 	{
-		ft_printf("line is too long\n");
+		ft_printf("21sh: line is too long\n");
 		return ;
 	}
 	dif = ft_strlen(*buf);

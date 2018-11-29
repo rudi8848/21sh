@@ -19,7 +19,6 @@ void	history_next(char *line, t_cpos *pos, int *cmd)
 		move_to_border(K_HOME, line, pos);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		ft_bzero(line, MAXLINE);
-		//init_position(pos, 1, line);
 		++(*cmd);
 		ft_strcpy(line, g_history[*cmd]);
 		pos->len = ft_strlen(line);
@@ -35,7 +34,6 @@ void	history_next(char *line, t_cpos *pos, int *cmd)
 		move_to_border(K_HOME, line, pos);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		ft_bzero(line, MAXLINE);
-		//init_position(pos, 1, line);
 		++(*cmd);
 		tputs(tgetstr("bl", NULL), 0, ft_iputchar);
 	}
@@ -70,7 +68,7 @@ void	history_prev(char *line, t_cpos *pos, int *cmd)
 
 void	move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd)
 {
-	//reset_selection(pos, line);
+	reset_selection(pos, line);
 	if (rb == K_DOWN)
 		history_next(line, pos, cmd);
 	else if (rb == K_UP)

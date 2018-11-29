@@ -30,18 +30,18 @@ void	init_terminal(void)
 
 	if ((tcgetattr(STDOUT_FILENO, &g_saved)) == -1)
 	{
-		ft_putstr_fd("Cannot get terminal settings\n", STDERR_FILENO);
+		ft_putstr_fd("21sh: Cannot get terminal settings\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
 	name = NULL;
 	if (!(name = getenv("TERM")))
 	{
-		ft_printf("TERM is not set\n");
+		ft_printf("21sh: TERM is not set\n");
 		exit(EXIT_FAILURE);
 	}
 	if (tgetent(buf, name) < 1)
 	{
-		ft_putstr_fd("Error at tgetent\n", STDERR_FILENO);
+		ft_putstr_fd("21sh: Error at tgetent\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -66,7 +66,7 @@ void	init_history(void)
 	g_hstr_fd = open(g_history_file, O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 	if (g_hstr_fd < 0)
 	{
-		ft_printf("Error: Cannot open/create history file\n");
+		ft_printf("21sh: Cannot open/create history file\n");
 		return ;
 	}
 	while (get_next_line(g_hstr_fd, &str) > 0)
@@ -95,7 +95,7 @@ void	init_shell(void)
 		g_shell_pgid = getpid();
 		if (setpgid(g_shell_pgid, g_shell_pgid) < 0)
 		{
-			perror("Couldn't put the shell in it's own group");
+			perror("21sh: Couldn't put the shell in it's own group");
 			exit(1);
 		}
 		tcsetpgrp(g_shell_terminal, g_shell_pgid);

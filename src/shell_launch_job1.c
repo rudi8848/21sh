@@ -55,7 +55,7 @@ void	make_child_process(t_job *j, t_launch *launch, int foreground)
 		launch_process(launch, j->pgid, j->err_fd, foreground);
 	else if (launch->pid == ERROR)
 	{
-		perror("fork");
+		perror("21sh: fork error");
 		ft_exit();
 	}
 	else

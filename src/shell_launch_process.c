@@ -48,6 +48,6 @@ void		launch_process(t_launch *launch, pid_t pgid, int errfile, int fg)
 	}
 	close_process_files(launch, errfile);
 	if (execve(launch->p->argv[0], launch->p->argv, g_envp) < 0)
-		perror("execve");
+		perror("21sh: execve error");
 	exit(EXIT_FAILURE);
 }

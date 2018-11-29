@@ -24,7 +24,7 @@ void		init_job(t_job *j)
 	{
 		if ((tcgetattr(STDOUT_FILENO, &j->tmodes)) == -1)
 		{
-			ft_putstr_fd("Cannot get terminal settings\n", STDERR_FILENO);
+			ft_putstr_fd("21sh: Cannot get terminal settings\n", STDERR_FILENO);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -33,7 +33,7 @@ void		init_job(t_job *j)
 	j->flags = O_WRONLY | O_CREAT | O_CLOEXEC;
 	if (!(j->first_process = (t_process*)ft_memalloc(sizeof(t_process))))
 	{
-		ft_printf("Memory error\n");
+		ft_putstr_fd("21sh: Memory error\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
 }

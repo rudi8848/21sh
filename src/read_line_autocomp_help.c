@@ -102,9 +102,7 @@ void		complete(char *line, t_cpos *pos, char *begin)
 	str = find_active(pos->autocompl);
 	if (str)
 	{
-		//pos->i = pos->autostart + pos->autolen;
 		pos->len = pos->autostart + pos->autolen;
-		//cursor_to_i(pos);
 		while (pos->i != pos->len)
 		{
 			move_left(pos, ON_SCREEN);
@@ -112,7 +110,6 @@ void		complete(char *line, t_cpos *pos, char *begin)
 		}
 		ft_strclr(&line[pos->autostart]);
 		ft_strcpy(&line[pos->autostart], str);
-		//tputs(tgetstr("sc", NULL), 0, ft_iputchar);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		pos->len += ft_strlen(str) - pos->autolen;
 		while (pos->i < pos->len)
@@ -121,12 +118,5 @@ void		complete(char *line, t_cpos *pos, char *begin)
 			move_right(pos, IN_MEMORY);
 			++pos->i;
 		}
-		/*
-		write(STDOUT_FILENO, &line[pos->autostart + pos->autolen],
-			ft_strlen(line) + ft_strlen(str));
-		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
-		pos->len += ft_strlen(str) - pos->autolen;
-		
-		move_to_border(K_END, line, pos);*/
 	}
 }

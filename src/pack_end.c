@@ -54,7 +54,7 @@ int			pack_end(t_job **j, t_process **p, char *line, t_pack *pack)
 		return (pack_semicolon(j, p, line, pack));
 	if (pack->argc == 0 && (pack->token != T_NLINE || (*j)->in_fd != -1))
 	{
-		ft_printf("Missing command\n");
+		ft_putstr_fd("Missing command\n", STDERR_FILENO);
 		return (remove_invalid_job(*j, *p, pack));
 	}
 	else if (pack->argc == 0 && pack->token == T_NLINE)

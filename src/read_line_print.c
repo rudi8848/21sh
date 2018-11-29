@@ -1,6 +1,6 @@
 #include "shell.h"
 
-void	shift_letters(char *line, t_cpos *pos)
+static void	shift_letters(char *line, t_cpos *pos)
 {
 	int j;
 
@@ -8,6 +8,35 @@ void	shift_letters(char *line, t_cpos *pos)
 	while (j > pos->i)
 	{
 		line[j] = line[j - 1];
+		--j;
+	}
+}
+
+static void	insert_char(char *line, t_cpos *pos, uint64_t rb)
+{
+	int j;
+
+	shift_letters(line, pos);
+	line[pos->i] = (char)rb;
+	++pos->len;	
+	j = pos->i;
+	while (j > 0)
+	{
+		move_left(pos, ON_SCREEN);
+		--j;
+	}
+	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
+	j = 0;
+	while (j < pos->len)
+	{
+		move_right(pos, IN_MEMORY);
+		write(STDOUT_FILENO, &line[j], 1);
+		++j;
+	}
+	++pos->i;
+	while (j > pos->i)
+	{
+		move_left(pos, ON_SCREEN);
 		--j;
 	}
 }
@@ -21,7 +50,7 @@ void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		ft_printf("\nLine is too long\n");
 		return ;
 	}
-	if (!line[pos->i])	//end of line
+	if (!line[pos->i])
 	{
 		line[pos->i] = (char)rb;
 		++pos->i;
@@ -29,32 +58,6 @@ void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
 		move_right(pos, IN_MEMORY);
 		write(STDOUT_FILENO, &rb, rr);
 	}
-	else	//middle of line
-	{
-		shift_letters(line, pos);
-		line[pos->i] = (char)rb;
-		++pos->len;
-		
-		int j = pos->i;
-		while (j > 0)
-		{
-			move_left(pos, ON_SCREEN);
-			--j;
-		}
-		
-		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
-		j = 0;
-		while (j < pos->len)
-		{
-			move_right(pos, IN_MEMORY);
-			write(STDOUT_FILENO, &line[j], 1);
-			++j;
-		}
-		++pos->i;
-		while (j > pos->i)
-		{
-			move_left(pos, ON_SCREEN);
-			--j;
-		}
-	}
+	else
+		insert_char(line, pos, rb);
 }

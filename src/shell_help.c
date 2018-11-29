@@ -45,7 +45,7 @@ void	free_job(t_job *j)
 void	ft_exit(void)
 {
 	ft_restore();
-	system("leaks 21sh");
+	//system("leaks 21sh");
 	exit(EXIT_SUCCESS);
 }
 

@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-void	reprint(char *line, t_cpos *pos)
+static void	reprint(char *line, t_cpos *pos)
 {
 	int i;
 
@@ -49,7 +49,7 @@ void	reprint(char *line, t_cpos *pos)
 	}
 }
 
-void	select_left(char *line, t_cpos *pos)
+static void	select_left(char *line, t_cpos *pos)
 {
 	if (pos->i > 0)
 	{
@@ -63,7 +63,7 @@ void	select_left(char *line, t_cpos *pos)
 	}
 }
 
-void	select_right(char *line, t_cpos *pos)
+static void	select_right(char *line, t_cpos *pos)
 {
 	if (pos->i < pos->len)
 	{

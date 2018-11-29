@@ -17,14 +17,14 @@ static int	set_outfile(t_job *j, t_launch *launch, int *mypipe)
 	if (j->out_fd == -1 && (j->out_fd = open(j->dstfile,
 					j->flags, FILE_PERM)) == -1)
 	{
-		perror("open");
+		perror("21sh: open");
 		return (ERROR);
 	}
 	if (launch->p->next)
 	{
 		if (pipe(mypipe) < 0)
 		{
-			perror("pipe");
+			perror("21sh: pipe");
 			ft_exit();
 		}
 		launch->outfile = mypipe[1];
@@ -48,13 +48,13 @@ static int	check_files(t_job *j, t_launch *launch)
 {
 	if (j->in_fd == -1 && (j->in_fd = open(j->srcfile, O_RDONLY)) == -1)
 	{
-		perror("open");
+		perror("21sh: open");
 		return (ERROR);
 	}
 	if (j->err_fd == -1 && (j->err_fd = open(j->errfile,
 					j->flags, FILE_PERM)) == -1)
 	{
-		perror("open");
+		perror("21sh: open");
 		return (ERROR);
 	}
 	launch->infile = j->in_fd;

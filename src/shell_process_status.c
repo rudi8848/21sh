@@ -59,16 +59,13 @@ int			mark_process_status(pid_t pid, int status)
 			if (check_process(&j, p, pid, status) == NORM)
 				return (0);
 		}
-		ft_putstr_fd("No clild process ", STDERR_FILENO);
-		ft_putnbr_fd((int)pid, STDERR_FILENO);
-		ft_putchar_fd('\n', STDERR_FILENO);
 		return (-1);
 	}
 	else if (pid == 0 || errno == ECHILD)
 		return (-1);
 	else
 	{
-		perror("waitpid");
+		perror("21sh: waitpid");
 		return (-1);
 	}
 }

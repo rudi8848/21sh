@@ -111,7 +111,7 @@ void		ft_autocomplete(char *line, t_cpos *pos)
 	{
 		if (!(head = (t_compl*)ft_memalloc(sizeof(t_compl))))
 		{
-			ft_putstr_fd("Out of memory\n", STDERR_FILENO);
+			ft_putstr_fd("21sh: Out of memory\n", STDERR_FILENO);
 			return ;
 		}
 		ptr = head;

@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-void	jump_up(t_cpos *pos)
+static void	jump_up(t_cpos *pos)
 {
 	if (pos->i + pos->prompt_len > pos->width)
 	{
@@ -26,7 +26,7 @@ void	jump_up(t_cpos *pos)
 	}
 }
 
-void	jump_down(t_cpos *pos)
+static void	jump_down(t_cpos *pos)
 {
 	if (pos->len + pos->prompt_len > pos->width)
 	{
@@ -43,7 +43,6 @@ void	jump_down(t_cpos *pos)
 void	ft_jump_vertical(uint64_t rb, char *line, t_cpos *pos)
 {
 	reset_selection(pos, line);
-	//pos->height = cmd_height(pos, line);
 	if (!line)
 		return;
 	if (rb == K_CTRL_UP)

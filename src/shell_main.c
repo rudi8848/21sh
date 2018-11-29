@@ -22,7 +22,7 @@ int			cbreak_settings(void)
 	changed.c_cc[VTIME] = 0;
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &changed) == -1)
 	{
-		ft_putstr_fd("Cannot set terminal attributes\n", STDERR_FILENO);
+		ft_putstr_fd("21sh: Cannot set terminal attributes\n", STDERR_FILENO);
 		ft_exit();
 	}
 	return (0);
@@ -91,14 +91,14 @@ static void	check_args(int argc, char **argv, int *infile)
 		*infile = open(argv[1], O_RDONLY);
 		if (*infile < 0)
 		{
-			perror("Cannot open input file");
+			perror("21sh: Cannot open input file");
 			exit(EXIT_FAILURE);
 		}
 		copy_env();
 	}
 	else
 	{
-		ft_putstr_fd("Unexpected argument\n", STDERR_FILENO);
+		ft_putstr_fd("21sh: Unexpected argument\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
 }

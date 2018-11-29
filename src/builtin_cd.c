@@ -85,7 +85,7 @@ int			ft_cd(char **args, int infile, int outfile)
 	if (ret == OK)
 		ft_change_env(new, old);
 	else
-		ft_printf("Cannot change directory\n");
+		ft_printf("21sh: cd: Cannot change directory\n");
 	free(old);
 	return (ret);
 }

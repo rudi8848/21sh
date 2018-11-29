@@ -16,12 +16,12 @@ static int	pack_less(t_job *j, t_process *p, char *line, t_pack *pack)
 {
 	if (pack->makepipe)
 	{
-		ft_printf("Extra <\n");
+		ft_putstr_fd("Extra <\n", STDERR_FILENO);
 		return (remove_invalid_job(j, p, pack));
 	}
 	if (ft_gettoken(line, &pack->i, j->srcfile, sizeof(j->srcfile)) != T_WORD)
 	{
-		ft_printf("Illegal <\n");
+		ft_putstr_fd("Illegal <\n", STDERR_FILENO);
 		return (remove_invalid_job(j, p, pack));
 	}
 	j->in_fd = -1;
@@ -35,7 +35,7 @@ static int	pack_heredoc(t_job *j, t_process *p, char *line, t_pack *pack)
 	prev = ft_memalloc(sizeof(t_process));
 	if (ft_gettoken(line, &pack->i, pack->word, sizeof(pack->word)) != T_WORD)
 	{
-		ft_printf("Error near << \n");
+		ft_putstr_fd("Error near << \n", STDERR_FILENO);
 		return (remove_invalid_job(j, p, pack));
 	}
 	prev->argv[0] = ft_strdup("heredoc");
@@ -47,7 +47,7 @@ static int	pack_heredoc(t_job *j, t_process *p, char *line, t_pack *pack)
 	}
 	else
 	{
-		ft_printf("Wrong input for heredoc\n");
+		ft_putstr_fd("Wrong input for heredoc\n", STDERR_FILENO);
 		return (remove_invalid_job(j, p, pack));
 	}
 	return (CONTINUE);
@@ -57,12 +57,12 @@ int			pack_word(t_process *p, t_pack *pack)
 {
 	if (pack->argc >= MAXARG - 1)
 	{
-		ft_printf("Too many args\n");
+		ft_putstr_fd("Too many args\n", STDERR_FILENO);
 		return (CONTINUE);
 	}
 	if (!(p->argv[pack->argc] = ft_strdup(pack->word)))
 	{
-		ft_printf("Out of memory\n");
+		ft_putstr_fd("Out of memory\n", STDERR_FILENO);
 		return (CONTINUE);
 	}
 	++pack->argc;

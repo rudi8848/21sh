@@ -46,7 +46,7 @@ static int	ft_env_rewrite(char *str, int size)
 	i = 0;
 	new_envp = (char**)ft_memalloc(sizeof(char*) * (size + 2));
 	if (!new_envp)
-		return (ft_printf("Cannot allocate memory\n"));
+		return (ft_printf("21sh: Out of memory\n"));
 	while (i < size)
 	{
 		new_envp[i] = ft_strdup(g_envp[i]);
@@ -55,7 +55,7 @@ static int	ft_env_rewrite(char *str, int size)
 	new_envp[size] = ft_strdup(str);
 	free(str);
 	if (new_envp[size] == NULL)
-		return (ft_printf("Cannot set env\n"));
+		return (ft_printf("21sh: Cannot set env\n"));
 	new_envp[size + 1] = NULL;
 	free_arr(g_envp);
 	g_envp = new_envp;
@@ -69,7 +69,7 @@ static char	*ft_check_args(char **args, int infile, int outfile)
 
 	if (!args[1] || (args[2] && args[3]) || infile < -1 || outfile < -1)
 	{
-		ft_printf("setenv: Wrong number of arguments\n");
+		ft_printf("21sh: setenv: Wrong number of arguments\n");
 		return (NULL);
 	}
 	if ((ft_strequ(args[1], "HOME") || ft_strequ(args[1], "PWD")

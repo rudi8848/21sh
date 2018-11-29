@@ -26,7 +26,6 @@ void	move_to_end(t_cpos *pos)
 
 void	move_to_border(uint64_t direction, char *line, t_cpos *pos)
 {
-	//pos->height = cmd_height(pos, line);
 	if (!line)
 		return;
 	if (direction == K_HOME)

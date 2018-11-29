@@ -25,25 +25,7 @@ int		ft_get_width(void)
 	}
 	return (argp.ws_col);
 }
-/*
-void	get_curpos(t_cpos *pos)
-{
-	char	buf[21];
-	int		ret;
 
-	ret = 0;
-	ft_memset(buf, 0, 21);
-	write(STDERR_FILENO, "\033[6n", 4);
-	if ((ret = read(STDERR_FILENO, buf, 20)) < 0)
-	{
-		ft_printf("Cannot get current position\n");
-		pos->curx = 0;
-		pos->cury = 0;
-		return ;
-	}
-	pos->curx = ft_atoi(ft_strrchr(buf, ';') + 1);
-	pos->cury = ft_atoi(&buf[2]) - 1;
-}*/
 void	reset_selection(t_cpos *pos, char *line)
 {
 	t_cpos tmp;
@@ -82,7 +64,6 @@ void	reset_selection(t_cpos *pos, char *line)
 
 void	init_position(t_cpos *pos, int start, char *line)
 {
-	//get_curpos(pos);
 	pos->cury = 0;
 	pos->startline = start;
 	pos->width = ft_get_width();
@@ -95,24 +76,4 @@ void	init_position(t_cpos *pos, int start, char *line)
 	pos->autocompl = NULL;
 	pos->bgn = NULL;
 	reset_selection(pos, line);
-	
-//		pos->start = pos->prompt_len;
 }
-/*
-int		cmd_height(t_cpos *pos, char *line)
-{
-	int len;
-	int width;
-	int height;
-
-	height = 1;
-	len = ft_strlen(line);
-	width = ft_get_width();
-	if (len <= width - pos->start)
-		return (height);
-	len -= width - pos->start;
-	height += len / width;
-	if (len % width)
-		height++;
-	return (height);
-}*/
