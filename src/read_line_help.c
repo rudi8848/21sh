@@ -43,9 +43,9 @@ void	reset_selection(t_cpos *pos, char *line)
 			++tmp.i;
 		}
 		tputs(tgetstr("rc", NULL), 0, ft_iputchar);
-	pos->selection = 0;
-	pos->first = -1;
-	pos->last = -1;
+		pos->selection = 0;
+		pos->first = -1;
+		pos->last = -1;
 	}
 	if (pos->is_auto)
 	{
