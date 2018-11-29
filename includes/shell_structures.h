@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 15:52:20 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/15 14:35:36 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/11/29 11:06:57 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,12 @@ typedef enum {
 	B_END,
 	BUILT
 }	t_built;
+
+typedef struct			s_bset
+{
+	char				*command;
+	t_pfb				function;
+}						t_bset;
 
 typedef struct			s_lex
 {

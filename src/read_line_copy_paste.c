@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-void	ft_copy(char *line, t_cpos *pos, char **buf)
+static void	ft_copy(char *line, t_cpos *pos, char **buf)
 {
 	int	len;
 
@@ -47,7 +47,7 @@ static void	reprint(char *line, t_cpos *pos, int dif)
 
 }
 
-void	ft_paste(char *line, t_cpos *pos, char **buf)
+static void	ft_paste(char *line, t_cpos *pos, char **buf)
 {
 	char	*tmp;
 	int		dif;
@@ -71,7 +71,7 @@ void	ft_paste(char *line, t_cpos *pos, char **buf)
 	*buf = NULL;
 }
 
-void	ft_cut(char *line, t_cpos *pos, char **buf)
+static void	ft_cut(char *line, t_cpos *pos, char **buf)
 {
 	char	*tmp;
 	int		len;
@@ -93,7 +93,6 @@ void	ft_cut(char *line, t_cpos *pos, char **buf)
 
 void	ft_copy_paste(uint64_t rb, char *line, t_cpos *pos)
 {
-	dprintf(4, ">\t%s, selection: [%s]\n", __FUNCTION__, pos->selection ? "ON" : "OFF");
 	static char *buf = NULL;
 
 	if (rb == K_ALT_C)
@@ -102,5 +101,4 @@ void	ft_copy_paste(uint64_t rb, char *line, t_cpos *pos)
 		ft_paste(line, pos, &buf);
 	else if (rb == K_ALT_X)
 		ft_cut(line, pos, &buf);
-	dprintf(4, ">\t%s\n", buf);
 }

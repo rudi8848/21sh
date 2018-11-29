@@ -12,65 +12,39 @@
 
 #include "shell.h"
 
+const t_bset g_g_built_tab[BUILT] = {
+	{ "echo", &ft_echo },
+	{ "cd", &ft_cd},
+	{ "setenv", &ft_setenv},
+	{ "unsetenv", &ft_unsetenv},
+	{ "env", &ft_env},
+	{ "heredoc", &ft_heredoc},
+	{ "exit", &b_exit},
+	{ "jobs", &ft_jobs},
+	{ "bg", &ft_bg},
+	{ "fg", &ft_fg},
+	{ "killj", &ft_killj},
+	{NULL, NULL}
+};
+
 int			check_built(char *cmd)
 {
-	int		i;
-	char	*built[BUILT];
+	int i;
 
 	i = 0;
-	built[B_ECHO] = "echo";
-	built[B_CD] = "cd";
-	built[B_SETENV] = "setenv";
-	built[B_UNSETENV] = "unsetenv";
-	built[B_ENV] = "env";
-	built[B_HRDOC] = "heredoc";
-	built[B_EXIT] = "exit";
-	built[B_JOBS] = "jobs";
-	built[B_BG] = "bg";
-	built[B_FG] = "fg";
-	built[B_KILLJ] = "killj";
-	built[B_END] = NULL;
-	while (built[i])
+	while (g_built_tab[i].command)
 	{
-		if (ft_strequ(cmd, built[i]))
+		if (ft_strequ(cmd, g_built_tab[i].command))
 			return (i);
-		i++;
+		++i;
 	}
 	return (-1);
 }
 
-static void	ft_set_builtins(t_pfb *built_tab)
-{
-	built_tab[B_ECHO] = &ft_echo;
-	built_tab[B_CD] = &ft_cd;
-	built_tab[B_SETENV] = &ft_setenv;
-	built_tab[B_UNSETENV] = &ft_unsetenv;
-	built_tab[B_ENV] = &ft_env;
-	built_tab[B_HRDOC] = &ft_heredoc;
-	built_tab[B_EXIT] = &b_exit;
-	built_tab[B_JOBS] = &ft_jobs;
-	built_tab[B_BG] = &ft_bg;
-	built_tab[B_FG] = &ft_fg;
-	built_tab[B_KILLJ] = &ft_killj;
-	built_tab[B_END] = NULL;
-}
-
 void		ft_built_exe(char **args, t_built cmd, int infile, int outfile)
 {
-	static t_pfb	*built_tab = NULL;
 	t_pfb			ft_run;
 
-	ft_run = NULL;
-	if (!built_tab)
-	{
-		built_tab = (t_pfb*)ft_memalloc(sizeof(t_pfb) * BUILT);
-		if (!built_tab)
-		{
-			ft_printf("Error\n");
-			return ;
-		}
-		ft_set_builtins(built_tab);
-	}
-	ft_run = built_tab[cmd];
+	ft_run = g_built_tab[cmd].function;
 	ft_run(args, infile, outfile);
 }
