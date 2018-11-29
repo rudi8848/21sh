@@ -109,7 +109,7 @@ typedef enum {
 	B_JOBS,
 	B_BG,
 	B_FG,
-	B_KILLJ,
+	B_KILL,
 	B_END,
 	BUILT
 }	t_built;

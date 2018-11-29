@@ -186,7 +186,7 @@ int			ft_find(t_process *commands);
 **	jobs builtin
 */
 int			ft_jobs(char **argv, int infile, int outfile);
-int			ft_killj(char **args, int infile, int outfile);
+int			ft_kill(char **args, int infile, int outfile);
 int			ft_fg(char **args, int infile, int outfile);
 int			ft_bg(char **args, int infile, int outfile);
 /*
@@ -197,7 +197,7 @@ int			ft_env(char **args, int infile, int outfile);
 /*
 **	is builtin
 */
-int			check_built(char *cmd);
+int			check_built(char **cmd);
 void		ft_built_exe(char **args, t_built cmd, int infile, int outfile);
 /*
 **	builtin cd

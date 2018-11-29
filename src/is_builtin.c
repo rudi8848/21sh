@@ -23,19 +23,23 @@ const t_bset g_built_tab[BUILT] = {
 	{ "jobs", &ft_jobs },
 	{ "bg", &ft_bg },
 	{ "fg", &ft_fg },
-	{ "killj", &ft_killj },
+	{ "kill", &ft_kill },
 	{ NULL, NULL }
 };
 
-int			check_built(char *cmd)
+int			check_built(char **cmd)
 {
 	int i;
 
 	i = 0;
 	while (g_built_tab[i].command)
 	{
-		if (ft_strequ(cmd, g_built_tab[i].command))
+		if (ft_strequ(cmd[0], g_built_tab[i].command))
+		{
+			if (i == B_KILL && cmd[1] && cmd[1][0] != '%')
+				return (-1);
 			return (i);
+		}
 		++i;
 	}
 	return (-1);

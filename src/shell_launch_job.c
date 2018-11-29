@@ -66,7 +66,7 @@ static int	run_process(t_job *j, t_launch *launch, int *mypipe, int foreground)
 {
 	if (set_outfile(j, launch, mypipe) != NORM)
 		return (RETURN);
-	if ((launch->ret = check_built(launch->p->argv[0])) >= 0)
+	if ((launch->ret = check_built(launch->p->argv)) >= 0)
 	{
 		do_builtin(j, launch, mypipe);
 		return (CONTINUE);

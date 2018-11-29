@@ -64,7 +64,7 @@ int			ft_fg(char **args, int infile, int outfile)
 	return (0);
 }
 
-int			ft_killj(char **args, int infile, int outfile)
+int			ft_kill(char **args, int infile, int outfile)
 {
 	t_job	*j;
 	int		nbr;
