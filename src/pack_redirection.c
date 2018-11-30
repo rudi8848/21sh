@@ -16,7 +16,7 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
 	int		nbr;
 
-	if (ft_isdigit(p->argv[pack->argc - 1][0]))
+	if (is_digit_only(p->argv[pack->argc - 1]))
 	{
 		nbr = ft_atoi(p->argv[pack->argc - 1]);
 		if (nbr == j->in_fd)
@@ -45,7 +45,7 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 	if ((pack->tkn = ft_gettoken(line, &pack->i, j->dstfile,
 					sizeof(j->dstfile))) != T_WORD)
 	{
-		ft_printf("21sh: Parse rror\n");
+		ft_printf("21sh: Parse error\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	if (ft_strequ("-", j->dstfile))
@@ -53,11 +53,11 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 		if ((ret = close_output(j, p, pack)) != CONTINUE)
 			return (ret);
 	}
-	else if (ft_isdigit(j->dstfile[0]))
+	else if (is_digit_only(j->dstfile))
 		return (fd_to_fd(j, p, pack));
 	else
 	{
-		ft_printf("21sh: Error\n");
+		ft_printf("21sh: Parse error\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	return (CONTINUE);
@@ -106,7 +106,7 @@ static int	check_redirection(t_job *j, t_process *p, char *line, t_pack *pack)
 	else
 	{
 		j->out_fd = -1;
-		if (ft_isdigit(p->argv[pack->argc - 1][0]))
+		if (is_digit_only(p->argv[pack->argc - 1]))
 			return (fd_to_file(j, p, pack));
 	}
 	return (CONTINUE);

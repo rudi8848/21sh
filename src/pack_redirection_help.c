@@ -59,3 +59,17 @@ int			close_output(t_job *j, t_process *p, t_pack *pack)
 	}
 	return (CONTINUE);
 }
+
+int			is_digit_only(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		++i;
+	}
+	return (1);
+}
