@@ -16,7 +16,7 @@ static int	plane_inword_backslash(char *line, int *i, t_lex *lex)
 {
 	++(*i);
 	if (line[*i] == '\n' && !line[(*i) + 1])
-		read_more(&line[(*i) + 1], (*i) + 1, ">");
+		read_more(&line[(*i) + 1], (*i) + 1, ">", NULL);
 	else
 	{
 		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
@@ -54,7 +54,7 @@ static int	word_tokens_bs(char *line, int *i, t_lex *lex)
 {
 	++(*i);
 	if (line[*i] == '\n' && !line[(*i) + 1])
-		read_more(&line[(*i) + 1], (*i) + 1, ">");
+		read_more(&line[(*i) + 1], (*i) + 1, ">", NULL);
 	else if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
 	{
 		lex->ret_token = T_ERROR;

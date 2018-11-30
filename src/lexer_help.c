@@ -23,10 +23,10 @@ int		store_char(char *word, size_t maxword, int c, size_t *np)
 		return (0);
 }
 
-void	read_more(char *line, int i, char *prompt)
+void	read_more(char *line, int i, char *prompt, char *eol)
 {
 	ft_printf("%s", prompt);
 	cbreak_settings();
-	read_line(line, i);
+	read_line(line, i, eol);
 	ft_restore();
 }

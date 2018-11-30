@@ -48,7 +48,7 @@ void	history_prev(char *line, t_cpos *pos, int *cmd)
 		move_to_border(K_HOME, line, pos);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		ft_bzero(line, MAXLINE);
-		init_position(pos, 1, line);
+		init_position(pos, 1, line, NULL);
 		if (*cmd > 0)
 		{
 			--(*cmd);

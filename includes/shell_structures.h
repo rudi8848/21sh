@@ -82,8 +82,6 @@ typedef struct			s_cpos
 	int					curx;
 	int					cury;
 	int					width;
-	int					curln;
-	int					height;
 	int					len;
 	int					i;
 	int					selection;
@@ -94,6 +92,7 @@ typedef struct			s_cpos
 	int					autostart;
 	int					autolen;
 	int					is_auto;
+	char				*eol;
 }						t_cpos;
 
 typedef	int	(*t_pfb) (char**, int, int);

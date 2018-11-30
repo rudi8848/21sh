@@ -50,7 +50,7 @@ void	end_line(char *line, uint64_t rb, t_cpos *pos)
 		(line[pos->len] = '\n');
 }
 
-void	read_line(char *line, int start)
+void	read_line(char *line, int start, char *eol)
 {
 	int			rr;
 	uint64_t	rb;
@@ -63,7 +63,7 @@ void	read_line(char *line, int start)
 	else
 		pos.prompt_len = 0;
 	ft_bzero(line, MAXLINE - start);
-	init_position(&pos, start, line);
+	init_position(&pos, start, line, eol);
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{

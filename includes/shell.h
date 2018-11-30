@@ -97,8 +97,8 @@ t_job					*g_first_job;
 /*
 **		read_line
 */
-void		read_line(char *line, int start);
-void		init_position(t_cpos *pos, int start, char *line);
+void		read_line(char *line, int start, char *eol);
+void		init_position(t_cpos *pos, int start, char *line, char *eol);
 void		print(char *line, t_cpos *pos, uint64_t rb, int rr);
 void		ft_highlight(uint64_t rb, char *line, t_cpos *pos);
 void		ft_copy_paste(uint64_t rb, char *line, t_cpos *pos);
@@ -173,7 +173,7 @@ int			word_tokens(char *line, int *i, t_lex *lex);
 void		insert_variable(char *line, char *word, int *i, size_t *wordn);
 int			dquote_tokens(char *line, int *i, t_lex *lex);
 int			quote_tokens(char *line, int *i, t_lex *lex);
-void		read_more(char *line, int i, char *prompt);
+void		read_more(char *line, int i, char *prompt, char *eol);
 int			store_char(char *word, size_t maxword, int c, size_t *np);
 /*
 **	find

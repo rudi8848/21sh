@@ -62,18 +62,17 @@ void	reset_selection(t_cpos *pos, char *line)
 	}	
 }
 
-void	init_position(t_cpos *pos, int start, char *line)
+void	init_position(t_cpos *pos, int start, char *line, char *eol)
 {
 	pos->cury = 0;
 	pos->startline = start;
 	pos->width = ft_get_width();
 	pos->curx = pos->prompt_len % pos->width;
-	pos->curln = 0;
-	pos->height = 1;
 	pos->len = 0;
 	pos->i = 0;
 	pos->is_auto = 0;
 	pos->autocompl = NULL;
 	pos->bgn = NULL;
+	pos->eol = eol;
 	reset_selection(pos, line);
 }

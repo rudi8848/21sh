@@ -37,7 +37,7 @@ static void	get_line(char *line, int infile)
 		if (g_hstr_fd == -1)
 			g_hstr_fd = open(g_history_file, O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
 		cbreak_settings();
-		read_line(&line[0], 0);
+		read_line(&line[0], 0, NULL);
 		ft_restore();
 	}
 	else

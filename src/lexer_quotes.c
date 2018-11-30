@@ -28,7 +28,7 @@ int			quote_tokens(char *line, int *i, t_lex *lex)
 	else
 	{
 		if (line[(*i) + 1] == '\0')
-			read_more(&line[(*i) + 1], (*i) + 1, "quote> ");
+			read_more(&line[(*i) + 1], (*i) + 1, "quote> ", NULL);
 		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
 		{
 			lex->ret_token = T_ERROR;
@@ -43,7 +43,7 @@ static int	dquote_tokens_bs(char *line, int *i, t_lex *lex)
 {
 	++(*i);
 	if (line[*i] == '\n' && !line[(*i) + 1])
-		read_more(&line[(*i) + 1], (*i) + 1, ">");
+		read_more(&line[(*i) + 1], (*i) + 1, ">", NULL);
 	else
 	{
 		if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
@@ -71,7 +71,7 @@ static int	dquote_tokens_end(int *i, t_lex *lex)
 static int	dquote_tokens_store(char *line, int *i, t_lex *lex)
 {
 	if (line[(*i) + 1] == '\0')
-		read_more(&line[(*i) + 1], (*i) + 1, "dquote> ");
+		read_more(&line[(*i) + 1], (*i) + 1, "dquote> ", NULL);
 	if (!store_char(lex->word, lex->maxword, line[*i], &lex->wordn))
 	{
 		lex->ret_token = T_ERROR;

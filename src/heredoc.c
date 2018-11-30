@@ -23,7 +23,7 @@ int		ft_heredoc(char **argv, int infile, int outfile)
 		ft_printf("Wrong input file");
 	while (!res)
 	{
-		read_more(line, 1, "heredoc> ");
+		read_more(line, 1, "heredoc> ", argv[1]);
 		res = ft_strequ(line, argv[1]);
 		if (!res)
 			ft_putstr_fd(line, outfile);
