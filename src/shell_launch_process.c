@@ -24,7 +24,7 @@ static void	close_process_files(t_launch *launch, int errfile)
 		dup2(launch->outfile, STDOUT_FILENO);
 		close(launch->outfile);
 	}
-	if (errfile != STDERR_FILENO)
+	if (errfile > STDERR_FILENO)
 	{
 		dup2(errfile, STDERR_FILENO);
 		close(errfile);

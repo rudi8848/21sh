@@ -27,7 +27,7 @@ static int	fd_to_file(t_job *j, t_process *p, t_pack *pack)
 			j->err_fd = ft_atoi(j->dstfile);
 		else
 		{
-			ft_printf("Bad file descriptor: %d\n", nbr);
+			ft_printf("21sh: Bad file descriptor: %d\n", nbr);
 			return (remove_invalid_job(j, p, pack));
 		}
 		--pack->argc;
@@ -45,7 +45,7 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 	if ((pack->tkn = ft_gettoken(line, &pack->i, j->dstfile,
 					sizeof(j->dstfile))) != T_WORD)
 	{
-		ft_printf("ERROR\n");
+		ft_printf("21sh: Error\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	if (ft_strequ("-", j->dstfile))
@@ -57,7 +57,7 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 		return (fd_to_file(j, p, pack));
 	else
 	{
-		ft_printf("ERROR\n");
+		ft_printf("21sh: Error\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	return (CONTINUE);
@@ -76,7 +76,7 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 		j->err_fd = open(j->dstfile, j->flags, FILE_PERM);
 	else
 	{
-		ft_printf("Bad file descriptor: %d\n", nbr);
+		ft_printf("21sh: Bad file descriptor: %d\n", nbr);
 		return (remove_invalid_job(j, p, pack));
 	}
 	--pack->argc;
@@ -99,7 +99,7 @@ static int	check_redirection(t_job *j, t_process *p, char *line, t_pack *pack)
 		}
 		else
 		{
-			ft_printf("\nIllegal > or >>\n");
+			ft_printf("\n21sh: Illegal > or >>\n");
 			return (remove_invalid_job(j, p, pack));
 		}
 	}
@@ -116,7 +116,7 @@ int			pack_great(t_job *j, t_process *p, char *line, t_pack *pack)
 {
 	if (j->out_fd != STDOUT_FILENO)
 	{
-		ft_printf("\nExtra > or >>\n");
+		ft_printf("\n21sh: Extra > or >>\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	if (!pack->argc)
