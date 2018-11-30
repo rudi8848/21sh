@@ -103,7 +103,7 @@ void		print(char *line, t_cpos *pos, uint64_t rb, int rr);
 void		ft_highlight(uint64_t rb, char *line, t_cpos *pos);
 void		ft_copy_paste(uint64_t rb, char *line, t_cpos *pos);
 void		move_history(uint64_t rb, char *line, t_cpos *pos, int *cmd);
-void		delete_char(uint64_t rb, char *line, t_cpos *pos);
+int		delete_char(uint64_t rb, char *line, t_cpos *pos);
 void		ft_move(uint64_t direction, char *line, t_cpos *pos);
 void		move_to_border(uint64_t direction, char *line, t_cpos *pos);
 void		ft_jump(uint64_t direction, char *line, t_cpos *pos);

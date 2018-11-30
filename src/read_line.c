@@ -12,16 +12,16 @@
 
 #include "shell.h"
 
-void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
+int	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 {
 	if (rb == K_RIGHT || rb == K_LEFT)
 		ft_move(rb, line, pos);
 	if (!cmd)
-		return;
+		return (CONTINUE);
 	else if (rb == K_DOWN || rb == K_UP)
 		move_history(rb, line, pos, cmd);
 	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
-		delete_char(rb, line, pos);
+		return (delete_char(rb, line, pos));
 	else if (rb == K_HOME || rb == K_END)
 		move_to_border(rb, line, pos);
 	else if (rb == K_ESC)
@@ -36,7 +36,7 @@ void	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 		ft_copy_paste(rb, line, pos);
 	else if (rb == K_TAB)
 		ft_autocomplete(line, pos);
-		
+	return (CONTINUE);
 }
 
 void	end_line(char *line, uint64_t rb, t_cpos *pos)
@@ -71,8 +71,8 @@ void	read_line(char *line, int start, char *eol)
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)
 			return (end_line(line, rb, &pos));
-		else
-			check_key(line, &pos, rb, &cmd);
+		else if (check_key(line, &pos, rb, &cmd) == RETURN)
+			return ;
 		rb = 0;
 	}
 	return ;
