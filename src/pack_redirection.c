@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-static int	fd_to_file(t_job *j, t_process *p, t_pack *pack)
+static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
 	int		nbr;
 
@@ -45,7 +45,7 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 	if ((pack->tkn = ft_gettoken(line, &pack->i, j->dstfile,
 					sizeof(j->dstfile))) != T_WORD)
 	{
-		ft_printf("21sh: Error\n");
+		ft_printf("21sh: Parse rror\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	if (ft_strequ("-", j->dstfile))
@@ -54,7 +54,7 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 			return (ret);
 	}
 	else if (ft_isdigit(j->dstfile[0]))
-		return (fd_to_file(j, p, pack));
+		return (fd_to_fd(j, p, pack));
 	else
 	{
 		ft_printf("21sh: Error\n");
@@ -63,14 +63,14 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 	return (CONTINUE);
 }
 
-static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
+static int	fd_to_file(t_job *j, t_process *p, t_pack *pack)
 {
 	int nbr;
 
 	nbr = ft_atoi(p->argv[pack->argc - 1]);
 	if (nbr == j->in_fd)
 		j->in_fd = open(j->dstfile, j->flags, FILE_PERM);
-	else if (nbr == j->out_fd)
+	else if (nbr == STDOUT_FILENO)
 		j->out_fd = -1;
 	else if (nbr == j->err_fd)
 		j->err_fd = open(j->dstfile, j->flags, FILE_PERM);
@@ -107,7 +107,7 @@ static int	check_redirection(t_job *j, t_process *p, char *line, t_pack *pack)
 	{
 		j->out_fd = -1;
 		if (ft_isdigit(p->argv[pack->argc - 1][0]))
-			return (fd_to_fd(j, p, pack));
+			return (fd_to_file(j, p, pack));
 	}
 	return (CONTINUE);
 }
@@ -121,7 +121,7 @@ int			pack_great(t_job *j, t_process *p, char *line, t_pack *pack)
 	}
 	if (!pack->argc)
 	{
-		ft_printf("Error\n");
+		ft_printf("21sh: Parse error\n");
 		return (remove_invalid_job(j, p, pack));
 	}
 	if (pack->token == T_GGREAT)
