@@ -16,8 +16,6 @@ int	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 {
 	if (rb == K_RIGHT || rb == K_LEFT)
 		ft_move(rb, line, pos);
-	if (!cmd)
-		return (CONTINUE);
 	else if (rb == K_DOWN || rb == K_UP)
 		move_history(rb, line, pos, cmd);
 	else if (rb == K_BSPACE || rb == K_DELETE || rb == K_CTRL_D)
