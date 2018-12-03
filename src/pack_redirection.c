@@ -15,8 +15,8 @@
 static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
 	//int		nbr;
-	int		left;
-	int		right;
+	int		left = -1;
+	int		right = -1;
 
 	if (is_digit_only(p->argv[pack->argc - 1]))
 	{
