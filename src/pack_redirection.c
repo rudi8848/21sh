@@ -14,7 +14,6 @@
 
 static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
-	//int		nbr;
 	int		left = -1;
 	int		right = -1;
 
@@ -24,7 +23,6 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 		right = ft_atoi(j->dstfile);
 		if (right > 2)
 			close(right);
-		//ft_printf(">\t left: [%d], right[%d]\n", left, right);
 		if (dup2(right, left) == -1)
 		{
 			ft_printf("21sh: Bad file descriptor: %d\n", left );
@@ -37,29 +35,9 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 	if (right > 2)
 		close(right);
 	j->out_fd = STDOUT_FILENO;
-	//j->out_fd = right;
-	/*
-		nbr = ft_atoi(p->argv[pack->argc - 1]);
-		if (nbr == j->in_fd)
-			j->in_fd = ft_atoi(j->dstfile);
-		else if (nbr == j->out_fd)
-			j->out_fd = ft_atoi(j->dstfile);
-		else if (nbr == j->err_fd)
-			j->err_fd = ft_atoi(j->dstfile);
-		else
-		{
-			ft_printf("21sh: Bad file descriptor: %d\n", nbr);
-			return (remove_invalid_job(j, p, pack));
-		}
-		--pack->argc;
+	--pack->argc;
 		free(p->argv[pack->argc]);
 		p->argv[pack->argc] = NULL;
-	}*/
-		--pack->argc;
-		free(p->argv[pack->argc]);
-		p->argv[pack->argc] = NULL;
-	
-	//j->out_fd = ft_atoi(j->dstfile);
 	return (CONTINUE);
 }
 
