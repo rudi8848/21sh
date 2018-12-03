@@ -27,7 +27,7 @@ static int	set_outfile(t_job *j, t_launch *launch, int *mypipe)
 			perror("21sh: pipe");
 			ft_exit();
 		}
-		dprintf(4, "outfile %d became %d\n", launch->outfile, mypipe[1]);
+		//dprintf(4, "outfile %d became %d\n", launch->outfile, mypipe[1]);
 		launch->outfile = mypipe[1];
 	}
 	else
@@ -41,7 +41,7 @@ static void	switch_files(t_job *j, t_launch *launch, int *mypipe)
 		close(launch->infile);
 	if (launch->outfile != j->out_fd)
 		close(launch->outfile);
-	dprintf(4, "infile %d became %d\n", launch->infile, mypipe[0]);
+	//dprintf(4, "infile %d became %d\n", launch->infile, mypipe[0]);
 	launch->infile = mypipe[0];
 	launch->p = launch->p->next;
 }
@@ -59,6 +59,11 @@ static int	check_files(t_job *j, t_launch *launch)
 		perror("21sh: open");
 		return (ERROR);
 	}
+	/*
+	if (j->out_fd == STDOUT_FILENO && ft_strlen(j->dstfile))
+	{
+		j->out_fd = ft_atoi(j->dstfile);
+	}*/
 	launch->infile = j->in_fd;
 	launch->p = j->first_process;
 	return (NORM);
