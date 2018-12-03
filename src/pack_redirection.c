@@ -16,28 +16,35 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
 	int		left = -1;
 	int		right = -1;
+	int		del_left;
 
-	if (is_digit_only(p->argv[pack->argc - 1]))
-	{
+	if ((del_left = is_digit_only(p->argv[pack->argc - 1])) != 0)
 		left = ft_atoi(p->argv[pack->argc - 1]);
-		right = ft_atoi(j->dstfile);
-		if (right > 2)
-			close(right);
-		if (dup2(right, left) == -1)
-		{
-			ft_printf("21sh: Bad file descriptor: %d\n", left );
-			return (remove_invalid_job(j, p, pack));	
-		}
-		if (left > 2)
-			close(left);
-	}
-	dup2(STDOUT_FILENO, right);
+	else
+		left = 1;
+	right = ft_atoi(j->dstfile);
 	if (right > 2)
 		close(right);
+	if (dup2(right, left) == -1)
+	{
+		ft_printf("21sh: Bad file descriptor: %d\n", left );
+		return (remove_invalid_job(j, p, pack));	
+	}
+	dprintf(4, "\n>\tdup2 ( %d, %d )\n", right, left);
+	if (left > 2)
+		close(left);
+	//dprintf(4, "dup2 ( %d, %d )\n", STDOUT_FILENO, right);
+	//dup2(STDOUT_FILENO, right);
+	//if (right > 2)
+	//	close(right);
 	j->out_fd = STDOUT_FILENO;
-	--pack->argc;
+	if (del_left)
+	{
+		
+		--pack->argc;
 		free(p->argv[pack->argc]);
 		p->argv[pack->argc] = NULL;
+	}	
 	return (CONTINUE);
 }
 
@@ -69,8 +76,12 @@ static int	check_output_fd(t_job *j, t_process *p, char *line, t_pack *pack)
 static int	fd_to_file(t_job *j, t_process *p, t_pack *pack)
 {
 	int nbr;
+	int del;
 
-	nbr = ft_atoi(p->argv[pack->argc - 1]);
+	if ((del = is_digit_only(p->argv[pack->argc - 1])))
+		nbr = ft_atoi(p->argv[pack->argc - 1]);
+	else
+		nbr = 1;
 	if (nbr == j->in_fd)
 		j->in_fd = open(j->dstfile, j->flags, FILE_PERM);
 	else if (nbr == STDOUT_FILENO)
@@ -82,9 +93,12 @@ static int	fd_to_file(t_job *j, t_process *p, t_pack *pack)
 		ft_printf("21sh: Bad file descriptor: %d\n", nbr);
 		return (remove_invalid_job(j, p, pack));
 	}
-	--pack->argc;
-	free(p->argv[pack->argc]);
-	p->argv[pack->argc] = NULL;
+	if (del)
+	{
+		--pack->argc;
+		free(p->argv[pack->argc]);
+		p->argv[pack->argc] = NULL;
+	}
 	return (CONTINUE);
 }
 
@@ -107,11 +121,7 @@ static int	check_redirection(t_job *j, t_process *p, char *line, t_pack *pack)
 		}
 	}
 	else
-	{
-		j->out_fd = -1;
-		if (is_digit_only(p->argv[pack->argc - 1]))
 			return (fd_to_file(j, p, pack));
-	}
 	return (CONTINUE);
 }
 

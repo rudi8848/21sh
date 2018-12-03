@@ -44,14 +44,15 @@ int			close_output(t_job *j, t_process *p, t_pack *pack)
 {
 	int nbr;
 	int ret;
+	int del;
 
-	if (ft_isdigit(p->argv[pack->argc - 1][0]))
+	if ((del = is_digit_only(p->argv[pack->argc - 1])))
 		nbr = ft_atoi(p->argv[pack->argc - 1]);
 	else
 		nbr = 1;
 	if ((ret = close_output_nbr(j, p, pack, nbr)) != CONTINUE)
 		return (ret);
-	if (ft_isdigit(p->argv[pack->argc - 1][0]))
+	if (del)
 	{
 		--pack->argc;
 		free(p->argv[pack->argc]);
