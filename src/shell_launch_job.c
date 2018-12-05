@@ -27,8 +27,12 @@ static int	set_outfile(t_job *j, t_launch *launch, int *mypipe)
 			perror("21sh: pipe");
 			ft_exit();
 		}
-		//dprintf(4, "outfile %d became %d\n", launch->outfile, mypipe[1]);
-		launch->outfile = mypipe[1];
+			launch->outfile = mypipe[1];
+			if (launch->p->is_redirected)
+			{
+				close(launch->outfile);
+				launch->outfile = launch->p->is_redirected;
+			}
 	}
 	else
 		launch->outfile = j->out_fd;

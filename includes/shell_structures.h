@@ -43,8 +43,9 @@ typedef struct			s_process
 	struct s_process	*next;
 	char				*argv[MAXARG];
 	pid_t				pid;
-	int					in_fd;
-	int					out_fd;
+	//int					in_fd;
+	//int					out_fd;
+	int is_redirected;
 	uint8_t				state;
 	int					status;
 }						t_process;

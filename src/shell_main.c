@@ -57,6 +57,9 @@ static void	get_line(char *line, int infile)
 
 void	restore_fd(void)
 {
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
 	if (dup2(g_cin, STDIN_FILENO) < 0 || dup2(g_cout, STDOUT_FILENO) < 0 || dup2(g_cerr, STDERR_FILENO) < 0)
 		perror("21sh: restore file descriptors");
 }
