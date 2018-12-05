@@ -102,7 +102,7 @@ void	init_shell(void)
 		tcsetpgrp(g_shell_terminal, g_shell_pgid);
 		init_terminal();
 	}
-	if ((g_cin = dup2(STDIN_FILENO, 40)) < 0 || (g_cout = dup2(STDOUT_FILENO, 40)) < 0 || (g_cerr = dup2(STDERR_FILENO, 40)) < 0)
+	if ((g_cin = dup2(STDIN_FILENO, 40)) < 0 || (g_cout = dup2(STDOUT_FILENO, 41)) < 0 || (g_cerr = dup2(STDERR_FILENO, 42)) < 0)
 		perror("21sh: saving file descriptors");
 	copy_env();
 }
