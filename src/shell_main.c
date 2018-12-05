@@ -55,6 +55,12 @@ static void	get_line(char *line, int infile)
 	}
 }
 
+void	restore_fd(void)
+{
+	if (dup2(g_cin, STDIN_FILENO) < 0 || dup2(g_cout, STDOUT_FILENO) < 0 || dup2(g_cerr, STDERR_FILENO) < 0)
+		perror("21sh: restore file descriptors");
+}
+
 static void	run_comand(char *line)
 {
 	t_job *ptr;
@@ -71,6 +77,7 @@ static void	run_comand(char *line)
 			do_job_notification();
 		else if (!ptr->nbr)
 			launch_job(ptr, ptr->foreground);
+		restore_fd();
 		ptr = ptr->next;
 	}
 	do_job_notification();

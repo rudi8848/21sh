@@ -93,6 +93,9 @@ char					*g_history[MAXHSTR];
 struct termios			g_saved;
 int						g_hstr_fd;
 t_job					*g_first_job;
+int g_cin;
+int g_cout;
+int g_cerr;
 
 /*
 **		read_line

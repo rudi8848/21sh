@@ -59,11 +59,7 @@ static int	check_files(t_job *j, t_launch *launch)
 		perror("21sh: open");
 		return (ERROR);
 	}
-	/*
-	if (j->out_fd == STDOUT_FILENO && ft_strlen(j->dstfile))
-	{
-		j->out_fd = ft_atoi(j->dstfile);
-	}*/
+	
 	launch->infile = j->in_fd;
 	launch->p = j->first_process;
 	return (NORM);

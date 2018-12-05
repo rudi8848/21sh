@@ -15,14 +15,17 @@
 static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
 	int		left = -1;
-	//int		right = -1;
+	int		right = -1;
 	int		del_left;
 
 	if ((del_left = is_digit_only(p->argv[pack->argc - 1])) != 0)
 		left = ft_atoi(p->argv[pack->argc - 1]);
 	else
 		left = 1;
+	right = ft_atoi(j->dstfile);
+	dup2(right, left);
 
+/*
 	if (left == j->in_fd)
 	{
 		ft_strcpy(j->srcfile, j->dstfile);
@@ -40,6 +43,7 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 		ft_printf("Error\n");
 		return (remove_invalid_job(j, p, pack));
 	}
+	*/
 	/*
 	right = ft_atoi(j->dstfile);
 	if (right > 2)
@@ -57,7 +61,7 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 	//if (right > 2)
 	//	close(right);
 	*/
-	j->out_fd = STDOUT_FILENO;
+	//j->out_fd = STDOUT_FILENO;
 	if (del_left)
 	{
 		
