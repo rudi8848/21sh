@@ -65,6 +65,7 @@ void	reset_selection(t_cpos *pos, char *line)
 void	init_position(t_cpos *pos, int start, char *line, char *eol)
 {
 	pos->cury = 0;
+	pos->selection = 0;
 	pos->startline = start;
 	pos->width = ft_get_width();
 	pos->curx = pos->prompt_len % pos->width;

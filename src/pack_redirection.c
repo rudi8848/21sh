@@ -23,8 +23,20 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 	else
 		left = 1;
 	right = ft_atoi(j->dstfile);
-	dup2(right, left);
+	//dup2(right, left);
+	
+	if (left == j->out_fd)
+	{
+		j->out_fd = right;
+		//dup2(left, j->err_fd);
+		//dup2(g_cout, STDOUT_FILENO);
+	}
+	else if (left == j->err_fd)
+	{
+		j->err_fd = right;
+		//dup2(left, j->out_fd);
 
+	}
 /*
 	if (left == j->in_fd)
 	{
