@@ -24,8 +24,10 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 		left = 1;
 	right = ft_atoi(j->dstfile);
 	//dup2(right, left);
+	close(right);
+	dup2(left, right);
 	
-	if (left == j->out_fd)
+/*	if (left == j->out_fd)
 	{
 		j->out_fd = right;
 		p->is_redirected = dup(j->out_fd);
@@ -35,6 +37,7 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 		close(right);
 		dup2(left, right);
 	}
+	*/
 /*
 	if (left == j->in_fd)
 	{

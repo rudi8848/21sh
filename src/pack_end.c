@@ -14,7 +14,7 @@
 
 static int	pack_pipe(t_job **j, t_process **p, t_pack *pack)
 {
-	if ((*j)->out_fd /*!= STDOUT_FILENO*/ == -1)
+	if ((*j)->out_fd != STDOUT_FILENO)
 		return (remove_invalid_job(*j, *p, pack));
 	(*p)->next = (t_process*)ft_memalloc(sizeof(t_process));
 	*p = (*p)->next;
