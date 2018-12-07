@@ -45,7 +45,6 @@ static void	switch_files(t_job *j, t_launch *launch, int *mypipe)
 		close(launch->infile);
 	if (launch->outfile != j->out_fd)
 		close(launch->outfile);
-	//dprintf(4, "infile %d became %d\n", launch->infile, mypipe[0]);
 	launch->infile = mypipe[0];
 	launch->p = launch->p->next;
 }
@@ -102,7 +101,6 @@ void		launch_job(t_job *j, int foreground)
 	set_job_number(j);
 	while (launch.p)
 	{
-		//dprintf(4, ">\t j->in:[%d], j->out:[%d], j->err:[%d], mypipe:[%d,%d]\n launch->infile:[%d], launch->outfile:[%d]\n", j->in_fd, j->out_fd, j->err_fd, mypipe[0], mypipe[1], launch.infile, launch.outfile);
 		if ((ret = run_process(j, &launch, mypipe, foreground)) == RETURN)
 			return ;
 		else if (ret == CONTINUE)

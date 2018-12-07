@@ -34,6 +34,12 @@ void	history_next(char *line, t_cpos *pos, int *cmd)
 		move_to_border(K_HOME, line, pos);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		ft_bzero(line, MAXLINE);
+		while(pos->i > 0)
+		{
+			move_left(pos, IN_MEMORY);
+			--pos->i;
+		}
+		pos->len = 0;
 		++(*cmd);
 		tputs(tgetstr("bl", NULL), 0, ft_iputchar);
 	}

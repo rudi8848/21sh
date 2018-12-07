@@ -23,61 +23,10 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 	else
 		left = 1;
 	right = ft_atoi(j->dstfile);
-	//dup2(right, left);
 	close(right);
 	dup2(left, right);
-	
-/*	if (left == j->out_fd)
-	{
-		j->out_fd = right;
-		p->is_redirected = dup(j->out_fd);
-	}
-	else if (left == j->err_fd)
-	{
-		close(right);
-		dup2(left, right);
-	}
-	*/
-/*
-	if (left == j->in_fd)
-	{
-		ft_strcpy(j->srcfile, j->dstfile);
-		ft_bzero(j->dstfile, ft_strlen(j->dstfile));
-	}
-	else if (left == STDOUT_FILENO)
-		;
-	else if (left == j->err_fd)
-	{
-		ft_strcpy(j->errfile, j->dstfile);
-		ft_bzero(j->dstfile, ft_strlen(j->dstfile));
-	}
-	else
-	{
-		ft_printf("Error\n");
-		return (remove_invalid_job(j, p, pack));
-	}
-	*/
-	/*
-	right = ft_atoi(j->dstfile);
-	if (right > 2)
-		close(right);
-	if (dup2(right, left) == -1)
-	{
-		ft_printf("21sh: Bad file descriptor: %d\n", left );
-		return (remove_invalid_job(j, p, pack));	
-	}
-	dprintf(4, "\n>\tdup2 ( %d, %d )\n", right, left);
-	if (left > 2)
-		close(left);
-	//dprintf(4, "dup2 ( %d, %d )\n", STDOUT_FILENO, right);
-	//dup2(STDOUT_FILENO, right);
-	//if (right > 2)
-	//	close(right);
-	*/
-	//j->out_fd = STDOUT_FILENO;
 	if (del_left)
 	{
-		
 		--pack->argc;
 		free(p->argv[pack->argc]);
 		p->argv[pack->argc] = NULL;

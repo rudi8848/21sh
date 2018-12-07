@@ -38,8 +38,8 @@ void	set_job_number(t_job *j)
 
 void	do_builtin(t_job *j, t_launch *launch, int *mypipe)
 {
-	ft_built_exe(launch->p->argv, launch->ret, launch->infile, launch->outfile);
 	launch->p->state |= COMPLETED;
+	ft_built_exe(launch->p->argv, launch->ret, launch->infile, launch->outfile);
 	if (launch->infile != j->in_fd)
 		close(launch->infile);
 	if (launch->outfile != j->out_fd)
