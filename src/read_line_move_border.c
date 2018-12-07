@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read_line_move_border.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/12/07 15:08:55 by gvynogra          #+#    #+#             */
+/*   Updated: 2018/12/07 15:08:57 by gvynogra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shell.h"
 
 void	move_to_home(t_cpos *pos)
@@ -20,14 +32,14 @@ void	move_to_end(t_cpos *pos)
 		{
 			move_right(pos, ON_SCREEN);
 			++pos->i;
-		} 
+		}
 	}
 }
 
 void	move_to_border(uint64_t direction, char *line, t_cpos *pos)
 {
 	if (!line)
-		return;
+		return ;
 	if (direction == K_HOME)
 		move_to_home(pos);
 	if (direction == K_END)

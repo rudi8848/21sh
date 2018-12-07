@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/10 11:18:57 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/10 11:21:33 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:56:43 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ static void	reprint(char *line, t_cpos *pos, int dif)
 		move_left(pos, ON_SCREEN);
 		--pos->i;
 	}
-
 }
 
 static void	ft_paste(char *line, t_cpos *pos, char **buf)
@@ -93,7 +92,7 @@ static void	ft_cut(char *line, t_cpos *pos, char **buf)
 	free(tmp);
 }
 
-void	ft_copy_paste(uint64_t rb, char *line, t_cpos *pos)
+void		ft_copy_paste(uint64_t rb, char *line, t_cpos *pos)
 {
 	static char *buf = NULL;
 

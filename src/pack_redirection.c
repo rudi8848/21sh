@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 13:38:26 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/12 13:38:28 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:55:32 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 {
-	int		left = -1;
-	int		right = -1;
+	int		left;
+	int		right;
 	int		del_left;
 
 	if ((del_left = is_digit_only(p->argv[pack->argc - 1])) != 0)
@@ -30,7 +30,7 @@ static int	fd_to_fd(t_job *j, t_process *p, t_pack *pack)
 		--pack->argc;
 		free(p->argv[pack->argc]);
 		p->argv[pack->argc] = NULL;
-	}	
+	}
 	return (CONTINUE);
 }
 
@@ -107,7 +107,7 @@ static int	check_redirection(t_job *j, t_process *p, char *line, t_pack *pack)
 		}
 	}
 	else
-			return (fd_to_file(j, p, pack));
+		return (fd_to_file(j, p, pack));
 	return (CONTINUE);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/11 15:51:31 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/04/11 16:02:16 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:42:39 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int			ft_putwchar(wint_t wc)
 	tmp[3] = 0;
 	bits = ft_nb_bits(wc);
 	bytes = ft_nb_bytes(bits);
-	//if (bytes <= bits && bytes <= MB_CUR_MAX)
+	if (bytes <= bits && bytes <= MB_CUR_MAX)
 		ft_fill_char(tmp, wc, bytes);
 	return (write(1, tmp, bytes));
 }

@@ -20,7 +20,7 @@ static void	find_home(char **home, char **pwd)
 	if (ft_strnequ(*home, *pwd, len))
 	{
 		*home = "~";
-		*pwd += len; 
+		*pwd += len;
 	}
 	else
 		*home = "";

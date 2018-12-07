@@ -22,23 +22,14 @@ void	history_next(char *line, t_cpos *pos, int *cmd)
 		++(*cmd);
 		ft_strcpy(line, g_history[*cmd]);
 		pos->len = ft_strlen(line);
-		while (pos->i < pos->len)
-		{
-			write(STDOUT_FILENO, &line[pos->i], 1);
-			move_right(pos, IN_MEMORY);
-			++pos->i;
-		}
+		write_to_end(line, pos);
 	}
 	else if (g_hstr_nb && (*cmd == (g_hstr_nb - 1)))
 	{
 		move_to_border(K_HOME, line, pos);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		ft_bzero(line, MAXLINE);
-		while(pos->i > 0)
-		{
-			move_left(pos, IN_MEMORY);
-			--pos->i;
-		}
+		move_to_border(K_HOME, line, pos);
 		pos->len = 0;
 		++(*cmd);
 		tputs(tgetstr("bl", NULL), 0, ft_iputchar);
@@ -61,12 +52,7 @@ void	history_prev(char *line, t_cpos *pos, int *cmd)
 			ft_strcpy(line, g_history[*cmd]);
 		}
 		pos->len = ft_strlen(line);
-		while (pos->i < pos->len)
-		{
-			write(STDOUT_FILENO, &line[pos->i], 1);
-			move_right(pos, IN_MEMORY);
-			++pos->i;
-		}
+		write_to_end(line, pos);
 	}
 	else
 		tputs(tgetstr("bl", NULL), 0, ft_iputchar);

@@ -12,44 +12,6 @@
 
 #include "shell.h"
 
-void		push_compl(t_compl **head, char *name)
-{
-	t_compl	*tmp;
-
-	if (!*head)
-		return ;
-	if (!(tmp = (t_compl*)ft_memalloc(sizeof(t_compl))))
-	{
-		ft_putstr_fd("Out of memory\n", STDERR_FILENO);
-		return ;
-	}
-	tmp->name = ft_strdup(name);
-	tmp->active = 0;
-	tmp->next = *head;
-	*head = tmp;
-}
-
-void		clear_compl(t_compl **head)
-{
-	t_compl *prev;
-
-	while (*head)
-	{
-		prev = *head;
-		*head = (*head)->next;
-		if (prev->name)
-		{
-			free(prev->name);
-			prev->name = NULL;
-		}
-		free(prev);
-		prev = NULL;
-	}
-	if (*head)
-		free(*head);
-	*head = NULL;
-}
-
 static void	set_active(t_compl *head, t_compl *ptr, char **str)
 {
 	if (ptr->name)
@@ -89,6 +51,16 @@ static char	*find_active(t_compl *head)
 	return (str);
 }
 
+void		write_to_end(char *line, t_cpos *pos)
+{
+	while (pos->i < pos->len)
+	{
+		write(STDOUT_FILENO, &line[pos->i], 1);
+		move_right(pos, IN_MEMORY);
+		++pos->i;
+	}
+}
+
 void		complete(char *line, t_cpos *pos, char *begin)
 {
 	char	*str;
@@ -112,11 +84,6 @@ void		complete(char *line, t_cpos *pos, char *begin)
 		ft_strcpy(&line[pos->autostart], str);
 		tputs(tgetstr("cd", NULL), 0, ft_iputchar);
 		pos->len += ft_strlen(str) - pos->autolen;
-		while (pos->i < pos->len)
-		{
-			write(STDOUT_FILENO, &line[pos->i], 1);
-			move_right(pos, IN_MEMORY);
-			++pos->i;
-		}
+		write_to_end(line, pos);
 	}
 }

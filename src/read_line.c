@@ -6,13 +6,13 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/10 11:14:37 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/10 11:18:24 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:45:50 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shell.h"
 
-int	check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
+int		check_key(char *line, t_cpos *pos, uint64_t rb, int *cmd)
 {
 	if (rb == K_RIGHT || rb == K_LEFT)
 		ft_move(rb, line, pos);

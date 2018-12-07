@@ -18,9 +18,7 @@ static void	reprint(char *line, t_cpos *pos)
 
 	i = pos->i;
 	move_to_border(K_HOME, line, pos);
-
 	tputs(tgetstr("cd", NULL), 0, ft_iputchar);
-
 	while (pos->i < pos->first)
 	{
 		write(STDOUT_FILENO, &line[pos->i], 1);
@@ -34,14 +32,8 @@ static void	reprint(char *line, t_cpos *pos)
 		move_right(pos, IN_MEMORY);
 		++pos->i;
 	}
-
 	tputs(tgetstr("me", NULL), 0, ft_iputchar);
-	while (pos->i < pos->len)
-	{
-		write(STDOUT_FILENO, &line[pos->i], 1);
-		move_right(pos, IN_MEMORY);
-		++pos->i;
-	}
+	write_to_end(line, pos);
 	while (pos->i > i)
 	{
 		move_left(pos, ON_SCREEN);
@@ -77,7 +69,7 @@ static void	select_right(char *line, t_cpos *pos)
 	}
 }
 
-void	ft_highlight(uint64_t rb, char *line, t_cpos *pos)
+void		ft_highlight(uint64_t rb, char *line, t_cpos *pos)
 {
 	pos->selection = 1;
 	if (rb == K_SHFT_L)

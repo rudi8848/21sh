@@ -90,7 +90,7 @@ static void	jump_left(char *line, t_cpos *pos, int *j)
 	}
 }
 
-void	ft_jump(uint64_t rb, char *line, t_cpos *pos)
+void		ft_jump(uint64_t rb, char *line, t_cpos *pos)
 {
 	int		j;
 

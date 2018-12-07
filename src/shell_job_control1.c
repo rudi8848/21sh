@@ -38,10 +38,10 @@ void		put_job_in_background(t_job *j, int cont)
 
 void		wait_for_job(t_job *j)
 {
-	int		status;
-	pid_t	pid;
+	int			status;
+	pid_t		pid;
 	t_process	*last;
-	t_process *tmp;
+	t_process	*tmp;
 
 	last = j->first_process;
 	while (last->next)
@@ -56,8 +56,8 @@ void		wait_for_job(t_job *j)
 			tmp->state |= COMPLETED;
 		mark_process_status(pid, status);
 		tmp = tmp->next;
-	}	
-	return;
+	}
+	return ;
 }
 
 static void	mark_job_as_running(t_job *j)

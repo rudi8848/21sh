@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/27 13:16:57 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/12 15:59:35 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:42:03 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ pid_t					g_shell_pgid;
 int						g_shell_terminal;
 int						g_shell_is_interactive;
 int						g_hstr_nb;
-char 					*g_history_file;
+char					*g_history_file;
 char					*g_history[MAXHSTR];
 struct termios			g_saved;
 int						g_hstr_fd;
@@ -101,6 +101,7 @@ int g_cerr;
 **		read_line
 */
 void		read_line(char *line, int start, char *eol);
+void		write_to_end(char *line, t_cpos *pos);
 void		init_position(t_cpos *pos, int start, char *line, char *eol);
 void		print(char *line, t_cpos *pos, uint64_t rb, int rr);
 void		ft_highlight(uint64_t rb, char *line, t_cpos *pos);
@@ -154,7 +155,7 @@ void		update_status(void);
 int			type_prompt(void);
 void		set_stopsignals(sig_t func);
 void		sig_tstp_handler(int signum);
-int 		is_empty(char *line);
+int			is_empty(char *line);
 /*
 **	pack
 */

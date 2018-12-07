@@ -45,7 +45,6 @@ void	free_job(t_job *j)
 void	ft_exit(void)
 {
 	ft_restore();
-	//system("leaks 21sh");
 	exit(EXIT_SUCCESS);
 }
 
@@ -62,13 +61,3 @@ void	check_history_capacity(void)
 		ft_exit();
 	}
 }
-
-/*
-**void	format_job_info(t_job *j, const char *status)
-**{
-**	ft_putnbr_fd(j->pgid, STDERR_FILENO);
-**	ft_putstr_fd(" : ", STDERR_FILENO);
-**	ft_putstr_fd(status, STDERR_FILENO);
-**	ft_putchar_fd('\n', STDERR_FILENO);
-**}
-*/

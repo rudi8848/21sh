@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-int		ft_get_width(void)
+int			ft_get_width(void)
 {
 	struct winsize	argp;
 	int				ret;
@@ -26,7 +26,21 @@ int		ft_get_width(void)
 	return (argp.ws_col);
 }
 
-void	reset_selection(t_cpos *pos, char *line)
+static void	clear_auto(t_cpos *pos)
+{
+	if (pos->autocompl)
+	{
+		clear_compl(&pos->autocompl);
+		pos->autocompl = NULL;
+	}
+	if (pos->bgn)
+		ft_strdel(&pos->bgn);
+	pos->autostart = 0;
+	pos->autolen = 0;
+	pos->is_auto = 0;
+}
+
+void		reset_selection(t_cpos *pos, char *line)
 {
 	t_cpos tmp;
 
@@ -48,24 +62,13 @@ void	reset_selection(t_cpos *pos, char *line)
 		pos->last = -1;
 	}
 	if (pos->is_auto)
-	{
-		if (pos->autocompl)
-		{
-			clear_compl(&pos->autocompl);
-			pos->autocompl = NULL;
-		}
-		if (pos->bgn)
-			ft_strdel(&pos->bgn);
-		pos->autostart = 0;
-		pos->autolen = 0;
-		pos->is_auto = 0;
-	}	
+		clear_auto(pos);
 }
 
-void	init_position(t_cpos *pos, int start, char *line, char *eol)
+void		init_position(t_cpos *pos, int start, char *line, char *eol)
 {
 	pos->cury = 0;
-	pos->selection = 0;
+	pos->selection = 1;
 	pos->startline = start;
 	pos->width = ft_get_width();
 	pos->curx = pos->prompt_len % pos->width;

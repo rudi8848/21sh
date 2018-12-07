@@ -16,19 +16,16 @@ static void	close_process_files(t_launch *launch, int errfile)
 {
 	if (launch->infile != STDIN_FILENO)
 	{
-		//dprintf(4, "dup2 ( %d, %d )\n", launch->infile, STDIN_FILENO);
 		dup2(launch->infile, STDIN_FILENO);
 		close(launch->infile);
 	}
 	if (launch->outfile != STDOUT_FILENO)
 	{
-		//dprintf(4, "dup2 ( %d, %d )\n", launch->outfile, STDOUT_FILENO);
 		dup2(launch->outfile, STDOUT_FILENO);
 		close(launch->outfile);
 	}
 	if (errfile > STDERR_FILENO)
 	{
-		//dprintf(4, "dup2 ( %d, %d )\n", errfile, STDERR_FILENO);
 		dup2(errfile, STDERR_FILENO);
 		close(errfile);
 	}

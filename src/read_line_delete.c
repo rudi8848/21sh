@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/10 11:21:55 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/10 11:27:21 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:58:14 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ static void	delete_front(char *line, t_cpos *pos)
 	if (pos->len > 0 && pos->i >= 0 && pos->i < pos->len)
 	{
 		pos->len--;
-		
 		j = pos->i;
 		while (line[j])
 		{
@@ -57,7 +56,6 @@ static void	delete_back(char *line, t_cpos *pos)
 	{
 		pos->i--;
 		pos->len--;
-	
 		j = pos->i;
 		while (line[j])
 		{
@@ -69,7 +67,7 @@ static void	delete_back(char *line, t_cpos *pos)
 	}
 }
 
-int	delete_char(uint64_t rb, char *line, t_cpos *pos)
+int			delete_char(uint64_t rb, char *line, t_cpos *pos)
 {
 	reset_selection(pos, line);
 	if (rb == K_CTRL_D && is_empty(line))
@@ -80,12 +78,12 @@ int	delete_char(uint64_t rb, char *line, t_cpos *pos)
 		{
 			ft_strcpy(line, pos->eol);
 			ft_printf("\n");
-			return RETURN;
+			return (RETURN);
 		}
 	}
 	if (rb == K_DELETE || rb == K_CTRL_D)
 		delete_front(line, pos);
 	else if (rb == K_BSPACE)
 		delete_back(line, pos);
-	return CONTINUE;
+	return (CONTINUE);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read_line_print.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/12/07 15:12:21 by gvynogra          #+#    #+#             */
+/*   Updated: 2018/12/07 15:13:55 by gvynogra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shell.h"
 
 static void	shift_letters(char *line, t_cpos *pos)
@@ -18,7 +30,7 @@ static void	insert_char(char *line, t_cpos *pos, uint64_t rb)
 
 	shift_letters(line, pos);
 	line[pos->i] = (char)rb;
-	++pos->len;	
+	++pos->len;
 	j = pos->i;
 	while (j > 0)
 	{
@@ -41,7 +53,7 @@ static void	insert_char(char *line, t_cpos *pos, uint64_t rb)
 	}
 }
 
-void	print(char *line, t_cpos *pos, uint64_t rb, int rr)
+void		print(char *line, t_cpos *pos, uint64_t rb, int rr)
 {
 	reset_selection(pos, line);
 	if (pos->len + 1 + pos->startline == MAXLINE)

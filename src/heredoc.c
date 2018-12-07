@@ -6,7 +6,7 @@
 /*   By: gvynogra <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 16:41:18 by gvynogra          #+#    #+#             */
-/*   Updated: 2018/11/12 16:41:54 by gvynogra         ###   ########.fr       */
+/*   Updated: 2018/12/07 14:44:43 by gvynogra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 static void	replace_str(char *line)
 {
 	char	word[MAXWORD];
-	int 	i;
-	size_t wordn;
+	int		i;
+	size_t	wordn;
 	char	tail[MAXWORD];
 
 	wordn = 0;
@@ -30,12 +30,12 @@ static void	replace_str(char *line)
 	ft_strcpy(&line[wordn], tail);
 }
 
-int		ft_heredoc(char **argv, int infile, int outfile)
+int			ft_heredoc(char **argv, int infile, int outfile)
 {
 	char	line[MAXLINE];
 	int		res;
+	char	*ptr;
 
-	char *ptr;
 	ft_bzero(line, MAXLINE);
 	res = 0;
 	if (infile < -1)

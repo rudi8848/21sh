@@ -27,12 +27,7 @@ static int	set_outfile(t_job *j, t_launch *launch, int *mypipe)
 			perror("21sh: pipe");
 			ft_exit();
 		}
-			launch->outfile = mypipe[1];
-			if (launch->p->is_redirected)
-			{
-				close(launch->outfile);
-				launch->outfile = launch->p->is_redirected;
-			}
+		launch->outfile = mypipe[1];
 	}
 	else
 		launch->outfile = j->out_fd;
@@ -62,7 +57,6 @@ static int	check_files(t_job *j, t_launch *launch)
 		perror("21sh: open");
 		return (ERROR);
 	}
-	
 	launch->infile = j->in_fd;
 	launch->p = j->first_process;
 	return (NORM);
