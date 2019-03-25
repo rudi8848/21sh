@@ -50,6 +50,7 @@ void	end_line(char *line, uint64_t rb, t_cpos *pos)
 
 void	read_line(char *line, int start, char *eol)
 {
+	dprintf(4, ">\t->\t%s\t<-\n", __FUNCTION__);
 	int			rr;
 	uint64_t	rb;
 	t_cpos		pos;
@@ -65,13 +66,23 @@ void	read_line(char *line, int start, char *eol)
 	rb = 0;
 	while ((rr = read(STDIN_FILENO, &rb, 8)) > 0)
 	{
+		dprintf(4, ">\t->\t%s [%llu], ret: %i\t<-\n", __FUNCTION__, rb, rr);
 		if (ft_isprint(rb))
 			print(line, &pos, rb, rr);
 		else if (rb == K_CTRL_C || rb == K_ENTER)
 			return (end_line(line, rb, &pos));
 		else if (check_key(line, &pos, rb, &cmd) == RETURN)
 			return ;
+		else
+			line[pos.len] = '\n';
 		rb = 0;
+		
+	}
+	dprintf(4, ">\t->\t%s ret: %i\t<-\n", __FUNCTION__, rr);
+	if (rr < 0)
+	{
+		perror("read");
+		exit(1);
 	}
 	return ;
 }

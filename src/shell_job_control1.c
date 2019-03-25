@@ -46,6 +46,8 @@ void		wait_for_job(t_job *j)
 	last = j->first_process;
 	while (last->next)
 		last = last->next;
+	if (last->pid != -42)
+	{
 	pid = waitpid(last->pid, &status, WUNTRACED);
 	mark_process_status(pid, status);
 	tmp = j->first_process;
@@ -57,6 +59,7 @@ void		wait_for_job(t_job *j)
 		mark_process_status(pid, status);
 		tmp = tmp->next;
 	}
+}
 	return ;
 }
 

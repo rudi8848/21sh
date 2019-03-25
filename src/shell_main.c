@@ -22,7 +22,9 @@ static void	get_line(char *line, int infile)
 			g_hstr_fd = open(g_history_file, O_RDWR | O_CREAT |
 				O_APPEND, S_IRWXU);
 		cbreak_settings();
+		dprintf(4, ">\tgetting new line\n");
 		read_line(&line[0], 0, NULL);
+		dprintf(4, ">\tgot line: %s\n", line);
 		ft_restore();
 	}
 	else
@@ -39,7 +41,7 @@ static void	get_line(char *line, int infile)
 			exit(close(infile));
 	}
 }
-
+/*
 static void	restore_fd(void)
 {
 	close(STDIN_FILENO);
@@ -50,7 +52,7 @@ static void	restore_fd(void)
 		|| dup2(g_cerr, STDERR_FILENO) < 0)
 		perror("21sh: restore file descriptors");
 }
-
+*/
 static void	run_comand(char *line)
 {
 	t_job *ptr;
@@ -67,7 +69,7 @@ static void	run_comand(char *line)
 			do_job_notification();
 		else if (!ptr->nbr)
 			launch_job(ptr, ptr->foreground);
-		restore_fd();
+		//restore_fd();
 		ptr = ptr->next;
 	}
 	do_job_notification();
@@ -105,7 +107,7 @@ int			main(int argc, char **argv)
 	char	line[MAXLINE];
 	t_job	*j;
 	int		infile;
-
+int ret;
 	g_envp = NULL;
 	g_hstr_fd = -1;
 	check_args(argc, argv, &infile);
@@ -120,11 +122,23 @@ int			main(int argc, char **argv)
 			perror("ft_memalloc");
 			return (1);
 		}
+		dprintf(4, ">\tstart\n");
 		get_line(line, infile);
+		dprintf(4, ">\tgot line: %s\n", line);
 		if (is_empty(line))
+		{
+			dprintf(4, ">\tline is empty\n");
 			free(j);
-		else if (pack_args(line, j))
+		}
+		else if ((ret = pack_args(line, j)))
+		{
+			dprintf(4, ">\targs packed\n");
 			run_comand(line);
+		}
+		else if (!ret)
+		{
+			dprintf(4, ">\targs NOT packed\n");
+		}
 	}
 	return (0);
 }

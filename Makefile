@@ -77,7 +77,7 @@ $(DIR_SRC)/%.o: $(DIR_SRC)/%.c
 	$(CC) $(CFLAGS) $(INCL) -g3 -o $@ -c $<
 
 $(LIB):
-	@make -C libft
+	make -C libft
 
 clean:
 	/bin/rm -f $(OBJS)

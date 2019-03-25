@@ -36,9 +36,9 @@ static int	set_outfile(t_job *j, t_launch *launch, int *mypipe)
 
 static void	switch_files(t_job *j, t_launch *launch, int *mypipe)
 {
-	if (launch->infile != j->in_fd)
+	if (launch->infile != j->in_fd && launch->infile > 2)
 		close(launch->infile);
-	if (launch->outfile != j->out_fd)
+	if (launch->outfile != j->out_fd && launch->outfile > 2)
 		close(launch->outfile);
 	launch->infile = mypipe[0];
 	launch->p = launch->p->next;
@@ -62,10 +62,25 @@ static int	check_files(t_job *j, t_launch *launch)
 	return (NORM);
 }
 
+int check_job(t_process *process)
+{
+	t_process *ptr = process;
+
+	while (ptr)
+	{
+		if (check_built(ptr->argv) <0 && !ft_find(ptr))
+			return -1;
+		ptr = ptr->next;
+	}
+	return 0;
+}
+
 static int	run_process(t_job *j, t_launch *launch, int *mypipe, int foreground)
 {
 	if (set_outfile(j, launch, mypipe) != NORM)
 		return (RETURN);
+	if (check_job(launch->p))
+	 	return (RETURN);
 	if ((launch->ret = check_built(launch->p->argv)) >= 0)
 	{
 		do_builtin(j, launch, mypipe);
@@ -73,9 +88,31 @@ static int	run_process(t_job *j, t_launch *launch, int *mypipe, int foreground)
 	}
 	else
 	{
-		if (!ft_find(launch->p))
+		if (!ft_find(launch->p))	//	if invalid command
 		{
-			launch->p->state |= COMPLETED;
+			int			i;
+			t_process	*pprev;
+
+			i = 0;
+
+			while (launch->p)
+			{
+				pprev = launch->p;
+				launch->p = launch->p->next;
+				i = 0;
+				while (pprev->argv[i])
+				{
+					free(pprev->argv[i]);
+					i++;
+				}
+				free(pprev);
+			}
+			launch->p = NULL;
+			if (launch->infile > 2)
+				close(launch->infile);
+			if (launch->outfile > 2)
+				close(launch->outfile);
+
 			return (RETURN);
 		}
 		make_child_process(j, launch, foreground);

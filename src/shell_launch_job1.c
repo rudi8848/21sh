@@ -40,9 +40,9 @@ void	do_builtin(t_job *j, t_launch *launch, int *mypipe)
 {
 	launch->p->state |= COMPLETED;
 	ft_built_exe(launch->p->argv, launch->ret, launch->infile, launch->outfile);
-	if (launch->infile != j->in_fd)
+	if (launch->infile != j->in_fd && launch->infile != STDIN_FILENO)
 		close(launch->infile);
-	if (launch->outfile != j->out_fd)
+	if (launch->outfile != j->out_fd && launch->outfile != STDOUT_FILENO)
 		close(launch->outfile);
 	launch->infile = mypipe[0];
 	launch->p = launch->p->next;
