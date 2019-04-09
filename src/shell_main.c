@@ -22,9 +22,7 @@ static void	get_line(char *line, int infile)
 			g_hstr_fd = open(g_history_file, O_RDWR | O_CREAT |
 				O_APPEND, S_IRWXU);
 		cbreak_settings();
-		dprintf(4, ">\tgetting new line\n");
 		read_line(&line[0], 0, NULL);
-		dprintf(4, ">\tgot line: %s\n", line);
 		ft_restore();
 	}
 	else
@@ -107,7 +105,8 @@ int			main(int argc, char **argv)
 	char	line[MAXLINE];
 	t_job	*j;
 	int		infile;
-int ret;
+	int ret;
+	
 	g_envp = NULL;
 	g_hstr_fd = -1;
 	check_args(argc, argv, &infile);
