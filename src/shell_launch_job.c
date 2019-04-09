@@ -62,14 +62,22 @@ static int	check_files(t_job *j, t_launch *launch)
 	return (NORM);
 }
 
-int check_job(t_process *process)
+int check_job(t_job *job)
 {
-	t_process *ptr = process;
+	t_process *ptr = job->first_process;
 
 	while (ptr)
 	{
 		if (check_built(ptr->argv) <0 && !ft_find(ptr))
+		{
+			ptr = job->first_process;
+			while (ptr)
+			{
+				ptr->state |= COMPLETED;
+				ptr = ptr->next;
+			}
 			return -1;
+		}
 		ptr = ptr->next;
 	}
 	return 0;
@@ -79,8 +87,6 @@ static int	run_process(t_job *j, t_launch *launch, int *mypipe, int foreground)
 {
 	if (set_outfile(j, launch, mypipe) != NORM)
 		return (RETURN);
-	if (check_job(launch->p))
-	 	return (RETURN);
 	if ((launch->ret = check_built(launch->p->argv)) >= 0)
 	{
 		do_builtin(j, launch, mypipe);
@@ -88,7 +94,7 @@ static int	run_process(t_job *j, t_launch *launch, int *mypipe, int foreground)
 	}
 	else
 	{
-		if (!ft_find(launch->p))	//	if invalid command
+		if (!ft_find(launch->p))
 		{
 			int			i;
 			t_process	*pprev;
@@ -127,7 +133,7 @@ void		launch_job(t_job *j, int foreground)
 	int			ret;
 
 	init_launch(&launch, mypipe);
-	if (check_files(j, &launch) != NORM)
+	if (check_job(j) || check_files(j, &launch) != NORM)
 		return ;
 	set_job_number(j);
 	while (launch.p)

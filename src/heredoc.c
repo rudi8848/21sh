@@ -40,6 +40,8 @@ int			ft_heredoc(char **argv, int infile, int outfile)
 	res = 0;
 	if (infile < -1)
 		ft_printf("Wrong input file");
+	if (!argv[1])
+		return (ft_printf("21sh: end of line is not set\n"));
 	while (!res)
 	{
 		read_more(line, 1, "heredoc> ", argv[1]);

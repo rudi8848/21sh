@@ -122,23 +122,11 @@ int ret;
 			perror("ft_memalloc");
 			return (1);
 		}
-		dprintf(4, ">\tstart\n");
 		get_line(line, infile);
-		dprintf(4, ">\tgot line: %s\n", line);
 		if (is_empty(line))
-		{
-			dprintf(4, ">\tline is empty\n");
 			free(j);
-		}
 		else if ((ret = pack_args(line, j)))
-		{
-			dprintf(4, ">\targs packed\n");
 			run_comand(line);
-		}
-		else if (!ret)
-		{
-			dprintf(4, ">\targs NOT packed\n");
-		}
 	}
 	return (0);
 }
